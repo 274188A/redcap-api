@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Redcap.Interfaces;
 using Redcap.Models;
 using Redcap.Utilities;
 using Serilog;
@@ -18,7 +17,7 @@ namespace Redcap.Api
     /// Go to your http://redcap_instance/api/help for Redcap Api documentations
     /// Author: Michael Tran tranpl@outlook.com, tranpl@vcu.edu
     /// </summary>
-    public class RedcapApi : IRedcap
+    public class Redcap : IRedcap
     {
 
         /// <summary>
@@ -43,7 +42,7 @@ namespace Redcap.Api
         /// 
         /// <param name="redcapApiUrl">Redcap instance URI</param>
         /// <param name="useInsecureCertificates">Allows use of insecure certificates in HttpClient</param>
-        public RedcapApi(string redcapApiUrl, bool useInsecureCertificates = false)
+        public Redcap(string redcapApiUrl, bool useInsecureCertificates = false)
         {
             _uri = new Uri(redcapApiUrl);
             Utils.UseInsecureCertificate = useInsecureCertificates;

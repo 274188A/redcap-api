@@ -1,14 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Redcap.Models;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using Newtonsoft.Json;
-using Redcap;
-using Redcap.Models;
 using Tynamix.ObjectFiller;
-using RedcapApi = Redcap.Api.RedcapApi;
 
 namespace RedcapApiDemo
 {
@@ -141,7 +137,7 @@ You can see here the Death Star orbiting the forest Moon of Endor. Although the 
             /*
              * Start a new instance of Redcap APi
              */
-            //var redcapApi = new RedcapApi(_token, _uri);
+            //var redcapApi = new Redcap(_token, _uri);
 
             //Console.WriteLine("Calling API Methods < 1.0.0");
 
@@ -277,8 +273,8 @@ You can see here the Death Star orbiting the forest Moon of Endor. Although the 
             Console.WriteLine("----------------------------Press Enter to Continue-------------");
             Console.ReadLine();
 
-            Console.WriteLine("Creating a new instance of RedcapApi");
-            var redcap_api_1_1_0 = new RedcapApi(_uri);
+            Console.WriteLine("Creating a new instance of Redcap");
+            var redcap_api_1_1_0 = new Redcap.Api.Redcap(_uri);
 
             Console.WriteLine($"Using {_uri.ToString()} for redcap api endpoint.");
 

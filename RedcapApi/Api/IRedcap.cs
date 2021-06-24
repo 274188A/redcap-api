@@ -1,8 +1,8 @@
-﻿using Redcap.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Redcap.Models;
 
-namespace Redcap.Interfaces
+namespace Redcap.Api
 {
     /// <summary>
     /// The REDCap API is an interface that allows external applications 

@@ -19,7 +19,6 @@ using Redcap;
 using Redcap.Models;
 using Redcap.Utilities;
 using Xunit;
-using RedcapApi = Redcap.Api.RedcapApi;
 
 namespace Tests
 {
@@ -35,11 +34,11 @@ namespace Tests
 
         // local instance of redcap api uri
         private const string _uri = "http://localhost/redcap/api/";
-        private readonly RedcapApi _redcapApi;
+        private readonly Redcap.Api.Redcap _redcap;
 
         public RedcapApiTestsOld()
         {
-            _redcapApi = new RedcapApi(_uri);
+            _redcap = new Redcap.Api.Redcap(_uri);
         }
 
         [Fact]
@@ -55,7 +54,7 @@ namespace Tests
             data.Add(keyValues);
 
             // Act
-            var result = await _redcapApi.ImportRecordsAsync(_token, Content.Record, ReturnFormat.json,
+            var result = await _redcap.ImportRecordsAsync(_token, Content.Record, ReturnFormat.json,
                 RedcapDataType.flat, OverwriteBehavior.normal, false, data, "MDY", CsvDelimiter.comma,
                 ReturnContent.count, OnErrorFormat.json);
 
@@ -74,7 +73,7 @@ namespace Tests
              * Using API Version 1.0.0+
              */
             // executing method using default options
-            var result = _redcapApi.ImportRecordsAsync(_token, Content.Record, ReturnFormat.json, RedcapDataType.flat,
+            var result = _redcap.ImportRecordsAsync(_token, Content.Record, ReturnFormat.json, RedcapDataType.flat,
                 OverwriteBehavior.normal, false, data, "MDY", CsvDelimiter.comma, ReturnContent.count,
                 OnErrorFormat.json).Result;
 
@@ -96,7 +95,7 @@ namespace Tests
             keyValues.Add("record_id", "8");
             record.Add(keyValues);
             // import records so we can delete it for this test
-            await _redcapApi.ImportRecordsAsync(_token, Content.Record, ReturnFormat.json, RedcapDataType.flat,
+            await _redcap.ImportRecordsAsync(_token, Content.Record, ReturnFormat.json, RedcapDataType.flat,
                 OverwriteBehavior.normal, true, record, "MDY", CsvDelimiter.comma, ReturnContent.count,
                 OnErrorFormat.json);
 
@@ -106,7 +105,7 @@ namespace Tests
             };
             var arm = 1;
             // Act
-            var result = await _redcapApi.DeleteRecordsAsync(_token, Content.Record, RedcapAction.Delete, records, arm);
+            var result = await _redcap.DeleteRecordsAsync(_token, Content.Record, RedcapAction.Delete, records, arm);
 
             // Assert 
             // Expecting a string of 1 since we are deleting one record
@@ -126,7 +125,7 @@ namespace Tests
                     CustomFormLabel = "TestTestTest"
                 }
             };
-            var result = await _redcapApi.ImportRepeatingInstrumentsAndEvents(_token, repeatingInstruments);
+            var result = await _redcap.ImportRepeatingInstrumentsAndEvents(_token, repeatingInstruments);
             // Expect "1" as we are importing a single repeating instrument
             Assert.Contains("1", result);
         }
@@ -151,13 +150,13 @@ namespace Tests
                     CustomFormLabel = "TestTestTest"
                 }
             };
-            await _redcapApi.ImportRepeatingInstrumentsAndEvents(_token, repeatingInstruments);
+            await _redcap.ImportRepeatingInstrumentsAndEvents(_token, repeatingInstruments);
 
             // Act
             /*
              * Using API Version 1.0.0+
              */
-            var result = await _redcapApi.ExportRepeatingInstrumentsAndEvents(_token);
+            var result = await _redcap.ExportRepeatingInstrumentsAndEvents(_token);
 
             // Assert 
             // Expecting event names, form name and custom form labels
@@ -185,7 +184,7 @@ namespace Tests
             /*
              * Using API Version 1.0.0+
              */
-            var result = _redcapApi.ExportArmsAsync(_token).Result;
+            var result = _redcap.ExportArmsAsync(_token).Result;
             var data = JsonConvert.DeserializeObject(result).ToString();
 
             // Assert 
@@ -215,7 +214,7 @@ namespace Tests
             /*
              * Using API Version 1.0.0+
              */
-            var result = await _redcapApi.ImportArmsAsync(_token, Content.Arm, Override.False, RedcapAction.Import,
+            var result = await _redcap.ImportArmsAsync(_token, Content.Arm, Override.False, RedcapAction.Import,
                 ReturnFormat.json, armlist, OnErrorFormat.json);
 
             // Assert 
@@ -239,7 +238,7 @@ namespace Tests
             };
 
             // Make sure we have an arm with a few events before trying to delete one.
-            var importArmsResults = await _redcapApi.ImportArmsAsync(_token, Content.Arm, Override.True,
+            var importArmsResults = await _redcap.ImportArmsAsync(_token, Content.Arm, Override.True,
                 RedcapAction.Import, ReturnFormat.json, redcapArms, OnErrorFormat.json);
 
             // arms(#) to be deleted
@@ -252,7 +251,7 @@ namespace Tests
             /*
              * Using API Version 1.0.0+
              */
-            var result = _redcapApi.DeleteArmsAsync(_token, Content.Arm, RedcapAction.Delete, armarray).Result;
+            var result = _redcap.DeleteArmsAsync(_token, Content.Arm, RedcapAction.Delete, armarray).Result;
             var data = JsonConvert.DeserializeObject(result).ToString();
 
             // Assert 
@@ -276,7 +275,7 @@ namespace Tests
             /*
              * Using API Version 1.0.0+
              */
-            var result = _redcapApi.ExportEventsAsync(_token, Content.Event, ReturnFormat.json, ExportEventsAsyncData,
+            var result = _redcap.ExportEventsAsync(_token, Content.Event, ReturnFormat.json, ExportEventsAsyncData,
                 OnErrorFormat.json).Result;
             var data = JsonConvert.DeserializeObject(result).ToString();
 
@@ -332,7 +331,7 @@ namespace Tests
             /*
              * Using API Version 1.0.0+
              */
-            var _redcapApi = new RedcapApi(apiEndpoint);
+            var _redcapApi = new Redcap.Api.Redcap(apiEndpoint);
             var result = _redcapApi.ImportEventsAsync(_token, Content.Event, RedcapAction.Import, Override.False,
                 ReturnFormat.json, eventList, OnErrorFormat.json).Result;
             var data = JsonConvert.DeserializeObject(result).ToString();
@@ -359,7 +358,7 @@ namespace Tests
                     UniqueEventName = "clinical_arm_1"
                 }
             };
-            await _redcapApi.ImportEventsAsync(_token, Content.Event, RedcapAction.Import, Override.True,
+            await _redcap.ImportEventsAsync(_token, Content.Event, RedcapAction.Import, Override.True,
                 ReturnFormat.json, events);
             // the event above, redcap appends _arm_1 when you add an arm_#
             var DeleteEventsAsyncData = new string[] {"clinical_event_1_arm_1"};
@@ -369,7 +368,7 @@ namespace Tests
              * Using API Version 1.0.0+
              */
             var result =
-                await _redcapApi.DeleteEventsAsync(_token, Content.Event, RedcapAction.Delete, DeleteEventsAsyncData);
+                await _redcap.DeleteEventsAsync(_token, Content.Event, RedcapAction.Delete, DeleteEventsAsyncData);
 
             // Assert 
             // Expecting "1", since we had 1 redcap events imported
@@ -385,7 +384,7 @@ namespace Tests
             /*
              * Just passing the required parameters
              */
-            var result = _redcapApi.ExportRecordAsync(_token, Content.Record, recordId).Result;
+            var result = _redcap.ExportRecordAsync(_token, Content.Record, recordId).Result;
 
             // Assert
             Assert.Contains("1", result);
@@ -404,7 +403,7 @@ namespace Tests
             };
             var redcapEvent = new string[] {"event_1_arm_1"};
             // Act
-            var result = await _redcapApi.ExportRecordsAsync(_token, Content.Record, ReturnFormat.json,
+            var result = await _redcap.ExportRecordsAsync(_token, Content.Record, ReturnFormat.json,
                 RedcapDataType.flat, record, null, null, redcapEvent);
 
             // Assert
@@ -421,7 +420,7 @@ namespace Tests
             var records = new string[] {"1, 2"};
 
             // Act
-            var result = await _redcapApi.ExportRecordsAsync(_token, Content.Record, ReturnFormat.json,
+            var result = await _redcap.ExportRecordsAsync(_token, Content.Record, ReturnFormat.json,
                 RedcapDataType.flat, records);
 
             // Assert
@@ -439,7 +438,7 @@ namespace Tests
             var records = new string[] {"1"};
 
             // Act
-            var result = await _redcapApi.ExportRecordsAsync(_token, Content.Record, ReturnFormat.json,
+            var result = await _redcap.ExportRecordsAsync(_token, Content.Record, ReturnFormat.json,
                 RedcapDataType.flat, records);
 
             // Assert
@@ -458,7 +457,7 @@ namespace Tests
             var currentRedcapVersion = "8";
 
             // Act
-            var result = await _redcapApi.ExportRedcapVersionAsync(_token, Content.Version);
+            var result = await _redcap.ExportRedcapVersionAsync(_token, Content.Version);
 
             // Assert
             // Any version 8.XX will do
@@ -476,7 +475,7 @@ namespace Tests
             var username = "tranpl";
 
             // Act
-            var result = await _redcapApi.ExportUsersAsync(_token, ReturnFormat.json);
+            var result = await _redcap.ExportUsersAsync(_token, ReturnFormat.json);
             // Assert
             Assert.Contains(username, result);
         }
@@ -491,7 +490,7 @@ namespace Tests
 
             // Act
             var result =
-                await _redcapApi.ExportRecordsAsync(_token, Content.Record, ReturnFormat.json, RedcapDataType.flat);
+                await _redcap.ExportRecordsAsync(_token, Content.Record, ReturnFormat.json, RedcapDataType.flat);
             var data = JsonConvert.DeserializeObject<List<Demographic>>(result);
 
             // Assert
@@ -572,7 +571,7 @@ namespace Tests
                 }
             };
             // Act
-            var result = await _redcapApi.ImportMetaDataAsync(_token, Content.MetaData, ReturnFormat.json, metata);
+            var result = await _redcap.ImportMetaDataAsync(_token, Content.MetaData, ReturnFormat.json, metata);
 
             // Assert
             // Expecting 7 metada objects imported
@@ -649,10 +648,10 @@ namespace Tests
             };
             // import 7 metadata fields into the project
             // this creates an instrument named demographics with 7 fields
-            await _redcapApi.ImportMetaDataAsync(_token, Content.MetaData, ReturnFormat.json, metata);
+            await _redcap.ImportMetaDataAsync(_token, Content.MetaData, ReturnFormat.json, metata);
 
             // Act
-            var result = await _redcapApi.ExportMetaDataAsync(_token, ReturnFormat.json);
+            var result = await _redcap.ExportMetaDataAsync(_token, ReturnFormat.json);
             var data = JsonConvert.DeserializeObject<List<RedcapMetaData>>(result);
             // Assert
             // expecting 7 metadata to be exported
@@ -674,7 +673,7 @@ namespace Tests
                 new RedcapArm {ArmNumber = "4", Name = "testarm4_this_will_be_deleted"},
             };
             // Import Arms so we can test
-            await _redcapApi.ImportArmsAsync(_token, Content.Arm, Override.False, RedcapAction.Import,
+            await _redcap.ImportArmsAsync(_token, Content.Arm, Override.False, RedcapAction.Import,
                 ReturnFormat.json, redcapArms, OnErrorFormat.json);
             var listOfEvents = new List<RedcapEvent>()
             {
@@ -710,12 +709,12 @@ namespace Tests
                 }
             };
             // Import Events so we can test 
-            await _redcapApi.ImportEventsAsync(_token, Override.False, ReturnFormat.json, listOfEvents,
+            await _redcap.ImportEventsAsync(_token, Override.False, ReturnFormat.json, listOfEvents,
                 OnErrorFormat.json);
             // we want to export arm 1 and arm 2
             var exportArms = new string[] {"1", "2"};
             // Act
-            var result = await _redcapApi.ExportArmsAsync(_token, Content.Arm, ReturnFormat.json, exportArms);
+            var result = await _redcap.ExportArmsAsync(_token, Content.Arm, ReturnFormat.json, exportArms);
 
             // Assert
             // In order for the arms array to be returned, events for the specific arm
@@ -767,7 +766,7 @@ namespace Tests
             };
 
             // Act
-            var result = await _redcapApi.ImportEventsAsync(_token, Override.False, ReturnFormat.json, listOfEvents,
+            var result = await _redcap.ImportEventsAsync(_token, Override.False, ReturnFormat.json, listOfEvents,
                 OnErrorFormat.json);
 
             // Assert
@@ -794,7 +793,7 @@ namespace Tests
             var repeatingInstrument = "1";
 
             // Act
-            var result = await _redcapApi.ImportFileAsync(_token, Content.File, RedcapAction.Import, record, fieldName,
+            var result = await _redcap.ImportFileAsync(_token, Content.File, RedcapAction.Import, record, fieldName,
                 eventName, repeatingInstrument, importFileName, pathImport, OnErrorFormat.json);
 
             // Assert
@@ -818,11 +817,11 @@ namespace Tests
             var pathImport = "C:\\redcap_download_files";
             string importFileName = "test.txt";
             // we need to import a file first so we can test the export api
-            await _redcapApi.ImportFileAsync(_token, Content.File, RedcapAction.Import, record, fieldName, eventName,
+            await _redcap.ImportFileAsync(_token, Content.File, RedcapAction.Import, record, fieldName, eventName,
                 repeatingInstrument, importFileName, pathImport, OnErrorFormat.json);
 
             // Act
-            var result = await _redcapApi.ExportFileAsync(_token, Content.File, RedcapAction.Export, record, fieldName,
+            var result = await _redcap.ExportFileAsync(_token, Content.File, RedcapAction.Export, record, fieldName,
                 eventName, repeatingInstrument, OnErrorFormat.json, pathExport);
 
             // Assert
@@ -846,11 +845,11 @@ namespace Tests
             var eventName = "event_1_arm_1";
             var repeatingInstrument = "1";
             // Import a file to a record so we can do the integrated test below.
-            await _redcapApi.ImportFileAsync(_token, Content.File, RedcapAction.Import, record, fieldName, eventName,
+            await _redcap.ImportFileAsync(_token, Content.File, RedcapAction.Import, record, fieldName, eventName,
                 repeatingInstrument, importFileName, pathImport, OnErrorFormat.json);
 
             // Act
-            var result = await _redcapApi.DeleteFileAsync(_token, Content.File, RedcapAction.Delete, record, fieldName,
+            var result = await _redcap.DeleteFileAsync(_token, Content.File, RedcapAction.Delete, record, fieldName,
                 eventName, repeatingInstrument, OnErrorFormat.json);
 
             // Assert
@@ -873,14 +872,14 @@ namespace Tests
             keyValues.Add("record_id", "8");
             data.Add(keyValues);
             // import a record so we can test
-            await _redcapApi.ImportRecordsAsync(_token, Content.Record, ReturnFormat.json, RedcapDataType.flat,
+            await _redcap.ImportRecordsAsync(_token, Content.Record, ReturnFormat.json, RedcapDataType.flat,
                 OverwriteBehavior.normal, false, data, "MDY", CsvDelimiter.comma, ReturnContent.count,
                 OnErrorFormat.json);
 
             var records = new string[] {"8"};
 
             // Act
-            var result = await _redcapApi.ExportRecordsAsync(_token, Content.Record, ReturnFormat.json,
+            var result = await _redcap.ExportRecordsAsync(_token, Content.Record, ReturnFormat.json,
                 RedcapDataType.flat, records);
 
             // Assert
@@ -907,7 +906,7 @@ namespace Tests
 
             // We import a repeating instrument to 'turn on' repeating instruments feature
             // as well as setting an initial repeating instrument 
-            await _redcapApi.ImportRepeatingInstrumentsAndEvents(_token, repeatingInstruments);
+            await _redcap.ImportRepeatingInstrumentsAndEvents(_token, repeatingInstruments);
             // Get the redcap event from above
             var redcapEvent = repeatingInstruments.FirstOrDefault();
             var data = new List<Dictionary<string, string>> { };
@@ -920,13 +919,13 @@ namespace Tests
             keyValues.Add("redcap_repeat_instrument", redcapEvent.FormName);
             data.Add(keyValues);
             // import a record so we can test
-            await _redcapApi.ImportRecordsAsync(_token, Content.Record, ReturnFormat.json, RedcapDataType.flat,
+            await _redcap.ImportRecordsAsync(_token, Content.Record, ReturnFormat.json, RedcapDataType.flat,
                 OverwriteBehavior.normal, false, data, "MDY", CsvDelimiter.comma, ReturnContent.count,
                 OnErrorFormat.json);
             var records = new string[] {"8"};
 
             // Act
-            var result = await _redcapApi.ExportRecordsAsync(_token, Content.Record, ReturnFormat.json,
+            var result = await _redcap.ExportRecordsAsync(_token, Content.Record, ReturnFormat.json,
                 RedcapDataType.flat, records);
 
             // Assert

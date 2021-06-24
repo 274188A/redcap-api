@@ -1,6 +1,4 @@
-﻿using Redcap.Api;
-using Redcap.Http;
-using Redcap.Models;
+﻿using Redcap.Models;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -52,12 +50,11 @@ namespace Redcap.Utilities
         /// <returns></returns>
         public static string GetDisplayName(this Enum enumString)
         {
-            var returnvalue = enumString
-                .GetType()
+            var returnvalue = enumString.GetType()
                 .GetMember(enumString.ToString())
                 .First()
                 .GetCustomAttribute<DisplayAttribute>()
-                .GetName();
+                ?.GetName();
 
             return returnvalue;
         }
@@ -94,7 +91,7 @@ namespace Redcap.Utilities
                 filestream = new FileStream(Path.Combine(path, fileName), FileMode.Create, FileAccess.Write,
                     FileShare.None);
                 return httpContent.CopyToAsync(filestream).ContinueWith(
-                    copyTask =>
+                    _ =>
                     {
                         filestream.Flush();
                         filestream.Dispose();
@@ -127,10 +124,10 @@ namespace Redcap.Utilities
         /// gets converted to "["firstName","lastName","age"]" 
         /// This is used as optional arguments for the Redcap Api
         /// </summary>
-        /// <param name="redcapApi"></param>
+        /// <param name="redcap"></param>
         /// <param name="inputArray"></param>
         /// <returns>string[]</returns>
-        public static async Task<string> ConvertArraytoString<T>(this RedcapApi redcapApi, T[] inputArray)
+        public static async Task<string> ConvertArraytoString<T>(this Api.Redcap redcap, T[] inputArray)
         {
             try
             {
@@ -167,10 +164,10 @@ namespace Redcap.Utilities
         /// gets converted to "["1","2","3"]" 
         /// This is used as optional arguments for the Redcap Api
         /// </summary>
-        /// <param name="redcapApi"></param>
+        /// <param name="redcap"></param>
         /// <param name="inputArray"></param>
         /// <returns>string</returns>
-        public static async Task<string> ConvertIntArraytoString(this RedcapApi redcapApi, int[] inputArray)
+        public static async Task<string> ConvertIntArraytoString(this Api.Redcap redcap, int[] inputArray)
         {
             try
             {
@@ -201,10 +198,10 @@ namespace Redcap.Utilities
         ///The method hands the return content from a request, the response.
         /// The method allows the calling method to choose a return type.
         /// </summary>
-        /// <param name="redcapApi"></param>
+        /// <param name="redcap"></param>
         /// <param name="returnContent"></param>
         /// <returns>string</returns>
-        public static async Task<string> HandleReturnContent(this RedcapApi redcapApi,
+        public static async Task<string> HandleReturnContent(this Api.Redcap redcap,
             ReturnContent returnContent = ReturnContent.count)
         {
             try
@@ -235,13 +232,13 @@ namespace Redcap.Utilities
         /// <summary>
         /// Tuple that returns both inputFormat and redcap returnFormat
         /// </summary>
-        /// <param name="redcapApi"></param>
+        /// <param name="redcap"></param>
         /// <param name="format">csv, json[default], xml , odm ('odm' refers to CDISC ODM XML format, specifically ODM version 1.3.1)</param>
         /// <param name="onErrorFormat"></param>
         /// <param name="redcapDataType"></param>
         /// <returns>tuple, string, string, string</returns>
         public static async Task<(string format, string onErrorFormat, string redcapDataType)> HandleFormat(
-            this RedcapApi redcapApi, ReturnFormat? format = ReturnFormat.json,
+            this Api.Redcap redcap, ReturnFormat? format = ReturnFormat.json,
             OnErrorFormat? onErrorFormat = OnErrorFormat.json, RedcapDataType? redcapDataType = RedcapDataType.flat)
         {
             // default
@@ -314,10 +311,10 @@ namespace Redcap.Utilities
         /// <summary>
         /// Method gets the overwrite behavior type and converts into string
         /// </summary>
-        /// <param name="redcapApi"></param>
+        /// <param name="redcap"></param>
         /// <param name="overwriteBehavior"></param>
         /// <returns>string</returns>
-        public static async Task<string> ExtractBehaviorAsync(this RedcapApi redcapApi,
+        public static async Task<string> ExtractBehaviorAsync(this Api.Redcap redcap,
             OverwriteBehavior overwriteBehavior)
         {
             try
@@ -348,10 +345,10 @@ namespace Redcap.Utilities
         /// <summary>
         /// This method extracts and converts an object's properties and associated values to redcap type and values.
         /// </summary>
-        /// <param name="redcapApi"></param>
+        /// <param name="redcap"></param>
         /// <param name="input">Object</param>
         /// <returns>Dictionary of key value pair.</returns>
-        public static async Task<Dictionary<string, string>> GetProperties(this RedcapApi redcapApi, object input)
+        public static async Task<Dictionary<string, string>> GetProperties(this Api.Redcap redcap, object input)
         {
             try
             {
@@ -421,11 +418,11 @@ namespace Redcap.Utilities
         /// <summary>
         /// Method extracts events into list from string
         /// </summary>
-        /// <param name="redcapApi"></param>
+        /// <param name="redcap"></param>
         /// <param name="events"></param>
         /// <param name="delimiters">char[] e.g [';',',']</param>
         /// <returns>List of string</returns>
-        public static async Task<List<string>> ExtractEventsAsync(this RedcapApi redcapApi, string events,
+        public static async Task<List<string>> ExtractEventsAsync(this Api.Redcap redcap, string events,
             char[] delimiters)
         {
             if (!String.IsNullOrEmpty(events))
@@ -454,11 +451,11 @@ namespace Redcap.Utilities
         /// <summary>
         /// Method gets / extracts fields into list from string
         /// </summary>
-        /// <param name="redcapApi"></param>
+        /// <param name="redcap"></param>
         /// <param name="fields"></param>
         /// <param name="delimiters">char[] e.g [';',',']</param>
         /// <returns>List of string</returns>
-        public static async Task<List<string>> ExtractFieldsAsync(this RedcapApi redcapApi, string fields,
+        public static async Task<List<string>> ExtractFieldsAsync(this Api.Redcap redcap, string fields,
             char[] delimiters)
         {
             if (!String.IsNullOrEmpty(fields))
@@ -487,11 +484,11 @@ namespace Redcap.Utilities
         /// <summary>
         /// Method gets / extract records into list from string
         /// </summary>
-        /// <param name="redcapApi"></param>
+        /// <param name="redcap"></param>
         /// <param name="records"></param>
         /// <param name="delimiters">char[] e.g [';',',']</param>
         /// <returns>List of string</returns>
-        public static async Task<List<string>> ExtractRecordsAsync(this RedcapApi redcapApi, string records,
+        public static async Task<List<string>> ExtractRecordsAsync(this Api.Redcap redcap, string records,
             char[] delimiters)
         {
             if (!String.IsNullOrEmpty(records))
@@ -520,11 +517,11 @@ namespace Redcap.Utilities
         /// <summary>
         /// Method gets / extracts forms into list from string
         /// </summary>
-        /// <param name="redcapApi"></param>
+        /// <param name="redcap"></param>
         /// <param name="forms"></param>
         /// <param name="delimiters">char[] e.g [';',',']</param>
         /// <returns>A list of string</returns>
-        public static async Task<List<string>> ExtractFormsAsync(this RedcapApi redcapApi, string forms,
+        public static async Task<List<string>> ExtractFormsAsync(this Api.Redcap redcap, string forms,
             char[] delimiters)
         {
             if (!String.IsNullOrEmpty(forms))
@@ -569,11 +566,11 @@ namespace Redcap.Utilities
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="redcapApi"></param>
+        /// <param name="redcap"></param>
         /// <param name="payload">data</param>
         /// <param name="uri">URI of the api instance</param>
         /// <returns>Stream</returns>
-        public static async Task<Stream> GetStreamContentAsync(this RedcapApi redcapApi,
+        public static async Task<Stream> GetStreamContentAsync(this Api.Redcap redcap,
             Dictionary<string, string> payload, Uri uri)
         {
             try
@@ -606,11 +603,11 @@ namespace Redcap.Utilities
         /// Method to send http request using MultipartFormDataContent
         /// Requests with attachments
         /// </summary>
-        /// <param name="redcapApi"></param>
+        /// <param name="redcap"></param>
         /// <param name="payload">data</param>
         /// <param name="uri">URI of the api instance</param>
         /// <returns>string</returns>
-        public static async Task<string> SendPostRequestAsync(this RedcapApi redcapApi,
+        public static async Task<string> SendPostRequestAsync(this Api.Redcap redcap,
             MultipartFormDataContent payload, Uri uri)
         {
             try
@@ -639,11 +636,11 @@ namespace Redcap.Utilities
         /// <summary>
         /// Sends request using http
         /// </summary>
-        /// <param name="redcapApi"></param>
+        /// <param name="redcap"></param>
         /// <param name="payload">data</param>
         /// <param name="uri">URI of the api instance</param>
         /// <returns></returns>
-        public static async Task<string> SendPostRequestAsync(this RedcapApi redcapApi,
+        public static async Task<string> SendPostRequestAsync(this Api.Redcap redcap,
             Dictionary<string, string> payload, Uri uri)
         {
             try
@@ -725,11 +722,11 @@ namespace Redcap.Utilities
         /// <summary>
         /// Sends http request to api
         /// </summary>
-        /// <param name="redcapApi"></param>
+        /// <param name="redcap"></param>
         /// <param name="payload">data </param>
         /// <param name="uri">URI of the api instance</param>
         /// <returns>string</returns>
-        public static async Task<string> SendPostRequest(this RedcapApi redcapApi,
+        public static async Task<string> SendPostRequest(this Api.Redcap redcap,
             Dictionary<string, string> payload, Uri uri)
         {
             string responseString;
@@ -754,10 +751,10 @@ namespace Redcap.Utilities
         /// <summary>
         /// Checks if the string passed is null or empty.
         /// </summary>
-        /// <param name="redcapApi"></param>
+        /// <param name="redcap"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static void CheckToken(this RedcapApi redcapApi, string token)
+        public static void CheckToken(this Api.Redcap redcap, string token)
         {
             if (string.IsNullOrEmpty(token))
             {

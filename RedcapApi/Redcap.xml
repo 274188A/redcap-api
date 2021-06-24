@@ -5,14 +5,14 @@
 		<name>Redcap</name>
 	</assembly>
 	<members>
-		<member name="T:Redcap.RedcapApi">
+		<member name="T:Redcap.Redcap">
 			<summary>
 				This api interacts with redcap instances. https://project-redcap.org
 				Go to your http://redcap_instance/api/help for Redcap Api documentations
 				Author: Michael Tran tranpl@outlook.com, tranpl@vcu.edu
 			</summary>
 		</member>
-		<member name="F:Redcap.RedcapApi._token">
+		<member name="F:Redcap.Redcap._token">
 			<summary>
 				Redcap Api Token
 				The token can be obtained from your redcap project.
@@ -21,7 +21,7 @@
 				4AAE216218B33700456A30898F2D6417
 			</example>
 		</member>
-		<member name="F:Redcap.RedcapApi._uri">
+		<member name="F:Redcap.Redcap._uri">
 			<summary>
 				Redcap API Uri
 				Location of your redcap instance
@@ -30,12 +30,12 @@
 				https://localhost/redcap/api
 			</example>
 		</member>
-		<member name="F:Redcap.RedcapApi.Version">
+		<member name="F:Redcap.Redcap.Version">
 			<summary>
 				The version of redcap that the api is currently interacting with.
 			</summary>
 		</member>
-		<member name="M:Redcap.RedcapApi.#ctor(System.String,System.String)">
+		<member name="M:Redcap.Redcap.#ctor(System.String,System.String)">
 			<summary>
 				Constructor requires an api token and a valid url.
 			</summary>
@@ -47,7 +47,7 @@
 			<param name="redcapApiUrl">Redcap instance URI</param>
 
 		</member>
-		<member name="M:Redcap.RedcapApi.#ctor(System.String,System.Boolean)">
+		<member name="M:Redcap.Redcap.#ctor(System.String,System.Boolean)">
 			<summary>
 				Constructor requires a valid url.
 			</summary>
@@ -62,7 +62,7 @@
 			<param name="useInsecureCertificates">Allows use of insecure certificates in HttpClient</param>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportArmsAsync(System.String,Redcap.Models.ReturnFormat,System.String[],Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ExportArmsAsync(System.String,Redcap.Models.ReturnFormat,System.String[],Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+ **
 				From Redcap Version 4.7.0
@@ -80,7 +80,7 @@
 			<returns>Arms for the project in the format specified(only ones with Events available)</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportArmsAsync(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat,System.String[],Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ExportArmsAsync(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat,System.String[],Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+ **
 				From Redcap Version 4.7.0
@@ -99,7 +99,7 @@
 			<returns>Arms for the project in the format specified(only ones with Events available)</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ImportArmsAsync``1(System.String,Redcap.Models.Override,Redcap.Models.RedcapAction,Redcap.Models.ReturnFormat,System.Collections.Generic.List{``0},Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ImportArmsAsync``1(System.String,Redcap.Models.Override,Redcap.Models.RedcapAction,Redcap.Models.ReturnFormat,System.Collections.Generic.List{``0},Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 4.7.0
@@ -129,7 +129,7 @@
 			<returns>Number of Arms imported</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ImportArmsAsync``1(System.String,Redcap.Models.Content,Redcap.Models.Override,Redcap.Models.RedcapAction,Redcap.Models.ReturnFormat,System.Collections.Generic.List{``0},Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ImportArmsAsync``1(System.String,Redcap.Models.Content,Redcap.Models.Override,Redcap.Models.RedcapAction,Redcap.Models.ReturnFormat,System.Collections.Generic.List{``0},Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 4.7.0
@@ -159,7 +159,7 @@
 			<param name="returnFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'xml'.</param>
 			<returns>Number of Arms imported</returns>
 		</member>
-		<member name="M:Redcap.RedcapApi.DeleteArmsAsync(System.String,System.String[])">
+		<member name="M:Redcap.Redcap.DeleteArmsAsync(System.String,System.String[])">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 4.7.0
@@ -177,7 +177,7 @@
 			<returns>Number of Arms deleted</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.DeleteArmsAsync(System.String,Redcap.Models.Content,Redcap.Models.RedcapAction,System.String[])">
+			name="M:Redcap.Redcap.DeleteArmsAsync(System.String,Redcap.Models.Content,Redcap.Models.RedcapAction,System.String[])">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 4.7.0
@@ -197,7 +197,7 @@
 			<returns>Number of Arms deleted</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportEventsAsync(System.String,Redcap.Models.ReturnFormat,System.String[],Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ExportEventsAsync(System.String,Redcap.Models.ReturnFormat,System.String[],Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 4.7.0
@@ -219,7 +219,7 @@
 			<returns>Events for the project in the format specified</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportEventsAsync(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat,System.String[],Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ExportEventsAsync(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat,System.String[],Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 6.11.0
@@ -242,7 +242,7 @@
 			<returns>Events for the project in the format specified</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ImportEventsAsync``1(System.String,Redcap.Models.Override,Redcap.Models.ReturnFormat,System.Collections.Generic.List{``0},Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ImportEventsAsync``1(System.String,Redcap.Models.Override,Redcap.Models.ReturnFormat,System.Collections.Generic.List{``0},Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 6.11.0
@@ -271,7 +271,7 @@
 			<returns>Number of Events imported</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ImportEventsAsync``1(System.String,Redcap.Models.Content,Redcap.Models.RedcapAction,Redcap.Models.Override,Redcap.Models.ReturnFormat,System.Collections.Generic.List{``0},Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ImportEventsAsync``1(System.String,Redcap.Models.Content,Redcap.Models.RedcapAction,Redcap.Models.Override,Redcap.Models.ReturnFormat,System.Collections.Generic.List{``0},Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 6.11.0
@@ -301,7 +301,7 @@
 			<param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
 			<returns>Number of Events imported</returns>
 		</member>
-		<member name="M:Redcap.RedcapApi.DeleteEventsAsync(System.String,System.String[])">
+		<member name="M:Redcap.Redcap.DeleteEventsAsync(System.String,System.String[])">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 6.11.0
@@ -321,7 +321,7 @@
 			<returns>Number of Events deleted</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.DeleteEventsAsync(System.String,Redcap.Models.Content,Redcap.Models.RedcapAction,System.String[])">
+			name="M:Redcap.Redcap.DeleteEventsAsync(System.String,Redcap.Models.Content,Redcap.Models.RedcapAction,System.String[])">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 6.11.0
@@ -343,7 +343,7 @@
 			<returns>Number of Events deleted</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportFieldNamesAsync(System.String,Redcap.Models.ReturnFormat,System.String,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ExportFieldNamesAsync(System.String,Redcap.Models.ReturnFormat,System.String,Redcap.Models.OnErrorFormat)">
 			<summary>
 				Export List of Export Field Names (i.e. variables used during exports and imports)
 
@@ -372,7 +372,7 @@
 			</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportFieldNamesAsync(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat,System.String,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ExportFieldNamesAsync(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat,System.String,Redcap.Models.OnErrorFormat)">
 			<summary>
 				Export List of Export Field Names (i.e. variables used during exports and imports)
 
@@ -402,7 +402,7 @@
 			</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportFileAsync(System.String,System.String,System.String,System.String,System.String,Redcap.Models.OnErrorFormat,System.String)">
+			name="M:Redcap.Redcap.ExportFileAsync(System.String,System.String,System.String,System.String,System.String,Redcap.Models.OnErrorFormat,System.String)">
 			<summary>
 				API Version 1.0.0+
 				Export a File
@@ -425,7 +425,7 @@
 			<returns>the contents of the file</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportFileAsync(System.String,Redcap.Models.Content,Redcap.Models.RedcapAction,System.String,System.String,System.String,System.String,Redcap.Models.OnErrorFormat,System.String)">
+			name="M:Redcap.Redcap.ExportFileAsync(System.String,Redcap.Models.Content,Redcap.Models.RedcapAction,System.String,System.String,System.String,System.String,Redcap.Models.OnErrorFormat,System.String)">
 			<summary>
 				API Version 1.0.0+
 				Export a File
@@ -451,7 +451,7 @@
 			<returns>the file name that was exported</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ImportFileAsync(System.String,System.String,System.String,System.String,System.String,System.String,System.String,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ImportFileAsync(System.String,System.String,System.String,System.String,System.String,System.String,System.String,Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				Import a File
@@ -472,7 +472,7 @@
 			<returns>csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ImportFileAsync(System.String,Redcap.Models.Content,Redcap.Models.RedcapAction,System.String,System.String,System.String,System.String,System.String,System.String,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ImportFileAsync(System.String,Redcap.Models.Content,Redcap.Models.RedcapAction,System.String,System.String,System.String,System.String,System.String,System.String,Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				Import a File
@@ -495,7 +495,7 @@
 			<returns>csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.DeleteFileAsync(System.String,System.String,System.String,System.String,System.String,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.DeleteFileAsync(System.String,System.String,System.String,System.String,System.String,Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				Delete a File
@@ -513,7 +513,7 @@
 			<returns>String</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.DeleteFileAsync(System.String,Redcap.Models.Content,Redcap.Models.RedcapAction,System.String,System.String,System.String,System.String,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.DeleteFileAsync(System.String,Redcap.Models.Content,Redcap.Models.RedcapAction,System.String,System.String,System.String,System.String,Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				Delete a File
@@ -532,7 +532,7 @@
 			<param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
 			<returns>String</returns>
 		</member>
-		<member name="M:Redcap.RedcapApi.ExportInstrumentsAsync(System.String,Redcap.Models.ReturnFormat)">
+		<member name="M:Redcap.Redcap.ExportInstrumentsAsync(System.String,Redcap.Models.ReturnFormat)">
 			<summary>
 				API Version 1.0.0+
 				Export Instruments (Data Entry Forms)
@@ -547,7 +547,7 @@
 			<returns>Instruments for the project in the format specified and will be ordered according to their order in the project.</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportInstrumentsAsync(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat)">
+			name="M:Redcap.Redcap.ExportInstrumentsAsync(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat)">
 			<summary>
 				API Version 1.0.0+
 				Export Instruments (Data Entry Forms)
@@ -563,7 +563,7 @@
 			<returns>Instruments for the project in the format specified and will be ordered according to their order in the project.</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportPDFInstrumentsAsync(System.String,System.String,System.String,System.String,System.Boolean,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ExportPDFInstrumentsAsync(System.String,System.String,System.String,System.String,System.Boolean,Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 6.4.0
@@ -584,7 +584,7 @@
 			<returns>A PDF file containing one or all data collection instruments from the project, in which the instruments will be blank (no data), contain data from a single record, or contain data from all records in the project, depending on the parameters passed in the API request.</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportPDFInstrumentsAsync(System.String,Redcap.Models.Content,System.String,System.String,System.String,System.Boolean,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ExportPDFInstrumentsAsync(System.String,Redcap.Models.Content,System.String,System.String,System.String,System.Boolean,Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 6.4.0
@@ -606,7 +606,7 @@
 			<returns>A PDF file containing one or all data collection instruments from the project, in which the instruments will be blank (no data), contain data from a single record, or contain data from all records in the project, depending on the parameters passed in the API request.</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportPDFInstrumentsAsync(System.String,System.String,System.String,System.String,System.Boolean,System.String,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ExportPDFInstrumentsAsync(System.String,System.String,System.String,System.String,System.Boolean,System.String,Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 6.4.0
@@ -629,7 +629,7 @@
 			<returns>A PDF file containing one or all data collection instruments from the project, in which the instruments will be blank (no data), contain data from a single record, or contain data from all records in the project, depending on the parameters passed in the API request.</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportInstrumentMappingAsync(System.String,Redcap.Models.ReturnFormat,System.String[],Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ExportInstrumentMappingAsync(System.String,Redcap.Models.ReturnFormat,System.String[],Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 4.7.0
@@ -648,7 +648,7 @@
 			<returns>Instrument-event mappings for the project in the format specified</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportInstrumentMappingAsync(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat,System.String[],Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ExportInstrumentMappingAsync(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat,System.String[],Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 4.7.0
@@ -668,7 +668,7 @@
 			<returns>Instrument-event mappings for the project in the format specified</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ImportInstrumentMappingAsync``1(System.String,Redcap.Models.ReturnFormat,System.Collections.Generic.List{``0},Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ImportInstrumentMappingAsync``1(System.String,Redcap.Models.ReturnFormat,System.Collections.Generic.List{``0},Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				FFrom Redcap Version 4.7.0
@@ -694,7 +694,7 @@
 			<returns>Number of Instrument-Event Mappings imported</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ImportInstrumentMappingAsync``1(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat,System.Collections.Generic.List{``0},Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ImportInstrumentMappingAsync``1(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat,System.Collections.Generic.List{``0},Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 4.7.0
@@ -721,7 +721,7 @@
 			<returns>Number of Instrument-Event Mappings imported</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportMetaDataAsync(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat,System.String[],System.String[],Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ExportMetaDataAsync(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat,System.String[],System.String[],Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 3.4.0+
@@ -740,7 +740,7 @@
 			<returns>Metadata from the project (i.e. Data Dictionary values) in the format specified ordered by the field order</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportMetaDataAsync(System.String,Redcap.Models.ReturnFormat,System.String[],System.String[],Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ExportMetaDataAsync(System.String,Redcap.Models.ReturnFormat,System.String[],System.String[],Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 3.4.0+
@@ -758,7 +758,7 @@
 			<returns>Metadata from the project (i.e. Data Dictionary values) in the format specified ordered by the field order</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ImportMetaDataAsync``1(System.String,Redcap.Models.ReturnFormat,System.Collections.Generic.List{``0},Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ImportMetaDataAsync``1(System.String,Redcap.Models.ReturnFormat,System.Collections.Generic.List{``0},Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 6.11.0
@@ -778,7 +778,7 @@
 			<returns>Number of fields imported</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ImportMetaDataAsync``1(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat,System.Collections.Generic.List{``0},Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ImportMetaDataAsync``1(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat,System.Collections.Generic.List{``0},Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 6.11.0
@@ -799,7 +799,7 @@
 			<returns>Number of fields imported</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.CreateProjectAsync``1(System.String,Redcap.Models.ReturnFormat,System.Collections.Generic.List{``0},Redcap.Models.OnErrorFormat,System.String)">
+			name="M:Redcap.Redcap.CreateProjectAsync``1(System.String,Redcap.Models.ReturnFormat,System.Collections.Generic.List{``0},Redcap.Models.OnErrorFormat,System.String)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 6.11.0
@@ -829,7 +829,7 @@
 			<returns>When a project is created, a 32-character project-level API Token is returned (associated with both the project and user creating the project). This token could then ostensibly be used to make subsequent API calls to this project, such as for adding new events, fields, records, etc.</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.CreateProjectAsync``1(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat,System.Collections.Generic.List{``0},Redcap.Models.OnErrorFormat,System.String)">
+			name="M:Redcap.Redcap.CreateProjectAsync``1(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat,System.Collections.Generic.List{``0},Redcap.Models.OnErrorFormat,System.String)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 6.11.0
@@ -860,7 +860,7 @@
 			<returns>When a project is created, a 32-character project-level API Token is returned (associated with both the project and user creating the project). This token could then ostensibly be used to make subsequent API calls to this project, such as for adding new events, fields, records, etc.</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ImportProjectInfoAsync(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat,Redcap.Models.RedcapProjectInfo)">
+			name="M:Redcap.Redcap.ImportProjectInfoAsync(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat,Redcap.Models.RedcapProjectInfo)">
 			<summary>
 				API Version 1.0.0+
 				Import Project Information
@@ -880,7 +880,7 @@
 			<returns>Returns the number of values accepted to be updated in the project settings (including values which remained the same before and after the import).</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ImportProjectInfoAsync(System.String,Redcap.Models.ReturnFormat,Redcap.Models.RedcapProjectInfo)">
+			name="M:Redcap.Redcap.ImportProjectInfoAsync(System.String,Redcap.Models.ReturnFormat,Redcap.Models.RedcapProjectInfo)">
 			<summary>
 				API Version 1.0.0+
 				Import Project Information
@@ -899,7 +899,7 @@
 			<returns>Returns the number of values accepted to be updated in the project settings (including values which remained the same before and after the import).</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportProjectInfoAsync(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ExportProjectInfoAsync(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				Export Project Information
@@ -919,7 +919,7 @@
 			</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportProjectInfoAsync(System.String,Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ExportProjectInfoAsync(System.String,Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				Export Project Information
@@ -938,7 +938,7 @@
 			</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportProjectXmlAsync(System.String,Redcap.Models.Content,System.Boolean,System.String[],System.String[],System.String[],Redcap.Models.OnErrorFormat,System.Boolean,System.Boolean,System.String,System.Boolean)">
+			name="M:Redcap.Redcap.ExportProjectXmlAsync(System.String,Redcap.Models.Content,System.Boolean,System.String[],System.String[],System.String[],Redcap.Models.OnErrorFormat,System.Boolean,System.Boolean,System.String,System.Boolean)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 6.12.0
@@ -965,7 +965,7 @@
 			<returns>The entire REDCap project's metadata (and data, if specified) will be returned in CDISC ODM format as a single XML string.</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportProjectXmlAsync(System.String,System.Boolean,System.String[],System.String[],System.String[],Redcap.Models.OnErrorFormat,System.Boolean,System.Boolean,System.String,System.Boolean)">
+			name="M:Redcap.Redcap.ExportProjectXmlAsync(System.String,System.Boolean,System.String[],System.String[],System.String[],Redcap.Models.OnErrorFormat,System.Boolean,System.Boolean,System.String,System.Boolean)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 6.12.0
@@ -990,7 +990,7 @@
 			<param name="exportFiles">true, false [default] - TRUE will cause the XML returned to include all files uploaded for File Upload and Signature fields for all records in the project, whereas FALSE will cause all such fields not to be included. NOTE: Setting this option to TRUE can make the export very large and may prevent it from completing if the project contains many files or very large files. </param>
 			<returns>The entire REDCap project's metadata (and data, if specified) will be returned in CDISC ODM format as a single XML string.</returns>
 		</member>
-		<member name="M:Redcap.RedcapApi.GenerateNextRecordNameAsync(System.String)">
+		<member name="M:Redcap.Redcap.GenerateNextRecordNameAsync(System.String)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 6.18.0
@@ -1007,7 +1007,7 @@
 			<param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
 			<returns>The maximum integer record ID + 1.</returns>
 		</member>
-		<member name="M:Redcap.RedcapApi.GenerateNextRecordNameAsync(System.String,Redcap.Models.Content)">
+		<member name="M:Redcap.Redcap.GenerateNextRecordNameAsync(System.String,Redcap.Models.Content)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 6.18.0
@@ -1026,7 +1026,7 @@
 			<returns>The maximum integer record ID + 1.</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportRecordsAsync(System.String,Redcap.Models.ReturnFormat,Redcap.Models.RedcapDataType,System.String[],System.String[],System.String[],System.String[],Redcap.Models.RawOrLabel,Redcap.Models.RawOrLabelHeaders,System.Boolean,Redcap.Models.OnErrorFormat,System.Boolean,System.Boolean,System.String)">
+			name="M:Redcap.Redcap.ExportRecordsAsync(System.String,Redcap.Models.ReturnFormat,Redcap.Models.RedcapDataType,System.String[],System.String[],System.String[],System.String[],Redcap.Models.RawOrLabel,Redcap.Models.RawOrLabelHeaders,System.Boolean,Redcap.Models.OnErrorFormat,System.Boolean,System.Boolean,System.String)">
 			<summary>
 				API Version 1.0.0+
 				Export Records
@@ -1053,7 +1053,7 @@
 			<returns>Data from the project in the format and type specified ordered by the record (primary key of project) and then by event id</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportRecordsAsync(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat,Redcap.Models.RedcapDataType,System.String[],System.String[],System.String[],System.String[],Redcap.Models.RawOrLabel,Redcap.Models.RawOrLabelHeaders,System.Boolean,Redcap.Models.OnErrorFormat,System.Boolean,System.Boolean,System.String)">
+			name="M:Redcap.Redcap.ExportRecordsAsync(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat,Redcap.Models.RedcapDataType,System.String[],System.String[],System.String[],System.String[],Redcap.Models.RawOrLabel,Redcap.Models.RawOrLabelHeaders,System.Boolean,Redcap.Models.OnErrorFormat,System.Boolean,System.Boolean,System.String)">
 			<summary>
 				API Version 1.0.0+
 				Export Records
@@ -1081,7 +1081,7 @@
 			<returns>Data from the project in the format and type specified ordered by the record (primary key of project) and then by event id</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportRecordAsync(System.String,Redcap.Models.Content,System.String,Redcap.Models.ReturnFormat,Redcap.Models.RedcapDataType,System.String[],System.String[],System.String[],Redcap.Models.RawOrLabel,Redcap.Models.RawOrLabelHeaders,System.Boolean,Redcap.Models.OnErrorFormat,System.Boolean,System.Boolean,System.String)">
+			name="M:Redcap.Redcap.ExportRecordAsync(System.String,Redcap.Models.Content,System.String,Redcap.Models.ReturnFormat,Redcap.Models.RedcapDataType,System.String[],System.String[],System.String[],Redcap.Models.RawOrLabel,Redcap.Models.RawOrLabelHeaders,System.Boolean,Redcap.Models.OnErrorFormat,System.Boolean,System.Boolean,System.String)">
 			<summary>
 				API Version 1.0.0++
 				Export Record
@@ -1109,7 +1109,7 @@
 			<returns>Data from the project in the format and type specified ordered by the record (primary key of project) and then by event id</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ImportRecordsAsync``1(System.String,Redcap.Models.ReturnFormat,Redcap.Models.RedcapDataType,Redcap.Models.OverwriteBehavior,System.Boolean,System.Collections.Generic.List{``0},System.String,Redcap.Models.CsvDelimiter,Redcap.Models.ReturnContent,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ImportRecordsAsync``1(System.String,Redcap.Models.ReturnFormat,Redcap.Models.RedcapDataType,Redcap.Models.OverwriteBehavior,System.Boolean,System.Collections.Generic.List{``0},System.String,Redcap.Models.CsvDelimiter,Redcap.Models.ReturnContent,Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				Updated with version 10.3.0 improvements
@@ -1150,7 +1150,7 @@
 			<returns>the content specified by returnContent</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ImportRecordsAsync``1(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat,Redcap.Models.RedcapDataType,Redcap.Models.OverwriteBehavior,System.Boolean,System.Collections.Generic.List{``0},System.String,Redcap.Models.CsvDelimiter,Redcap.Models.ReturnContent,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ImportRecordsAsync``1(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat,Redcap.Models.RedcapDataType,Redcap.Models.OverwriteBehavior,System.Boolean,System.Collections.Generic.List{``0},System.String,Redcap.Models.CsvDelimiter,Redcap.Models.ReturnContent,Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				Updated with version 10.3.0 improvements
@@ -1189,7 +1189,7 @@
 			<param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
 			<returns>the content specified by returnContent</returns>
 		</member>
-		<member name="M:Redcap.RedcapApi.DeleteRecordsAsync(System.String,System.String[],System.Nullable{System.Int32})">
+		<member name="M:Redcap.Redcap.DeleteRecordsAsync(System.String,System.String[],System.Nullable{System.Int32})">
 			<summary>
 				API Version 1.0.0+
 				Delete Records
@@ -1208,7 +1208,7 @@
 			<returns>the number of records deleted.</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.DeleteRecordsAsync(System.String,Redcap.Models.Content,Redcap.Models.RedcapAction,System.String[],System.Nullable{System.Int32})">
+			name="M:Redcap.Redcap.DeleteRecordsAsync(System.String,Redcap.Models.Content,Redcap.Models.RedcapAction,System.String[],System.Nullable{System.Int32})">
 			<summary>
 				API Version 1.0.0+
 				Delete Records
@@ -1228,7 +1228,7 @@
 			</param>
 			<returns>the number of records deleted.</returns>
 		</member>
-		<member name="M:Redcap.RedcapApi.ExportRepeatingInstrumentsAndEvents(System.String,Redcap.Models.ReturnFormat)">
+		<member name="M:Redcap.Redcap.ExportRepeatingInstrumentsAndEvents(System.String,Redcap.Models.ReturnFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 8.2.0
@@ -1242,7 +1242,7 @@
 			<returns>Repeated instruments and events for the project in the format specified and will be ordered according to their order in the project.</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportRepeatingInstrumentsAndEvents(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat)">
+			name="M:Redcap.Redcap.ExportRepeatingInstrumentsAndEvents(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 8.2.0
@@ -1257,7 +1257,7 @@
 			<returns>Repeated instruments and events for the project in the format specified and will be ordered according to their order in the project.</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ImportRepeatingInstrumentsAndEvents``1(System.String,System.Collections.Generic.List{``0},Redcap.Models.Content,Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ImportRepeatingInstrumentsAndEvents``1(System.String,System.Collections.Generic.List{``0},Redcap.Models.Content,Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 8.10.0
@@ -1273,7 +1273,7 @@
 			<returns>Repeated instruments and events for the project in the format specified and will be ordered according to their order in the project.</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportReportsAsync(System.String,System.Int32,Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat,Redcap.Models.RawOrLabel,Redcap.Models.RawOrLabelHeaders,System.Boolean)">
+			name="M:Redcap.Redcap.ExportReportsAsync(System.String,System.Int32,Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat,Redcap.Models.RawOrLabel,Redcap.Models.RawOrLabelHeaders,System.Boolean)">
 			<summary>
 				API Version 1.0.0+
 				Export Reports
@@ -1294,7 +1294,7 @@
 			<returns>Data from the project in the format and type specified ordered by the record (primary key of project) and then by event id</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportReportsAsync(System.String,Redcap.Models.Content,System.Int32,Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat,Redcap.Models.RawOrLabel,Redcap.Models.RawOrLabelHeaders,System.Boolean)">
+			name="M:Redcap.Redcap.ExportReportsAsync(System.String,Redcap.Models.Content,System.Int32,Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat,Redcap.Models.RawOrLabel,Redcap.Models.RawOrLabelHeaders,System.Boolean)">
 			<summary>
 				API Version 1.0.0+
 				Export Reports
@@ -1316,7 +1316,7 @@
 			<returns>Data from the project in the format and type specified ordered by the record (primary key of project) and then by event id</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportRedcapVersionAsync(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat)">
+			name="M:Redcap.Redcap.ExportRedcapVersionAsync(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat)">
 			<summary>
 				API Version 1.0.0+
 				Export REDCap Version
@@ -1331,7 +1331,7 @@
 			<param name="format">csv, json [default], xml</param>
 			<returns>The current REDCap version number (three numbers delimited with two periods) as plain text - e.g., 4.13.18, 5.12.2, 6.0.0</returns>
 		</member>
-		<member name="M:Redcap.RedcapApi.ExportRedcapVersionAsync(System.String,Redcap.Models.ReturnFormat)">
+		<member name="M:Redcap.Redcap.ExportRedcapVersionAsync(System.String,Redcap.Models.ReturnFormat)">
 			<summary>
 				API Version 1.0.0+
 				Export REDCap Version
@@ -1346,7 +1346,7 @@
 			<returns>The current REDCap version number (three numbers delimited with two periods) as plain text - e.g., 4.13.18, 5.12.2, 6.0.0</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportSurveyLinkAsync(System.String,System.String,System.String,System.String,System.Int32,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ExportSurveyLinkAsync(System.String,System.String,System.String,System.String,System.Int32,Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 6.4.0
@@ -1366,7 +1366,7 @@
 			<returns>Returns a unique survey link (i.e., a URL) in plain text format for the specified record and instrument (and event, if longitudinal).</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportSurveyLinkAsync(System.String,Redcap.Models.Content,System.String,System.String,System.String,System.Int32,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ExportSurveyLinkAsync(System.String,Redcap.Models.Content,System.String,System.String,System.String,System.Int32,Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 6.4.0
@@ -1387,7 +1387,7 @@
 			<returns>Returns a unique survey link (i.e., a URL) in plain text format for the specified record and instrument (and event, if longitudinal).</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportSurveyParticipantsAsync(System.String,System.String,System.String,Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ExportSurveyParticipantsAsync(System.String,System.String,System.String,Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				Export a Survey Participant List
@@ -1405,7 +1405,7 @@
 			<returns>Returns the list of all participants for the specified survey instrument [and event] in the desired format. The following fields are returned: email, email_occurrence, identifier, invitation_sent_status, invitation_send_time, response_status, survey_access_code, survey_link. The attribute 'email_occurrence' represents the current count that the email address has appeared in the list (because emails can be used more than once), thus email + email_occurrence represent a unique value pair. 'invitation_sent_status' is '0' if an invitation has not yet been sent to the participant, and is '1' if it has. 'invitation_send_time' is the date/time in which the next invitation will be sent, and is blank if there is no invitation that is scheduled to be sent. 'response_status' represents whether the participant has responded to the survey, in which its value is 0, 1, or 2 for 'No response', 'Partial', or 'Completed', respectively. Note: If an incorrect event_id or instrument name is used or if the instrument has not been enabled as a survey, then an error will be returned.</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportSurveyParticipantsAsync(System.String,Redcap.Models.Content,System.String,System.String,Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ExportSurveyParticipantsAsync(System.String,Redcap.Models.Content,System.String,System.String,Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				Export a Survey Participant List
@@ -1423,7 +1423,7 @@
 			<param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
 			<returns>Returns the list of all participants for the specified survey instrument [and event] in the desired format. The following fields are returned: email, email_occurrence, identifier, invitation_sent_status, invitation_send_time, response_status, survey_access_code, survey_link. The attribute 'email_occurrence' represents the current count that the email address has appeared in the list (because emails can be used more than once), thus email + email_occurrence represent a unique value pair. 'invitation_sent_status' is '0' if an invitation has not yet been sent to the participant, and is '1' if it has. 'invitation_send_time' is the date/time in which the next invitation will be sent, and is blank if there is no invitation that is scheduled to be sent. 'response_status' represents whether the participant has responded to the survey, in which its value is 0, 1, or 2 for 'No response', 'Partial', or 'Completed', respectively. Note: If an incorrect event_id or instrument name is used or if the instrument has not been enabled as a survey, then an error will be returned.</returns>
 		</member>
-		<member name="M:Redcap.RedcapApi.ExportSurveyQueueLinkAsync(System.String,System.String,Redcap.Models.OnErrorFormat)">
+		<member name="M:Redcap.Redcap.ExportSurveyQueueLinkAsync(System.String,System.String,Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 6.4.0
@@ -1440,7 +1440,7 @@
 			<returns>Returns a unique Survey Queue link (i.e., a URL) in plain text format for the specified record in the project.</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportSurveyQueueLinkAsync(System.String,Redcap.Models.Content,System.String,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ExportSurveyQueueLinkAsync(System.String,Redcap.Models.Content,System.String,Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 6.4.0
@@ -1458,7 +1458,7 @@
 			<returns>Returns a unique Survey Queue link (i.e., a URL) in plain text format for the specified record in the project.</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportSurveyReturnCodeAsync(System.String,System.String,System.String,System.String,System.String,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ExportSurveyReturnCodeAsync(System.String,System.String,System.String,System.String,System.String,Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 6.4.0
@@ -1477,7 +1477,7 @@
 			<returns>Returns a unique Return Code in plain text format for the specified record and instrument (and event, if longitudinal).</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportSurveyReturnCodeAsync(System.String,Redcap.Models.Content,System.String,System.String,System.String,System.String,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ExportSurveyReturnCodeAsync(System.String,Redcap.Models.Content,System.String,System.String,System.String,System.String,Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 6.4.0
@@ -1497,7 +1497,7 @@
 			<returns>Returns a unique Return Code in plain text format for the specified record and instrument (and event, if longitudinal).</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportUsersAsync(System.String,Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ExportUsersAsync(System.String,Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 4.7.0
@@ -1522,7 +1522,7 @@
 			</example>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportUsersAsync(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ExportUsersAsync(System.String,Redcap.Models.Content,Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 4.7.0
@@ -1548,7 +1548,7 @@
 			</example>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ImportUsersAsync``1(System.String,System.Collections.Generic.List{``0},Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ImportUsersAsync``1(System.String,System.Collections.Generic.List{``0},Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 4.7.0
@@ -1592,7 +1592,7 @@
 			<returns>Number of users added or updated</returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ImportUsersAsync``1(System.String,Redcap.Models.Content,System.Collections.Generic.List{``0},Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ImportUsersAsync``1(System.String,Redcap.Models.Content,System.Collections.Generic.List{``0},Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
 			<summary>
 				API Version 1.0.0+
 				From Redcap Version 4.7.0
@@ -1636,7 +1636,7 @@
 			<param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
 			<returns>Number of users added or updated</returns>
 		</member>
-		<member name="M:Redcap.RedcapApi.ExportArmsAsync(Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
+		<member name="M:Redcap.Redcap.ExportArmsAsync(Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
 			<summary>
 				Export Arms
 			</summary>
@@ -1644,7 +1644,7 @@
 			<param name="returnFormat">test</param>
 
 		</member>
-		<member name="M:Redcap.RedcapApi.DeleteArmsAsync``1(``0)">
+		<member name="M:Redcap.Redcap.DeleteArmsAsync``1(``0)">
 			<summary>
 
 			</summary>
@@ -1654,7 +1654,7 @@
 
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.GetMetaDataAsync(System.Nullable{Redcap.Models.ReturnFormat},System.Nullable{Redcap.Models.OnErrorFormat})">
+			name="M:Redcap.Redcap.GetMetaDataAsync(System.Nullable{Redcap.Models.ReturnFormat},System.Nullable{Redcap.Models.OnErrorFormat})">
 			<summary>
 
 			</summary>
@@ -1664,7 +1664,7 @@
 
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.GetMetaDataAsync(System.Nullable{Redcap.Models.ReturnFormat},System.Nullable{Redcap.Models.OnErrorFormat},System.Char[],System.String,System.String)">
+			name="M:Redcap.Redcap.GetMetaDataAsync(System.Nullable{Redcap.Models.ReturnFormat},System.Nullable{Redcap.Models.OnErrorFormat},System.Char[],System.String,System.String)">
 			<summary>
 
 			</summary>
@@ -1677,7 +1677,7 @@
 
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.GetRecordAsync(System.String,Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat,Redcap.Models.RedcapDataType,System.Char[])">
+			name="M:Redcap.Redcap.GetRecordAsync(System.String,Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat,Redcap.Models.RedcapDataType,System.Char[])">
 			<summary>
 
 			</summary>
@@ -1690,7 +1690,7 @@
 
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.GetRecordAsync(System.String,Redcap.Models.ReturnFormat,Redcap.Models.RedcapDataType,Redcap.Models.OnErrorFormat,System.Char[],System.String,System.String,System.String)">
+			name="M:Redcap.Redcap.GetRecordAsync(System.String,Redcap.Models.ReturnFormat,Redcap.Models.RedcapDataType,Redcap.Models.OnErrorFormat,System.Char[],System.String,System.String,System.String)">
 			<summary>
 
 			</summary>
@@ -1706,7 +1706,7 @@
 
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.GetRecordsAsync(Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat,Redcap.Models.RedcapDataType)">
+			name="M:Redcap.Redcap.GetRecordsAsync(Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat,Redcap.Models.RedcapDataType)">
 			<summary>
 
 			</summary>
@@ -1716,7 +1716,7 @@
 			<returns></returns>
 
 		</member>
-		<member name="M:Redcap.RedcapApi.GetRedcapVersionAsync(Redcap.Models.ReturnFormat,Redcap.Models.RedcapDataType)">
+		<member name="M:Redcap.Redcap.GetRedcapVersionAsync(Redcap.Models.ReturnFormat,Redcap.Models.RedcapDataType)">
 			<summary>
 
 			</summary>
@@ -1726,7 +1726,7 @@
 
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.SaveRecordsAsync(System.Object,Redcap.Models.ReturnContent,Redcap.Models.OverwriteBehavior,System.Nullable{Redcap.Models.ReturnFormat},System.Nullable{Redcap.Models.RedcapDataType},System.Nullable{Redcap.Models.OnErrorFormat})">
+			name="M:Redcap.Redcap.SaveRecordsAsync(System.Object,Redcap.Models.ReturnContent,Redcap.Models.OverwriteBehavior,System.Nullable{Redcap.Models.ReturnFormat},System.Nullable{Redcap.Models.RedcapDataType},System.Nullable{Redcap.Models.OnErrorFormat})">
 			<summary>
 
 			</summary>
@@ -1740,7 +1740,7 @@
 
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.SaveRecordsAsync(System.Object,Redcap.Models.ReturnContent,Redcap.Models.OverwriteBehavior,System.Nullable{Redcap.Models.ReturnFormat},System.Nullable{Redcap.Models.RedcapDataType},System.Nullable{Redcap.Models.OnErrorFormat},System.String)">
+			name="M:Redcap.Redcap.SaveRecordsAsync(System.Object,Redcap.Models.ReturnContent,Redcap.Models.OverwriteBehavior,System.Nullable{Redcap.Models.ReturnFormat},System.Nullable{Redcap.Models.RedcapDataType},System.Nullable{Redcap.Models.OnErrorFormat},System.String)">
 			<summary>
 
 			</summary>
@@ -1755,7 +1755,7 @@
 
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.SaveRecordsAsync(System.Collections.Generic.List{System.String},Redcap.Models.ReturnContent,Redcap.Models.OverwriteBehavior,System.Nullable{Redcap.Models.ReturnFormat},System.Nullable{Redcap.Models.RedcapDataType},System.Nullable{Redcap.Models.OnErrorFormat},System.String)">
+			name="M:Redcap.Redcap.SaveRecordsAsync(System.Collections.Generic.List{System.String},Redcap.Models.ReturnContent,Redcap.Models.OverwriteBehavior,System.Nullable{Redcap.Models.ReturnFormat},System.Nullable{Redcap.Models.RedcapDataType},System.Nullable{Redcap.Models.OnErrorFormat},System.String)">
 			<summary>
 				Saves record to redcap
 			</summary>
@@ -1770,7 +1770,7 @@
 
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ImportRecordsAsync(System.Object,Redcap.Models.ReturnContent,Redcap.Models.OverwriteBehavior,System.Nullable{Redcap.Models.ReturnFormat},System.Nullable{Redcap.Models.RedcapDataType},System.Nullable{Redcap.Models.OnErrorFormat},System.String)">
+			name="M:Redcap.Redcap.ImportRecordsAsync(System.Object,Redcap.Models.ReturnContent,Redcap.Models.OverwriteBehavior,System.Nullable{Redcap.Models.ReturnFormat},System.Nullable{Redcap.Models.RedcapDataType},System.Nullable{Redcap.Models.OnErrorFormat},System.String)">
 			<summary>
 
 			</summary>
@@ -1785,7 +1785,7 @@
 
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ImportRecordsAsync(System.Object,Redcap.Models.ReturnContent,Redcap.Models.OverwriteBehavior,System.Nullable{Redcap.Models.ReturnFormat},System.Nullable{Redcap.Models.RedcapDataType},System.Nullable{Redcap.Models.OnErrorFormat},System.String,System.String)">
+			name="M:Redcap.Redcap.ImportRecordsAsync(System.Object,Redcap.Models.ReturnContent,Redcap.Models.OverwriteBehavior,System.Nullable{Redcap.Models.ReturnFormat},System.Nullable{Redcap.Models.RedcapDataType},System.Nullable{Redcap.Models.OnErrorFormat},System.String,System.String)">
 			<summary>
 
 			</summary>
@@ -1801,7 +1801,7 @@
 
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportMetaDataAsync(System.Nullable{Redcap.Models.ReturnFormat},System.Nullable{Redcap.Models.OnErrorFormat})">
+			name="M:Redcap.Redcap.ExportMetaDataAsync(System.Nullable{Redcap.Models.ReturnFormat},System.Nullable{Redcap.Models.OnErrorFormat})">
 			<summary>
 
 			</summary>
@@ -1811,7 +1811,7 @@
 
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportMetaDataAsync(System.Nullable{Redcap.Models.ReturnFormat},System.Nullable{Redcap.Models.OnErrorFormat},System.Char[],System.String,System.String)">
+			name="M:Redcap.Redcap.ExportMetaDataAsync(System.Nullable{Redcap.Models.ReturnFormat},System.Nullable{Redcap.Models.OnErrorFormat},System.Char[],System.String,System.String)">
 			<summary>
 
 			</summary>
@@ -1824,7 +1824,7 @@
 
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportEventsAsync(Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat,System.Int32[])">
+			name="M:Redcap.Redcap.ExportEventsAsync(Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat,System.Int32[])">
 			<summary>
 
 			</summary>
@@ -1834,7 +1834,7 @@
 			<returns></returns>
 
 		</member>
-		<member name="T:Redcap.RedcapApi.GetRedcapVersion">
+		<member name="T:Redcap.Redcap.GetRedcapVersion">
 			<summary>
 				Alias /test/compatibility
 			</summary>
@@ -1842,7 +1842,7 @@
 			<param name="redcapDataType"></param>
 			<returns>string</returns>
 		</member>
-		<member name="T:Redcap.RedcapApi.ExportRecord">
+		<member name="T:Redcap.Redcap.ExportRecord">
 			<summary>
 				Alias /test/compatibility
 			</summary>
@@ -1856,7 +1856,7 @@
 			<param name="fields"></param>
 			<returns></returns>
 		</member>
-		<member name="T:Redcap.RedcapApi.ExportRecords">
+		<member name="T:Redcap.Redcap.ExportRecords">
 			<summary>
 
 			</summary>
@@ -1871,7 +1871,7 @@
 			<returns></returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ImportArmsAsync``1(System.Collections.Generic.List{``0},Redcap.Models.Override,Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ImportArmsAsync``1(System.Collections.Generic.List{``0},Redcap.Models.Override,Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
 			<summary>
 
 			</summary>
@@ -1884,7 +1884,7 @@
 
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportRecordAsync(System.String,Redcap.Models.ReturnFormat,Redcap.Models.RedcapDataType,Redcap.Models.OnErrorFormat,System.Char[],System.String,System.String,System.String)">
+			name="M:Redcap.Redcap.ExportRecordAsync(System.String,Redcap.Models.ReturnFormat,Redcap.Models.RedcapDataType,Redcap.Models.OnErrorFormat,System.Char[],System.String,System.String,System.String)">
 			<summary>
 
 			</summary>
@@ -1899,7 +1899,7 @@
 			<returns></returns>
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportRecordsAsync(System.String,Redcap.Models.ReturnFormat,Redcap.Models.RedcapDataType,Redcap.Models.OnErrorFormat,System.Char[],System.String,System.String,System.String)">
+			name="M:Redcap.Redcap.ExportRecordsAsync(System.String,Redcap.Models.ReturnFormat,Redcap.Models.RedcapDataType,Redcap.Models.OnErrorFormat,System.Char[],System.String,System.String,System.String)">
 			<summary>
 
 			</summary>
@@ -1915,7 +1915,7 @@
 
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportRecordsAsync(Redcap.Models.ReturnFormat,Redcap.Models.RedcapDataType,Redcap.Models.OnErrorFormat,System.Char[],System.String,System.String,System.String)">
+			name="M:Redcap.Redcap.ExportRecordsAsync(Redcap.Models.ReturnFormat,Redcap.Models.RedcapDataType,Redcap.Models.OnErrorFormat,System.Char[],System.String,System.String,System.String)">
 			<summary>
 
 			</summary>
@@ -1929,7 +1929,7 @@
 			<returns></returns>
 
 		</member>
-		<member name="M:Redcap.RedcapApi.ExportRedcapVersionAsync(Redcap.Models.ReturnFormat,Redcap.Models.RedcapDataType)">
+		<member name="M:Redcap.Redcap.ExportRedcapVersionAsync(Redcap.Models.ReturnFormat,Redcap.Models.RedcapDataType)">
 			<summary>
 
 			</summary>
@@ -1938,7 +1938,7 @@
 			<returns></returns>
 
 		</member>
-		<member name="M:Redcap.RedcapApi.ExportUsersAsync(Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
+		<member name="M:Redcap.Redcap.ExportUsersAsync(Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
 			<summary>
 
 			</summary>
@@ -1948,7 +1948,7 @@
 
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.GetRecordsAsync(Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat,Redcap.Models.RedcapDataType,System.Char[])">
+			name="M:Redcap.Redcap.GetRecordsAsync(Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat,Redcap.Models.RedcapDataType,System.Char[])">
 			<summary>
 
 			</summary>
@@ -1960,7 +1960,7 @@
 
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ImportEventsAsync``1(System.Collections.Generic.List{``0},Redcap.Models.Override,Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ImportEventsAsync``1(System.Collections.Generic.List{``0},Redcap.Models.Override,Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
 			<summary>
 
 			</summary>
@@ -1973,7 +1973,7 @@
 
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportFileAsync(System.String,System.String,System.String,System.String,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ExportFileAsync(System.String,System.String,System.String,System.String,Redcap.Models.OnErrorFormat)">
 			<summary>
 
 			</summary>
@@ -1986,7 +1986,7 @@
 
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ExportFileAsync(System.String,System.String,System.String,System.String,System.String,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ExportFileAsync(System.String,System.String,System.String,System.String,System.String,Redcap.Models.OnErrorFormat)">
 			<summary>
 
 			</summary>
@@ -2000,7 +2000,7 @@
 
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.ImportFileAsync(System.String,System.String,System.String,System.String,System.String,System.String,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.ImportFileAsync(System.String,System.String,System.String,System.String,System.String,System.String,Redcap.Models.OnErrorFormat)">
 			<summary>
 
 			</summary>
@@ -2015,7 +2015,7 @@
 
 		</member>
 		<member
-			name="M:Redcap.RedcapApi.DeleteFileAsync(System.String,System.String,System.String,System.String,Redcap.Models.OnErrorFormat)">
+			name="M:Redcap.Redcap.DeleteFileAsync(System.String,System.String,System.String,System.String,Redcap.Models.OnErrorFormat)">
 			<summary>
 
 			</summary>
@@ -2027,7 +2027,7 @@
 			<returns></returns>
 
 		</member>
-		<member name="M:Redcap.RedcapApi.ExportEventsAsync(Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
+		<member name="M:Redcap.Redcap.ExportEventsAsync(Redcap.Models.ReturnFormat,Redcap.Models.OnErrorFormat)">
 			<summary>
 
 			</summary>
@@ -4565,94 +4565,94 @@
 			<param name="array">The array to test.</param>
 			<returns>true if the array parameter is null or has a length of zero; otherwise, false.</returns>
 		</member>
-		<member name="M:Redcap.Utilities.Utils.ConvertArraytoString``1(Redcap.RedcapApi,``0[])">
+		<member name="M:Redcap.Utilities.Utils.ConvertArraytoString``1(Redcap.Redcap,``0[])">
 			<summary>
 				This method converts string[] into string. For example, given string of "firstName, lastName, age"
 				gets converted to "["firstName","lastName","age"]"
 				This is used as optional arguments for the Redcap Api
 			</summary>
-			<param name="redcapApi"></param>
+			<param name="redcap"></param>
 			<param name="inputArray"></param>
 			<returns>string[]</returns>
 		</member>
-		<member name="M:Redcap.Utilities.Utils.ConvertIntArraytoString(Redcap.RedcapApi,System.Int32[])">
+		<member name="M:Redcap.Utilities.Utils.ConvertIntArraytoString(Redcap.Redcap,System.Int32[])">
 			<summary>
 				This method converts int[] into a string. For example, given int[] of "[1,2,3]"
 				gets converted to "["1","2","3"]"
 				This is used as optional arguments for the Redcap Api
 			</summary>
-			<param name="redcapApi"></param>
+			<param name="redcap"></param>
 			<param name="inputArray"></param>
 			<returns>string</returns>
 		</member>
-		<member name="M:Redcap.Utilities.Utils.HandleReturnContent(Redcap.RedcapApi,Redcap.Models.ReturnContent)">
+		<member name="M:Redcap.Utilities.Utils.HandleReturnContent(Redcap.Redcap,Redcap.Models.ReturnContent)">
 			<summary>
 				The method hands the return content from a request, the response.
 				The method allows the calling method to choose a return type.
 			</summary>
-			<param name="redcapApi"></param>
+			<param name="redcap"></param>
 			<param name="returnContent"></param>
 			<returns>string</returns>
 		</member>
 		<member
-			name="M:Redcap.Utilities.Utils.HandleFormat(Redcap.RedcapApi,System.Nullable{Redcap.Models.ReturnFormat},System.Nullable{Redcap.Models.OnErrorFormat},System.Nullable{Redcap.Models.RedcapDataType})">
+			name="M:Redcap.Utilities.Utils.HandleFormat(Redcap.Redcap,System.Nullable{Redcap.Models.ReturnFormat},System.Nullable{Redcap.Models.OnErrorFormat},System.Nullable{Redcap.Models.RedcapDataType})">
 			<summary>
 				Tuple that returns both inputFormat and redcap returnFormat
 			</summary>
-			<param name="redcapApi"></param>
+			<param name="redcap"></param>
 			<param name="format">csv, json[default], xml , odm ('odm' refers to CDISC ODM XML format, specifically ODM version 1.3.1)</param>
 			<param name="onErrorFormat"></param>
 			<param name="redcapDataType"></param>
 			<returns>tuple, string, string, string</returns>
 		</member>
-		<member name="M:Redcap.Utilities.Utils.ExtractBehaviorAsync(Redcap.RedcapApi,Redcap.Models.OverwriteBehavior)">
+		<member name="M:Redcap.Utilities.Utils.ExtractBehaviorAsync(Redcap.Redcap,Redcap.Models.OverwriteBehavior)">
 			<summary>
 				Method gets the overwrite behavior type and converts into string
 			</summary>
-			<param name="redcapApi"></param>
+			<param name="redcap"></param>
 			<param name="overwriteBehavior"></param>
 			<returns>string</returns>
 		</member>
-		<member name="M:Redcap.Utilities.Utils.GetProperties(Redcap.RedcapApi,System.Object)">
+		<member name="M:Redcap.Utilities.Utils.GetProperties(Redcap.Redcap,System.Object)">
 			<summary>
 				This method extracts and converts an object's properties and associated values to redcap type and values.
 			</summary>
-			<param name="redcapApi"></param>
+			<param name="redcap"></param>
 			<param name="input">Object</param>
 			<returns>Dictionary of key value pair.</returns>
 		</member>
-		<member name="M:Redcap.Utilities.Utils.ExtractEventsAsync(Redcap.RedcapApi,System.String,System.Char[])">
+		<member name="M:Redcap.Utilities.Utils.ExtractEventsAsync(Redcap.Redcap,System.String,System.Char[])">
 			<summary>
 				Method extracts events into list from string
 			</summary>
-			<param name="redcapApi"></param>
+			<param name="redcap"></param>
 			<param name="events"></param>
 			<param name="delimiters">char[] e.g [';',',']</param>
 			<returns>List of string</returns>
 		</member>
-		<member name="M:Redcap.Utilities.Utils.ExtractFieldsAsync(Redcap.RedcapApi,System.String,System.Char[])">
+		<member name="M:Redcap.Utilities.Utils.ExtractFieldsAsync(Redcap.Redcap,System.String,System.Char[])">
 			<summary>
 				Method gets / extracts fields into list from string
 			</summary>
-			<param name="redcapApi"></param>
+			<param name="redcap"></param>
 			<param name="fields"></param>
 			<param name="delimiters">char[] e.g [';',',']</param>
 			<returns>List of string</returns>
 		</member>
-		<member name="M:Redcap.Utilities.Utils.ExtractRecordsAsync(Redcap.RedcapApi,System.String,System.Char[])">
+		<member name="M:Redcap.Utilities.Utils.ExtractRecordsAsync(Redcap.Redcap,System.String,System.Char[])">
 			<summary>
 				Method gets / extract records into list from string
 			</summary>
-			<param name="redcapApi"></param>
+			<param name="redcap"></param>
 			<param name="records"></param>
 			<param name="delimiters">char[] e.g [';',',']</param>
 			<returns>List of string</returns>
 		</member>
-		<member name="M:Redcap.Utilities.Utils.ExtractFormsAsync(Redcap.RedcapApi,System.String,System.Char[])">
+		<member name="M:Redcap.Utilities.Utils.ExtractFormsAsync(Redcap.Redcap,System.String,System.Char[])">
 			<summary>
 				Method gets / extracts forms into list from string
 			</summary>
-			<param name="redcapApi"></param>
+			<param name="redcap"></param>
 			<param name="forms"></param>
 			<param name="delimiters">char[] e.g [';',',']</param>
 			<returns>A list of string</returns>
@@ -4664,61 +4664,61 @@
 			<returns>HttpClientHandler</returns>
 		</member>
 		<member
-			name="M:Redcap.Utilities.Utils.GetStreamContentAsync(Redcap.RedcapApi,System.Collections.Generic.Dictionary{System.String,System.String},System.Uri)">
+			name="M:Redcap.Utilities.Utils.GetStreamContentAsync(Redcap.Redcap,System.Collections.Generic.Dictionary{System.String,System.String},System.Uri)">
 			<summary>
 
 			</summary>
-			<param name="redcapApi"></param>
+			<param name="redcap"></param>
 			<param name="payload">data</param>
 			<param name="uri">URI of the api instance</param>
 			<returns>Stream</returns>
 		</member>
 		<member
-			name="M:Redcap.Utilities.Utils.SendPostRequestAsync(Redcap.RedcapApi,System.Net.Http.MultipartFormDataContent,System.Uri)">
+			name="M:Redcap.Utilities.Utils.SendPostRequestAsync(Redcap.Redcap,System.Net.Http.MultipartFormDataContent,System.Uri)">
 			<summary>
 				Method to send http request using MultipartFormDataContent
 				Requests with attachments
 			</summary>
-			<param name="redcapApi"></param>
+			<param name="redcap"></param>
 			<param name="payload">data</param>
 			<param name="uri">URI of the api instance</param>
 			<returns>string</returns>
 		</member>
 		<member
-			name="M:Redcap.Utilities.Utils.SendPostRequestAsync(Redcap.RedcapApi,System.Collections.Generic.Dictionary{System.String,System.String},System.Uri)">
+			name="M:Redcap.Utilities.Utils.SendPostRequestAsync(Redcap.Redcap,System.Collections.Generic.Dictionary{System.String,System.String},System.Uri)">
 			<summary>
 				Sends request using http
 			</summary>
-			<param name="redcapApi"></param>
+			<param name="redcap"></param>
 			<param name="payload">data</param>
 			<param name="uri">URI of the api instance</param>
 			<returns></returns>
 		</member>
 		<member
-			name="M:Redcap.Utilities.Utils.SendPostRequest(Redcap.RedcapApi,System.Collections.Generic.Dictionary{System.String,System.String},System.Uri)">
+			name="M:Redcap.Utilities.Utils.SendPostRequest(Redcap.Redcap,System.Collections.Generic.Dictionary{System.String,System.String},System.Uri)">
 			<summary>
 				Sends http request to api
 			</summary>
-			<param name="redcapApi"></param>
+			<param name="redcap"></param>
 			<param name="payload">data </param>
 			<param name="uri">URI of the api instance</param>
 			<returns>string</returns>
 		</member>
-		<member name="M:Redcap.Utilities.Utils.ExtractArmsAsync``1(Redcap.RedcapApi,System.String,System.Char[])">
+		<member name="M:Redcap.Utilities.Utils.ExtractArmsAsync``1(Redcap.Redcap,System.String,System.Char[])">
 			<summary>
 				Method obtains list of string from comma seperated strings
 			</summary>
 			<typeparam name="T"></typeparam>
-			<param name="redcapApi"></param>
+			<param name="redcap"></param>
 			<param name="arms"></param>
 			<param name="delimiters"></param>
 			<returns>List of string</returns>
 		</member>
-		<member name="M:Redcap.Utilities.Utils.CheckToken(Redcap.RedcapApi,System.String)">
+		<member name="M:Redcap.Utilities.Utils.CheckToken(Redcap.Redcap,System.String)">
 			<summary>
 				Checks if the string passed is null or empty.
 			</summary>
-			<param name="redcapApi"></param>
+			<param name="redcap"></param>
 			<param name="token"></param>
 			<returns></returns>
 		</member>

@@ -4,17 +4,13 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 
-namespace Redcap.Http
+namespace Redcap.Utilities
 {
     /// <summary>
     /// https://stackoverflow.com/a/23740338
     /// </summary>
     public class CustomFormUrlEncodedContent : ByteArrayContent
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="nameValueCollection"></param>
         public CustomFormUrlEncodedContent(IEnumerable<KeyValuePair<string, string>> nameValueCollection)
             : base(CustomFormUrlEncodedContent.GetContentByteArray(nameValueCollection))
         {
@@ -28,7 +24,7 @@ namespace Redcap.Http
                 throw new ArgumentNullException(nameof(nameValueCollection));
             }
 
-            StringBuilder stringBuilder = new StringBuilder();
+            StringBuilder stringBuilder = new();
             foreach (KeyValuePair<string, string> current in nameValueCollection)
             {
                 if (stringBuilder.Length > 0)
@@ -51,7 +47,7 @@ namespace Redcap.Http
                 return string.Empty;
             }
 
-            return System.Net.WebUtility.UrlEncode(data)?.Replace("%20", "+");
+            return System.Net.WebUtility.UrlEncode(data).Replace("%20", "+");
         }
     }
 }

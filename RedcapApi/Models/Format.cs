@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace Redcap.Models
-{
+    {
     /// <summary>
     /// The format that the response object should be when returned from the http request.
     /// Format, 0 = JSON
