@@ -15,20 +15,18 @@ namespace Redcap.Models
         /// Export Action
         /// </summary>
         /// 
-        [Display(Name = "export")]
-        Export,
+        [Display(Name = "export")] Export,
 
         /// <summary>
         /// Import Action
         /// </summary>
         /// 
-        [Display(Name = "import")]
-        Import,
+        [Display(Name = "import")] Import,
+
         /// <summary>
         /// Delete Action
         /// </summary>
         /// 
-        [Display(Name = "delete")]
-        Delete,
+        [Display(Name = "delete")] Delete,
     }
 }

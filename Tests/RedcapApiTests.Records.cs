@@ -3,17 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using FluentAssertions;
-
 using Moq;
-
 using Redcap.Broker;
 using Redcap.Models;
 using Redcap.Services;
-
 using RestSharp;
-
 using Xunit;
 
 namespace Tests

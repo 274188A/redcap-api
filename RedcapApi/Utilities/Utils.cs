@@ -1,96 +1,45 @@
-﻿using Redcap.Http;
+﻿using Redcap.Api;
+using Redcap.Http;
 using Redcap.Models;
-
 using Serilog;
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-using Xunit.Abstractions;
-using Xunit.Sdk;
-
-using static System.String;
 
 namespace Redcap.Utilities
 {
     /// <summary>
     /// 
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Method)]
     public class TestPriorityAttribute : Attribute
     {
-        /// <summary>
-        /// 
-        /// </summary>
+
+       
         /// <param name="priority"></param>
         public TestPriorityAttribute(int priority)
         {
-            Priority = priority;
+            var _priority = priority;
+
+            
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        public int Priority { get; private set; }
+
     }
-    /// <summary>
-    /// 
-    /// </summary>
-    public class PriorityOrderer : ITestCaseOrderer
-    {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="TTestCase"></typeparam>
-        /// <param name="testCases"></param>
-        /// <returns></returns>
-        public IEnumerable<TTestCase> OrderTestCases<TTestCase>(IEnumerable<TTestCase> testCases) where TTestCase : ITestCase
-        {
-            var sortedMethods = new SortedDictionary<int, List<TTestCase>>();
 
-            foreach (TTestCase testCase in testCases)
-            {
-                int priority = 0;
-
-                foreach (IAttributeInfo attr in testCase.TestMethod.Method.GetCustomAttributes((typeof(TestPriorityAttribute).AssemblyQualifiedName)))
-                    priority = attr.GetNamedArgument<int>("Priority");
-
-                GetOrCreate(sortedMethods, priority).Add(testCase);
-            }
-
-            foreach (var list in sortedMethods.Keys.Select(priority => sortedMethods[priority]))
-            {
-                list.Sort((x, y) => StringComparer.OrdinalIgnoreCase.Compare(x.TestMethod.Method.Name, y.TestMethod.Method.Name));
-                foreach (TTestCase testCase in list)
-                    yield return testCase;
-            }
-        }
-
-        static TValue GetOrCreate<TKey, TValue>(IDictionary<TKey, TValue> dictionary, TKey key) where TValue : new()
-        {
-            TValue result;
-
-            if (dictionary.TryGetValue(key, out result)) return result;
-
-            result = new TValue();
-            dictionary[key] = result;
-
-            return result;
-        }
-    }
+ 
     /// <summary>
     /// Utilities
     /// </summary>
     public static class Utils
     {
-
         /// <summary>
         /// Controls how strictly a certificate's credentials are observed, for example over ssh tunnels.
         /// </summary>
@@ -112,6 +61,7 @@ namespace Redcap.Utilities
 
             return returnvalue;
         }
+
         /// <summary>
         /// Extension method reads a stream and saves content to a local file.
         /// </summary>
@@ -121,13 +71,14 @@ namespace Redcap.Utilities
         /// <param name="overwrite"></param>
         /// <param name="fileExtension"></param>
         /// <returns>HttpContent</returns>
-        public static Task ReadAsFileAsync(this HttpContent httpContent, string fileName, string path, bool overwrite, string fileExtension = "pdf")
+        public static Task ReadAsFileAsync(this HttpContent httpContent, string fileName, string path, bool overwrite,
+            string fileExtension = "pdf")
         {
-
             if (!overwrite && File.Exists(Path.Combine(fileName + fileExtension?.SingleOrDefault(), path)))
             {
                 throw new InvalidOperationException($"File {fileName} already exists.");
             }
+
             FileStream filestream = null;
             try
             {
@@ -139,9 +90,11 @@ namespace Redcap.Utilities
                 {
                     fileName = fileName + "." + fileExtension;
                 }
-                filestream = new FileStream(Path.Combine(path, fileName), FileMode.Create, FileAccess.Write, FileShare.None);
+
+                filestream = new FileStream(Path.Combine(path, fileName), FileMode.Create, FileAccess.Write,
+                    FileShare.None);
                 return httpContent.CopyToAsync(filestream).ContinueWith(
-                    (copyTask) =>
+                    copyTask =>
                     {
                         filestream.Flush();
                         filestream.Dispose();
@@ -155,9 +108,11 @@ namespace Redcap.Utilities
                 {
                     filestream.Flush();
                 }
+
                 throw new InvalidOperationException($"{Ex.Message}");
             }
         }
+
         /// https://stackoverflow.com/questions/8560106/isnullorempty-equivalent-for-array-c-sharp
         /// <summary>Indicates whether the specified array is null or has a length of zero.</summary>
         /// <param name="array">The array to test.</param>
@@ -166,6 +121,7 @@ namespace Redcap.Utilities
         {
             return (array == null || array.Length == 0);
         }
+
         /// <summary>
         /// This method converts string[] into string. For example, given string of "firstName, lastName, age"
         /// gets converted to "["firstName","lastName","age"]" 
@@ -180,30 +136,32 @@ namespace Redcap.Utilities
             {
                 if (inputArray.IsNullOrEmpty())
                 {
-                    throw new ArgumentNullException("Please provide a valid array.");
+                    throw new ArgumentNullException(nameof(inputArray));
                 }
+
                 StringBuilder builder = new StringBuilder();
                 foreach (T v in inputArray)
                 {
-
                     builder.Append(v);
                     // We do not need to append the , if less than or equal to a single string
                     if (inputArray.Length <= 1)
                     {
                         return await Task.FromResult(builder.ToString());
                     }
+
                     builder.Append(",");
                 }
+
                 // We trim the comma from the string for clarity
                 return await Task.FromResult(builder.ToString().TrimEnd(','));
-
             }
             catch (Exception Ex)
             {
                 Log.Error($"{Ex.Message}");
-                return await Task.FromResult(String.Empty);
+                return await Task.FromResult(string.Empty);
             }
         }
+
         /// <summary>
         /// This method converts int[] into a string. For example, given int[] of "[1,2,3]"
         /// gets converted to "["1","2","3"]" 
@@ -219,25 +177,26 @@ namespace Redcap.Utilities
                 StringBuilder builder = new StringBuilder();
                 foreach (var intValue in inputArray)
                 {
-
                     builder.Append(intValue);
                     // We do not need to append the , if less than or equal to a single string
                     if (inputArray.Length <= 1)
                     {
                         return await Task.FromResult(builder.ToString());
                     }
+
                     builder.Append(",");
                 }
+
                 // We trim the comma from the string for clarity
                 return await Task.FromResult(builder.ToString().TrimEnd(','));
-
             }
             catch (Exception Ex)
             {
                 Log.Error($"{Ex.Message}");
-                return await Task.FromResult(String.Empty);
+                return await Task.FromResult(string.Empty);
             }
         }
+
         /// <summary>
         ///The method hands the return content from a request, the response.
         /// The method allows the calling method to choose a return type.
@@ -245,11 +204,12 @@ namespace Redcap.Utilities
         /// <param name="redcapApi"></param>
         /// <param name="returnContent"></param>
         /// <returns>string</returns>
-        public static async Task<string> HandleReturnContent(this RedcapApi redcapApi, ReturnContent returnContent = ReturnContent.count)
+        public static async Task<string> HandleReturnContent(this RedcapApi redcapApi,
+            ReturnContent returnContent = ReturnContent.count)
         {
             try
             {
-                var _returnContent = returnContent.ToString();
+                string _returnContent;
                 switch (returnContent)
                 {
                     case ReturnContent.ids:
@@ -262,14 +222,16 @@ namespace Redcap.Utilities
                         _returnContent = ReturnContent.count.ToString();
                         break;
                 }
+
                 return await Task.FromResult(_returnContent);
             }
             catch (Exception Ex)
             {
                 Log.Error(Ex.Message);
-                return await Task.FromResult(String.Empty);
+                return await Task.FromResult(string.Empty);
             }
         }
+
         /// <summary>
         /// Tuple that returns both inputFormat and redcap returnFormat
         /// </summary>
@@ -278,7 +240,9 @@ namespace Redcap.Utilities
         /// <param name="onErrorFormat"></param>
         /// <param name="redcapDataType"></param>
         /// <returns>tuple, string, string, string</returns>
-        public static async Task<(string format, string onErrorFormat, string redcapDataType)> HandleFormat(this RedcapApi redcapApi, ReturnFormat? format = ReturnFormat.json, OnErrorFormat? onErrorFormat = OnErrorFormat.json, RedcapDataType? redcapDataType = RedcapDataType.flat)
+        public static async Task<(string format, string onErrorFormat, string redcapDataType)> HandleFormat(
+            this RedcapApi redcapApi, ReturnFormat? format = ReturnFormat.json,
+            OnErrorFormat? onErrorFormat = OnErrorFormat.json, RedcapDataType? redcapDataType = RedcapDataType.flat)
         {
             // default
             var _format = ReturnFormat.json.ToString();
@@ -287,7 +251,6 @@ namespace Redcap.Utilities
 
             try
             {
-
                 switch (format)
                 {
                     case ReturnFormat.json:
@@ -354,11 +317,12 @@ namespace Redcap.Utilities
         /// <param name="redcapApi"></param>
         /// <param name="overwriteBehavior"></param>
         /// <returns>string</returns>
-        public static async Task<string> ExtractBehaviorAsync(this RedcapApi redcapApi, OverwriteBehavior overwriteBehavior)
+        public static async Task<string> ExtractBehaviorAsync(this RedcapApi redcapApi,
+            OverwriteBehavior overwriteBehavior)
         {
             try
             {
-                var _overwriteBehavior = OverwriteBehavior.normal.ToString();
+                string _overwriteBehavior;
                 switch (overwriteBehavior)
                 {
                     case OverwriteBehavior.overwrite:
@@ -371,14 +335,16 @@ namespace Redcap.Utilities
                         _overwriteBehavior = OverwriteBehavior.overwrite.ToString();
                         break;
                 }
+
                 return await Task.FromResult(_overwriteBehavior);
             }
             catch (Exception Ex)
             {
                 Log.Error($"{Ex.Message}");
-                return await Task.FromResult(String.Empty);
+                return await Task.FromResult(string.Empty);
             }
         }
+
         /// <summary>
         /// This method extracts and converts an object's properties and associated values to redcap type and values.
         /// </summary>
@@ -395,8 +361,8 @@ namespace Redcap.Utilities
                     var type = input.GetType();
                     var obj = new Dictionary<string, string>();
                     // Get the properties
-                    var props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-                    PropertyInfo[] properties = input.GetType().GetProperties();
+                    //var props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+                    PropertyInfo[] properties = input.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
                     foreach (var prop in properties)
                     {
                         // get type of column
@@ -406,7 +372,7 @@ namespace Redcap.Utilities
                         // We need to set lower case for REDCap's variable nameing convention (lower casing)
                         string propName = prop.Name.ToLower();
                         // We check for null values
-                        var propValue = type.GetProperty(prop.Name).GetValue(input, null)?.ToString();
+                        var propValue = type.GetProperty(prop.Name)?.GetValue(input, null)?.ToString();
                         if (propValue != null)
                         {
                             var t = columnType.GetGenericArguments();
@@ -415,8 +381,9 @@ namespace Redcap.Utilities
                                 if (columnType.GenericTypeArguments[0].FullName == "System.DateTime")
                                 {
                                     var dt = DateTime.Parse(propValue);
-                                    propValue = dt.ToString();
+                                    propValue = dt.ToString(CultureInfo.CurrentCulture);
                                 }
+
                                 if (columnType.GenericTypeArguments[0].FullName == "System.Boolean")
                                 {
                                     if (propValue == "True")
@@ -429,6 +396,7 @@ namespace Redcap.Utilities
                                     }
                                 }
                             }
+
                             obj.Add(propName, propValue);
                         }
                         else
@@ -437,16 +405,19 @@ namespace Redcap.Utilities
                             obj.Add(propName, null);
                         }
                     }
+
                     return await Task.FromResult(obj);
                 }
-                return await Task.FromResult(new Dictionary<string, string> { });
+
+                return await Task.FromResult(new Dictionary<string, string>());
             }
             catch (Exception Ex)
             {
                 Log.Error($"{Ex.Message}");
-                return await Task.FromResult(new Dictionary<string, string> { });
+                return await Task.FromResult(new Dictionary<string, string>());
             }
         }
+
         /// <summary>
         /// Method extracts events into list from string
         /// </summary>
@@ -454,7 +425,8 @@ namespace Redcap.Utilities
         /// <param name="events"></param>
         /// <param name="delimiters">char[] e.g [';',',']</param>
         /// <returns>List of string</returns>
-        public static async Task<List<string>> ExtractEventsAsync(this RedcapApi redcapApi, string events, char[] delimiters)
+        public static async Task<List<string>> ExtractEventsAsync(this RedcapApi redcapApi, string events,
+            char[] delimiters)
         {
             if (!String.IsNullOrEmpty(events))
             {
@@ -466,16 +438,19 @@ namespace Redcap.Utilities
                     {
                         eventsResult.Add(form);
                     }
+
                     return await Task.FromResult(eventsResult);
                 }
                 catch (Exception Ex)
                 {
                     Log.Error($"{Ex.Message}");
-                    return await Task.FromResult(new List<string> { });
+                    return await Task.FromResult(new List<string>());
                 }
             }
-            return await Task.FromResult(new List<string> { });
+
+            return await Task.FromResult(new List<string>());
         }
+
         /// <summary>
         /// Method gets / extracts fields into list from string
         /// </summary>
@@ -483,7 +458,8 @@ namespace Redcap.Utilities
         /// <param name="fields"></param>
         /// <param name="delimiters">char[] e.g [';',',']</param>
         /// <returns>List of string</returns>
-        public static async Task<List<string>> ExtractFieldsAsync(this RedcapApi redcapApi, string fields, char[] delimiters)
+        public static async Task<List<string>> ExtractFieldsAsync(this RedcapApi redcapApi, string fields,
+            char[] delimiters)
         {
             if (!String.IsNullOrEmpty(fields))
             {
@@ -495,16 +471,19 @@ namespace Redcap.Utilities
                     {
                         fieldsResult.Add(field);
                     }
+
                     return await Task.FromResult(fieldsResult);
                 }
                 catch (Exception Ex)
                 {
                     Log.Error($"{Ex.Message}");
-                    return await Task.FromResult(new List<string> { });
+                    return await Task.FromResult(new List<string>());
                 }
             }
-            return await Task.FromResult(new List<string> { });
+
+            return await Task.FromResult(new List<string>());
         }
+
         /// <summary>
         /// Method gets / extract records into list from string
         /// </summary>
@@ -512,7 +491,8 @@ namespace Redcap.Utilities
         /// <param name="records"></param>
         /// <param name="delimiters">char[] e.g [';',',']</param>
         /// <returns>List of string</returns>
-        public static async Task<List<string>> ExtractRecordsAsync(this RedcapApi redcapApi, string records, char[] delimiters)
+        public static async Task<List<string>> ExtractRecordsAsync(this RedcapApi redcapApi, string records,
+            char[] delimiters)
         {
             if (!String.IsNullOrEmpty(records))
             {
@@ -524,16 +504,19 @@ namespace Redcap.Utilities
                     {
                         recordResults.Add(record);
                     }
+
                     return await Task.FromResult(recordResults);
                 }
                 catch (Exception Ex)
                 {
                     Log.Error($"{Ex.Message}");
-                    return await Task.FromResult(new List<string> { });
+                    return await Task.FromResult(new List<string>());
                 }
             }
-            return await Task.FromResult(new List<string> { });
+
+            return await Task.FromResult(new List<string>());
         }
+
         /// <summary>
         /// Method gets / extracts forms into list from string
         /// </summary>
@@ -541,7 +524,8 @@ namespace Redcap.Utilities
         /// <param name="forms"></param>
         /// <param name="delimiters">char[] e.g [';',',']</param>
         /// <returns>A list of string</returns>
-        public static async Task<List<string>> ExtractFormsAsync(this RedcapApi redcapApi, string forms, char[] delimiters)
+        public static async Task<List<string>> ExtractFormsAsync(this RedcapApi redcapApi, string forms,
+            char[] delimiters)
         {
             if (!String.IsNullOrEmpty(forms))
             {
@@ -553,28 +537,35 @@ namespace Redcap.Utilities
                     {
                         formsResult.Add(form);
                     }
+
                     return await Task.FromResult(formsResult);
                 }
                 catch (Exception Ex)
                 {
                     Log.Error($"{Ex.Message}");
-                    return await Task.FromResult(new List<string> { });
+                    return await Task.FromResult(new List<string>());
                 }
             }
-            return await Task.FromResult(new List<string> { });
+
+            return await Task.FromResult(new List<string>());
         }
+
         /// <summary>
         /// Returns a HttpClientHandler dependent on the value of the UseInsecureCertificate boolean
         /// </summary>
         /// <returns>HttpClientHandler</returns>
         public static HttpClientHandler GetHttpHandler()
         {
-            return UseInsecureCertificate ? new HttpClientHandler()
-            {
-                UseProxy = false,
-                ServerCertificateCustomValidationCallback = BrokenCertificate.DangerousAcceptAnyServerCertificateValidator
-            } : new HttpClientHandler();
+            return UseInsecureCertificate
+                ? new HttpClientHandler
+                {
+                    UseProxy = false,
+                    ServerCertificateCustomValidationCallback =
+                        BrokenCertificate.DangerousAcceptAnyServerCertificateValidator
+                }
+                : new HttpClientHandler();
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -582,11 +573,11 @@ namespace Redcap.Utilities
         /// <param name="payload">data</param>
         /// <param name="uri">URI of the api instance</param>
         /// <returns>Stream</returns>
-        public static async Task<Stream> GetStreamContentAsync(this RedcapApi redcapApi, Dictionary<string, string> payload, Uri uri)
+        public static async Task<Stream> GetStreamContentAsync(this RedcapApi redcapApi,
+            Dictionary<string, string> payload, Uri uri)
         {
             try
             {
-                Stream stream = null;
                 using (var handler = GetHttpHandler())
                 using (var client = new HttpClient(handler))
                 {
@@ -596,12 +587,12 @@ namespace Redcap.Utilities
                     {
                         if (response.IsSuccessStatusCode)
                         {
-                            stream = await response.Content.ReadAsStreamAsync();
+                            Stream stream = await response.Content.ReadAsStreamAsync();
                             return stream;
                         }
                     }
-
                 }
+
                 return null;
             }
             catch (Exception Ex)
@@ -610,6 +601,7 @@ namespace Redcap.Utilities
                 return null;
             }
         }
+
         /// <summary>
         /// Method to send http request using MultipartFormDataContent
         /// Requests with attachments
@@ -618,7 +610,8 @@ namespace Redcap.Utilities
         /// <param name="payload">data</param>
         /// <param name="uri">URI of the api instance</param>
         /// <returns>string</returns>
-        public static async Task<string> SendPostRequestAsync(this RedcapApi redcapApi, MultipartFormDataContent payload, Uri uri)
+        public static async Task<string> SendPostRequestAsync(this RedcapApi redcapApi,
+            MultipartFormDataContent payload, Uri uri)
         {
             try
             {
@@ -633,12 +626,13 @@ namespace Redcap.Utilities
                         }
                     }
                 }
-                return Empty;
+
+                return string.Empty;
             }
             catch (Exception Ex)
             {
                 Log.Error(Ex.Message);
-                return Empty;
+                return string.Empty;
             }
         }
 
@@ -649,83 +643,85 @@ namespace Redcap.Utilities
         /// <param name="payload">data</param>
         /// <param name="uri">URI of the api instance</param>
         /// <returns></returns>
-        public static async Task<string> SendPostRequestAsync(this RedcapApi redcapApi, Dictionary<string, string> payload, Uri uri)
+        public static async Task<string> SendPostRequestAsync(this RedcapApi redcapApi,
+            Dictionary<string, string> payload, Uri uri)
         {
             try
             {
-                string _responseMessage = Empty;
+                using var handler = GetHttpHandler();
+                using var client = new HttpClient(handler);
+                // extract the filepath
+                var pathValue = payload.FirstOrDefault(x => x.Key == "filePath").Value;
+                var pathkey = payload.FirstOrDefault(x => x.Key == "filePath").Key;
 
-                using (var handler = GetHttpHandler())
-                using (var client = new HttpClient(handler))
+                if (!string.IsNullOrEmpty(pathkey))
                 {
+                    // the actual payload does not contain a 'filePath' key
+                    payload.Remove(pathkey);
+                }
 
-                    // extract the filepath
-                    var pathValue = payload.Where(x => x.Key == "filePath").FirstOrDefault().Value;
-                    var pathkey = payload.Where(x => x.Key == "filePath").FirstOrDefault().Key;
-
-                    if (!string.IsNullOrEmpty(pathkey))
+                string _responseMessage;
+                using (var content = new CustomFormUrlEncodedContent(payload))
+                {
+                    using (var response = await client.PostAsync(uri, content))
                     {
-                        // the actual payload does not contain a 'filePath' key
-                        payload.Remove(pathkey);
-                    }
-
-                    using (var content = new CustomFormUrlEncodedContent(payload))
-                    {
-                        using (var response = await client.PostAsync(uri, content))
+                        if (response.IsSuccessStatusCode)
                         {
-                            if (response.IsSuccessStatusCode)
+                            // Get the filename so we can save with the name
+                            var headers = response.Content.Headers;
+                            var fileName = headers.ContentType?.Parameters.Select(x => x.Value).FirstOrDefault();
+                            //if (!string.IsNullOrEmpty(fileName))
+                            //{
+                            //    var contentDisposition = response.Content.Headers.ContentDisposition =
+                            //        new ContentDispositionHeaderValue("attachment")
+                            //        {
+                            //            FileName = fileName
+                            //        };
+                            //}
+
+
+                            if (!string.IsNullOrEmpty(pathValue))
                             {
-                                // Get the filename so we can save with the name
-                                var headers = response.Content.Headers;
-                                var fileName = headers.ContentType?.Parameters.Select(x => x.Value).FirstOrDefault();
-                                if (!string.IsNullOrEmpty(fileName))
+                                var fileExtension = payload
+                                    .SingleOrDefault(x => x.Key == "content" && x.Value == "pdf").Value;
+                                if (!string.IsNullOrEmpty(fileExtension))
                                 {
-                                    var contentDisposition = response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
-                                    {
-                                        FileName = fileName
-                                    };
-                                }
-
-
-                                if (!string.IsNullOrEmpty(pathValue))
-                                {
-                                    var fileExtension = payload.Where(x => x.Key == "content" && x.Value == "pdf").SingleOrDefault().Value;
-                                    if (!string.IsNullOrEmpty(fileExtension))
-                                    {
-                                        // pdf 
-                                        fileName = payload.Where(x => x.Key == "instrument").SingleOrDefault().Value;
-                                        // to do , make extensions for various types
-                                        // save the file to a specified location using an extension method
-                                        await response.Content.ReadAsFileAsync(fileName, pathValue, true, fileExtension);
-
-                                    }
-                                    else
-                                    {
-                                        await response.Content.ReadAsFileAsync(fileName, pathValue, true, fileExtension);
-
-                                    }
-                                    _responseMessage = fileName;
+                                    // pdf 
+                                    fileName = payload.SingleOrDefault(x => x.Key == "instrument").Value;
+                                    // to do , make extensions for various types
+                                    // save the file to a specified location using an extension method
+                                    await response.Content.ReadAsFileAsync(fileName, pathValue, true,
+                                        fileExtension);
                                 }
                                 else
                                 {
-                                    _responseMessage = await response.Content.ReadAsStringAsync();
+                                    await response.Content.ReadAsFileAsync(fileName, pathValue, true,
+                                        fileExtension);
                                 }
+
+                                _responseMessage = fileName;
                             }
                             else
                             {
                                 _responseMessage = await response.Content.ReadAsStringAsync();
                             }
                         }
+                        else
+                        {
+                            _responseMessage = await response.Content.ReadAsStringAsync();
+                        }
                     }
-                    return _responseMessage;
                 }
+
+                return _responseMessage;
             }
             catch (Exception Ex)
             {
                 Log.Error($"{Ex.Message}");
-                return Empty;
+                return string.Empty;
             }
         }
+
         /// <summary>
         /// Sends http request to api
         /// </summary>
@@ -733,7 +729,8 @@ namespace Redcap.Utilities
         /// <param name="payload">data </param>
         /// <param name="uri">URI of the api instance</param>
         /// <returns>string</returns>
-        public static async Task<string> SendPostRequest(this RedcapApi redcapApi, Dictionary<string, string> payload, Uri uri)
+        public static async Task<string> SendPostRequest(this RedcapApi redcapApi,
+            Dictionary<string, string> payload, Uri uri)
         {
             string responseString;
             using (var handler = GetHttpHandler())
@@ -750,39 +747,10 @@ namespace Redcap.Utilities
                     }
                 }
             }
+
             return responseString;
         }
-        /// <summary>
-        /// Method obtains list of string from comma seperated strings
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="redcapApi"></param>
-        /// <param name="arms"></param>
-        /// <param name="delimiters"></param>
-        /// <returns>List of string</returns>
-        public static async Task<List<string>> ExtractArmsAsync<T>(this RedcapApi redcapApi, string arms, char[] delimiters)
-        {
-            if (!String.IsNullOrEmpty(arms))
-            {
-                try
-                {
-                    var _arms = arms.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
-                    List<string> armsResult = new List<string>();
-                    foreach (var arm in _arms)
-                    {
-                        armsResult.Add(arm);
-                    }
-                    return await Task.FromResult(armsResult);
-                }
-                catch (Exception Ex)
-                {
-                    Log.Error($"{Ex.Message}");
-                    return await Task.FromResult(new List<string> { });
-                }
-            }
-            return await Task.FromResult(new List<string> { });
-
-        }
+        
         /// <summary>
         /// Checks if the string passed is null or empty.
         /// </summary>
@@ -791,14 +759,10 @@ namespace Redcap.Utilities
         /// <returns></returns>
         public static void CheckToken(this RedcapApi redcapApi, string token)
         {
-            /*
-             * Check the required parameters for empty or null
-             */
             if (string.IsNullOrEmpty(token))
             {
-                throw new ArgumentNullException("Please provide a valid Redcap token.");
+                throw new ArgumentNullException(nameof(token));
             }
         }
-
     }
 }

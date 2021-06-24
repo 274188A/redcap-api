@@ -10,31 +10,30 @@ namespace Redcap.Models
         /// <summary>
         /// , [default]
         /// </summary>
-        [Display(Name = ",")]
-        comma,
+        [Display(Name = ",")] comma,
+
         /// <summary>
         /// tab
         /// </summary>
         /// 
-        [Display(Name = "tab")]
-        tab,
+        [Display(Name = "tab")] tab,
+
         /// <summary>
         /// ;
         /// </summary>
         /// 
-        [Display(Name = ";")]
-        semiColon,
+        [Display(Name = ";")] semiColon,
+
         /// <summary>
         /// |
         /// </summary>
         /// 
-        [Display(Name = "|")]
-        pipe,
+        [Display(Name = "|")] pipe,
+
         /// <summary>
         /// ^
         /// </summary>
         /// 
-        [Display(Name = "^")]
-        caret
+        [Display(Name = "^")] caret
     }
 }

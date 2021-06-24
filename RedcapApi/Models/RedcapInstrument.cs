@@ -18,6 +18,5 @@ namespace Redcap.Models
         /// </summary>
         [JsonProperty("instrument_label")]
         public string InstrumentLabel { get; set; }
-
     }
 }

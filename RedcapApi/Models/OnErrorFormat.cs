@@ -14,20 +14,18 @@ namespace Redcap.Models
         /// Default Javascript Notation
         /// </summary>
         /// 
-        [Display(Name = "json")]
-        json = 0,
+        [Display(Name = "json")] json = 0,
+
         /// <summary>
         /// Comma Seperated Values
         /// </summary>
         /// 
-        [Display(Name = "csv")]
+        [Display(Name = "csv")] csv = 1,
 
-        csv = 1,
         /// <summary>
         /// Extensible Markup Language
         /// </summary>
         /// 
-        [Display(Name = "xml")]
-        xml = 2
+        [Display(Name = "xml")] xml = 2
     }
 }

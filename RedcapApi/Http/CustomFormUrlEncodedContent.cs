@@ -20,12 +20,14 @@ namespace Redcap.Http
         {
             base.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
         }
+
         private static byte[] GetContentByteArray(IEnumerable<KeyValuePair<string, string>> nameValueCollection)
         {
             if (nameValueCollection == null)
             {
-                throw new ArgumentNullException("nameValueCollection");
+                throw new ArgumentNullException(nameof(nameValueCollection));
             }
+
             StringBuilder stringBuilder = new StringBuilder();
             foreach (KeyValuePair<string, string> current in nameValueCollection)
             {
@@ -38,15 +40,18 @@ namespace Redcap.Http
                 stringBuilder.Append('=');
                 stringBuilder.Append(CustomFormUrlEncodedContent.Encode(current.Value));
             }
+
             return Encoding.Default.GetBytes(stringBuilder.ToString());
         }
+
         private static string Encode(string data)
         {
-            if (string.IsNullOrEmpty(data))
+            if (data == null || string.IsNullOrEmpty(data))
             {
                 return string.Empty;
             }
-            return System.Net.WebUtility.UrlEncode(data).Replace("%20", "+");
+
+            return System.Net.WebUtility.UrlEncode(data)?.Replace("%20", "+");
         }
     }
 }

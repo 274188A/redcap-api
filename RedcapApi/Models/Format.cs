@@ -14,26 +14,25 @@ namespace Redcap.Models
         /// Default Javascript Notation
         /// </summary>
         /// 
-        [Display(Name = "json")]
-        json = 0,
+        [Display(Name = "json")] json = 0,
+
         /// <summary>
         /// Comma Seperated Values
         /// </summary>
         /// 
-        [Display(Name = "csv")]
-        csv = 1,
+        [Display(Name = "csv")] csv = 1,
+
         /// <summary>
         /// Extensible Markup Language
         /// </summary>
         /// 
-        [Display(Name = "xml")]
-        xml = 2,
+        [Display(Name = "xml")] xml = 2,
+
         /// <summary>
         /// CDISC ODM XML format, specifically ODM version 1.3.1
         /// Only usable on Project Create 
         /// </summary>
         /// 
-        [Display(Name = "odm")]
-        odm = 3
+        [Display(Name = "odm")] odm = 3
     }
 }

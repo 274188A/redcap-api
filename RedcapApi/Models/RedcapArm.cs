@@ -13,6 +13,7 @@ namespace Redcap.Models
         /// 
         [JsonProperty("arm_num")]
         public string ArmNumber { get; set; }
+
         /// <summary>
         /// Name of the event. e.g "event1_arm_1"
         /// </summary>

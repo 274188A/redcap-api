@@ -13,6 +13,7 @@ namespace Redcap.Models
         /// no labels
         /// </summary>
         raw = 0,
+
         /// <summary>
         /// label - (for 'csv' format 'flat' type only) for the CSV headers
         /// </summary>

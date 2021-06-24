@@ -13,6 +13,7 @@ namespace Redcap.Models
         /// raw coded values
         /// </summary>
         raw = 0,
+
         /// <summary>
         /// labels for the values
         /// </summary>

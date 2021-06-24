@@ -1,37 +1,25 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Redcap.Interfaces;
+using Redcap.Models;
+using Redcap.Utilities;
+using Serilog;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-using Newtonsoft.Json;
 
-using Redcap.Interfaces;
-using Redcap.Models;
-using Redcap.Utilities;
-
-using Serilog;
-
-using static System.String;
-
-namespace Redcap
+namespace Redcap.Api
 {
     /// <summary>
     /// This api interacts with redcap instances. https://project-redcap.org
     /// Go to your http://redcap_instance/api/help for Redcap Api documentations
     /// Author: Michael Tran tranpl@outlook.com, tranpl@vcu.edu
     /// </summary>
-    public partial class RedcapApi : IRedcap
+    public class RedcapApi : IRedcap
     {
-        /// <summary>
-        /// Redcap Api Token
-        /// The token can be obtained from your redcap project.
-        /// </summary>
-        /// <example>
-        /// 4AAE216218B33700456A30898F2D6417
-        /// </example>
-        private static string _token;
 
         /// <summary>
         /// Redcap API Uri
@@ -42,10 +30,6 @@ namespace Redcap
         /// </example>
         private static Uri _uri;
 
-        /// <summary>
-        /// The version of redcap that the api is currently interacting with.
-        /// </summary>
-        public static string Version;
 
         /// <summary>
         /// Constructor requires a valid url.
@@ -65,8 +49,9 @@ namespace Redcap
             Utils.UseInsecureCertificate = useInsecureCertificates;
         }
 
-        
+
         #region Logging
+
         /// <summary>
         /// API @Version 10.8
         /// POST
@@ -87,21 +72,23 @@ namespace Redcap
         /// <param name="endTime">To return only records that have been logged *before* a given date/time, provide a timestamp in the format YYYY-MM-DD HH:MM (e.g., '2017-01-01 17:00' for January 1, 2017 at 5:00 PM server time). If not specified, it will use the current server time.</param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>List of all changes made to this project, including data exports, data changes, and the creation or deletion of users.</returns>
-        public async Task<string> ExportLoggingAsync(string token, Content content, ReturnFormat format = ReturnFormat.json, LogType logType = LogType.All, string user = null, string record = null, string dag = null, string beginTime = null, string endTime = null, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportLoggingAsync(string token, Content content,
+            ReturnFormat format = ReturnFormat.json, LogType logType = LogType.All, string user = "",
+            string record = "", string dag = "", string beginTime = "", string endTime = "",
+            OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             var exportLoggingResults = string.Empty;
             try
             {
-                // Check for presence of token
                 this.CheckToken(token);
 
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() },
-                    { "logtype", logType.GetDisplayName() }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()},
+                    {"logtype", logType.GetDisplayName()}
                 };
 
                 // Optional
@@ -109,22 +96,27 @@ namespace Redcap
                 {
                     payload.Add("user", user);
                 }
+
                 if (!string.IsNullOrEmpty(record))
                 {
                     payload.Add("record", record);
                 }
+
                 if (!string.IsNullOrEmpty(dag))
                 {
                     payload.Add("dag", dag);
                 }
+
                 if (!string.IsNullOrEmpty(beginTime))
                 {
                     payload.Add("beginTime", beginTime);
                 }
+
                 if (!string.IsNullOrEmpty(endTime))
                 {
                     payload.Add("endTime", endTime);
                 }
+
                 exportLoggingResults = await this.SendPostRequestAsync(payload, _uri);
                 return exportLoggingResults;
             }
@@ -134,8 +126,11 @@ namespace Redcap
                 return exportLoggingResults;
             }
         }
+
         #endregion
+
         #region Data Access Groups
+
         /// <summary>
         /// POST
         /// Export DAGs
@@ -149,25 +144,25 @@ namespace Redcap
         /// <param name="format">csv, json [default], xml</param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>DAGs for the project in the format specified</returns>
-        public async Task<string> ExportDagsAsync(string token, Content content, ReturnFormat format = ReturnFormat.json, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportDagsAsync(string token, Content content,
+            ReturnFormat format = ReturnFormat.json, OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             var exportDagsResults = string.Empty;
             try
             {
-                // Check for presence of token
+                
                 this.CheckToken(token);
 
                 // Request payload
                 var payload = new Dictionary<string, string>
-                    {
-                        { "token", token },
-                        { "content", content.GetDisplayName() },
-                        { "format", format.GetDisplayName() },
-                        { "returnFormat", onErrorFormat.GetDisplayName() }
-                    };
+                {
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
+                };
                 exportDagsResults = await this.SendPostRequestAsync(payload, _uri);
                 return exportDagsResults;
-
             }
             catch (Exception Ex)
             {
@@ -175,6 +170,7 @@ namespace Redcap
                 return exportDagsResults;
             }
         }
+
         /// <summary>
         /// POST
         /// Import DAGs
@@ -203,26 +199,26 @@ namespace Redcap
         /// </param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>Number of DAGs added or updated</returns>
-        public async Task<string> ImportDagsAsync<T>(string token, Content content, RedcapAction action, ReturnFormat format, List<T> data, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ImportDagsAsync<T>(string token, Content content, RedcapAction action,
+            ReturnFormat format, List<T> data, OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             var importDagsResults = string.Empty;
             try
             {
-                // Check for presence of token
                 this.CheckToken(token);
 
                 var _serializedData = JsonConvert.SerializeObject(data);
                 var payload = new Dictionary<string, string>
-                    {
-                        { "token", token },
-                        { "content", content.GetDisplayName() },
-                        { "action", action.GetDisplayName() },
-                        { "format", format.GetDisplayName() },
-                        { "returnFormat", onErrorFormat.GetDisplayName() },
-                        { "data", _serializedData }
-                    };
+                {
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"action", action.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()},
+                    {"data", _serializedData}
+                };
                 // Execute request
-                importDagsResults =  await this.SendPostRequestAsync(payload, _uri);
+                importDagsResults = await this.SendPostRequestAsync(payload, _uri);
                 return importDagsResults;
             }
             catch (Exception Ex)
@@ -231,6 +227,7 @@ namespace Redcap
                 return importDagsResults;
             }
         }
+
         /// <summary>
         /// POST
         /// Delete DAGs
@@ -249,7 +246,7 @@ namespace Redcap
             var deleteDagsResult = string.Empty;
             try
             {
-                // Check for presence of token
+                
                 this.CheckToken(token);
 
                 // Check for any dags
@@ -257,17 +254,19 @@ namespace Redcap
                 {
                     throw new InvalidOperationException($"No dags to delete.");
                 }
+
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "action", action.GetDisplayName() }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"action", action.GetDisplayName()}
                 };
                 // Required
                 for (var i = 0; i < dags.Length; i++)
                 {
-                    payload.Add($"dags[{i}]", dags[i].ToString());
+                    payload.Add($"dags[{i}]", dags[i]);
                 }
+
                 // Execute request
                 deleteDagsResult = await this.SendPostRequestAsync(payload, _uri);
                 return deleteDagsResult;
@@ -278,6 +277,7 @@ namespace Redcap
                 return deleteDagsResult;
             }
         }
+
         /// <summary>
         /// POST
         /// Export User-DAG Assignments
@@ -291,25 +291,25 @@ namespace Redcap
         /// <param name="format">csv, json [default], xml</param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>User-DAG assignments for the project in the format specified</returns>
-        public async Task<string> ExportUserDagAssignmentAsync(string token, Content content, ReturnFormat format = ReturnFormat.json, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportUserDagAssignmentAsync(string token, Content content,
+            ReturnFormat format = ReturnFormat.json, OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             var exportUserDagAssignmentResult = string.Empty;
             try
             {
-                // Check for presence of token
+                
                 this.CheckToken(token);
 
                 // Request payload
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
                 exportUserDagAssignmentResult = await this.SendPostRequestAsync(payload, _uri);
                 return exportUserDagAssignmentResult;
-
             }
             catch (Exception Ex)
             {
@@ -317,6 +317,7 @@ namespace Redcap
                 return exportUserDagAssignmentResult;
             }
         }
+
         /// <summary>
         /// POST
         /// Import User-DAG Assignments
@@ -345,24 +346,25 @@ namespace Redcap
         /// </param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>Number of User-DAG assignments added or updated</returns>
-        public async Task<string> ImportUserDagAssignmentAsync<T>(string token, Content content, RedcapAction action, ReturnFormat format, List<T> data, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ImportUserDagAssignmentAsync<T>(string token, Content content, RedcapAction action,
+            ReturnFormat format, List<T> data, OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             var ImportUserDagAssignmentResults = string.Empty;
             try
             {
-                // Check for presence of token
+                
                 this.CheckToken(token);
 
                 var _serializedData = JsonConvert.SerializeObject(data);
                 var payload = new Dictionary<string, string>
-                    {
-                        { "token", token },
-                        { "content", content.GetDisplayName() },
-                        { "action", action.GetDisplayName() },
-                        { "format", format.GetDisplayName() },
-                        { "returnFormat", onErrorFormat.GetDisplayName() },
-                        { "data", _serializedData }
-                    };
+                {
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"action", action.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()},
+                    {"data", _serializedData}
+                };
                 // Execute request
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -374,7 +376,9 @@ namespace Redcap
         }
 
         #endregion
+
         #region Arms
+
         /// <summary>
         /// API Version 1.0.0+ **
         /// From Redcap Version 4.7.0
@@ -390,7 +394,8 @@ namespace Redcap
         /// <param name="arms">an array of arm numbers that you wish to pull events for (by default, all events are pulled)</param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>Arms for the project in the format specified(only ones with Events available)</returns>
-        public async Task<string> ExportArmsAsync(string token, ReturnFormat returnFormat = ReturnFormat.json, string[] arms = null, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportArmsAsync(string token, ReturnFormat returnFormat = ReturnFormat.json,
+            string[] arms = null, OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -403,18 +408,19 @@ namespace Redcap
                  */
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.Arm.GetDisplayName() },
-                    { "format", returnFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", Content.Arm.GetDisplayName()},
+                    {"format", returnFormat.GetDisplayName()}
                 };
                 // Optional
                 if (arms?.Length > 0)
                 {
                     for (var i = 0; i < arms.Length; i++)
                     {
-                        payload.Add($"arms[{i}]", arms[i].ToString());
+                        payload.Add($"arms[{i}]", arms[i]);
                     }
                 }
+
                 // defaults to 'json'
                 payload.Add("returnFormat", onErrorFormat.GetDisplayName());
 
@@ -429,7 +435,6 @@ namespace Redcap
                 Log.Error($"{Ex.Message}");
                 return Ex.Message;
             }
-
         }
 
         /// <summary>
@@ -448,7 +453,9 @@ namespace Redcap
         /// <param name="arms">e.g. ["1","2"] an array of arm numbers that you wish to pull events for (by default, all events are pulled)</param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>Arms for the project in the format specified(only ones with Events available)</returns>
-        public async Task<string> ExportArmsAsync(string token, Content content, ReturnFormat returnFormat = ReturnFormat.json, string[] arms = null, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportArmsAsync(string token, Content content,
+            ReturnFormat returnFormat = ReturnFormat.json, string[] arms = null,
+            OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -461,18 +468,19 @@ namespace Redcap
                  */
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "format", returnFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"format", returnFormat.GetDisplayName()}
                 };
                 // Optional
                 if (arms?.Length > 0)
                 {
                     for (var i = 0; i < arms.Length; i++)
                     {
-                        payload.Add($"arms[{i}]", arms[i].ToString());
+                        payload.Add($"arms[{i}]", arms[i]);
                     }
                 }
+
                 // defaults to 'json'
                 payload.Add("returnFormat", onErrorFormat.GetDisplayName());
 
@@ -487,7 +495,6 @@ namespace Redcap
                 Log.Error($"{Ex.Message}");
                 return Ex.Message;
             }
-
         }
 
         /// <summary>
@@ -516,7 +523,8 @@ namespace Redcap
         /// </param>
         /// <param name="returnFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'xml'.</param>
         /// <returns>Number of Arms imported</returns>
-        public async Task<string> ImportArmsAsync<T>(string token, Override overrideBhavior, RedcapAction action, ReturnFormat format, List<T> data, OnErrorFormat returnFormat = OnErrorFormat.json)
+        public async Task<string> ImportArmsAsync<T>(string token, Override overrideBhavior, RedcapAction action,
+            ReturnFormat format, List<T> data, OnErrorFormat returnFormat = OnErrorFormat.json)
         {
             try
             {
@@ -526,15 +534,15 @@ namespace Redcap
                 this.CheckToken(token);
                 var _serializedData = JsonConvert.SerializeObject(data);
                 var payload = new Dictionary<string, string>
-                    {
-                        { "token", token },
-                        { "content", Content.Arm.GetDisplayName() },
-                        { "action", action.GetDisplayName() },
-                        { "format", format.GetDisplayName() },
-                        { "override", overrideBhavior.GetDisplayName() },
-                        { "returnFormat", returnFormat.GetDisplayName() },
-                        { "data", _serializedData }
-                    };
+                {
+                    {"token", token},
+                    {"content", Content.Arm.GetDisplayName()},
+                    {"action", action.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"override", overrideBhavior.GetDisplayName()},
+                    {"returnFormat", returnFormat.GetDisplayName()},
+                    {"data", _serializedData}
+                };
                 // Execute request
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -546,7 +554,6 @@ namespace Redcap
                 Log.Error($"{Ex.Message}");
                 return Ex.Message;
             }
-
         }
 
         /// <summary>
@@ -576,7 +583,8 @@ namespace Redcap
         /// </param>
         /// <param name="returnFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'xml'.</param>
         /// <returns>Number of Arms imported</returns>
-        public async Task<string> ImportArmsAsync<T>(string token, Content content, Override overrideBhavior, RedcapAction action, ReturnFormat format, List<T> data, OnErrorFormat returnFormat)
+        public async Task<string> ImportArmsAsync<T>(string token, Content content, Override overrideBhavior,
+            RedcapAction action, ReturnFormat format, List<T> data, OnErrorFormat returnFormat)
         {
             try
             {
@@ -586,15 +594,15 @@ namespace Redcap
                 this.CheckToken(token);
                 var _serializedData = JsonConvert.SerializeObject(data);
                 var payload = new Dictionary<string, string>
-                    {
-                        { "token", token },
-                        { "content", content.GetDisplayName() },
-                        { "action", action.GetDisplayName() },
-                        { "format", format.GetDisplayName() },
-                        { "override", overrideBhavior.GetDisplayName() },
-                        { "returnFormat", returnFormat.GetDisplayName() },
-                        { "data", _serializedData }
-                    };
+                {
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"action", action.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"override", overrideBhavior.GetDisplayName()},
+                    {"returnFormat", returnFormat.GetDisplayName()},
+                    {"data", _serializedData}
+                };
                 // Execute request
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -606,7 +614,6 @@ namespace Redcap
                 Log.Error($"{Ex.Message}");
                 return Ex.Message;
             }
-
         }
 
         /// <summary>
@@ -635,20 +642,20 @@ namespace Redcap
                 if (arms.Length < 1)
                 {
                     throw new InvalidOperationException($"No arm to delete, specify arm");
-
                 }
+
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.Arm.GetDisplayName() },
-                    { "action", RedcapAction.Delete.GetDisplayName() }
+                    {"token", token},
+                    {"content", Content.Arm.GetDisplayName()},
+                    {"action", RedcapAction.Delete.GetDisplayName()}
                 };
                 // Required
                 for (var i = 0; i < arms.Length; i++)
                 {
-                    payload.Add($"arms[{i}]", arms[i].ToString());
-
+                    payload.Add($"arms[{i}]", arms[i]);
                 }
+
                 // Execute request
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -690,20 +697,20 @@ namespace Redcap
                 if (arms.Length < 1)
                 {
                     throw new InvalidOperationException($"No arm to delete, specify arm");
-
                 }
+
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "action", action.GetDisplayName() }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"action", action.GetDisplayName()}
                 };
                 // Required
                 for (var i = 0; i < arms.Length; i++)
                 {
-                    payload.Add($"arms[{i}]", arms[i].ToString());
-
+                    payload.Add($"arms[{i}]", arms[i]);
                 }
+
                 // Execute request
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -716,7 +723,9 @@ namespace Redcap
                 return Ex.Message;
             }
         }
+
         #endregion Arms
+
         #region Events
 
         /// <summary>
@@ -738,7 +747,8 @@ namespace Redcap
         /// <param name="arms"></param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>Events for the project in the format specified</returns>
-        public async Task<string> ExportEventsAsync(string token, ReturnFormat format = ReturnFormat.json, string[] arms = null, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportEventsAsync(string token, ReturnFormat format = ReturnFormat.json,
+            string[] arms = null, OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -749,24 +759,24 @@ namespace Redcap
                 if (arms.Length < 1)
                 {
                     throw new InvalidOperationException($"Please specify the arm you wish to export the events from.");
-
                 }
+
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.Event.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", Content.Event.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
                 // Optional
-                if (arms?.Length > 0)
+                if (arms.Length > 0)
                 {
                     for (var i = 0; i < arms.Length; i++)
                     {
-                        payload.Add($"arms[{i}]", arms[i].ToString());
-
+                        payload.Add($"arms[{i}]", arms[i]);
                     }
                 }
+
                 // Execute request
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -800,7 +810,9 @@ namespace Redcap
         /// <param name="arms"></param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>Events for the project in the format specified</returns>
-        public async Task<string> ExportEventsAsync(string token, Content content = Content.Event, ReturnFormat format = ReturnFormat.json, string[] arms = null, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportEventsAsync(string token, Content content = Content.Event,
+            ReturnFormat format = ReturnFormat.json, string[] arms = null,
+            OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -811,24 +823,24 @@ namespace Redcap
                 if (arms.Length < 1)
                 {
                     throw new InvalidOperationException($"Please specify the arm you wish to export the events from.");
-
                 }
+
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
                 // Optional
-                if (arms?.Length > 0)
+                if (arms.Length > 0)
                 {
                     for (var i = 0; i < arms.Length; i++)
                     {
-                        payload.Add($"arms[{i}]", arms[i].ToString());
-
+                        payload.Add($"arms[{i}]", arms[i]);
                     }
                 }
+
                 // Execute request
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -867,7 +879,8 @@ namespace Redcap
         /// <param name="format">csv, json [default], xml</param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>Number of Events imported</returns>
-        public async Task<string> ImportEventsAsync<T>(string token, Override overRideBehavior, ReturnFormat format, List<T> data, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ImportEventsAsync<T>(string token, Override overRideBehavior, ReturnFormat format,
+            List<T> data, OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -879,16 +892,17 @@ namespace Redcap
                 {
                     throw new InvalidOperationException($"Events can not be empty or null");
                 }
+
                 var _serializedData = JsonConvert.SerializeObject(data);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.Event.GetDisplayName() },
-                    { "action", RedcapAction.Import.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "override", overRideBehavior.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() },
-                    { "data", _serializedData }
+                    {"token", token},
+                    {"content", Content.Event.GetDisplayName()},
+                    {"action", RedcapAction.Import.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"override", overRideBehavior.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()},
+                    {"data", _serializedData}
                 };
                 // Execute request
                 return await this.SendPostRequestAsync(payload, _uri);
@@ -901,7 +915,6 @@ namespace Redcap
                 Log.Error($"{Ex.Message}");
                 return Ex.Message;
             }
-
         }
 
         /// <summary>
@@ -931,7 +944,9 @@ namespace Redcap
         /// <param name="format">csv, json [default], xml</param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>Number of Events imported</returns>
-        public async Task<string> ImportEventsAsync<T>(string token, Content content, RedcapAction action, Override overRideBehavior, ReturnFormat format, List<T> data, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ImportEventsAsync<T>(string token, Content content, RedcapAction action,
+            Override overRideBehavior, ReturnFormat format, List<T> data,
+            OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -943,16 +958,17 @@ namespace Redcap
                 {
                     throw new InvalidOperationException($"Events can not be empty or null");
                 }
+
                 var _serializedData = JsonConvert.SerializeObject(data);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "action", action.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "override", overRideBehavior.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() },
-                    { "data", _serializedData }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"action", action.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"override", overRideBehavior.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()},
+                    {"data", _serializedData}
                 };
                 // Execute request
                 return await this.SendPostRequestAsync(payload, _uri);
@@ -965,7 +981,6 @@ namespace Redcap
                 Log.Error($"{Ex.Message}");
                 return Ex.Message;
             }
-
         }
 
         /// <summary>
@@ -1000,19 +1015,19 @@ namespace Redcap
 
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.Event.GetDisplayName() },
-                    { "action", RedcapAction.Delete.GetDisplayName() }
+                    {"token", token},
+                    {"content", Content.Event.GetDisplayName()},
+                    {"action", RedcapAction.Delete.GetDisplayName()}
                 };
                 // Required
-                if (events?.Length > 0)
+                if (events.Length > 0)
                 {
                     for (var i = 0; i < events.Length; i++)
                     {
                         payload.Add($"events[{i}]", events[i]);
-
                     }
                 }
+
                 // Execute request
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -1045,7 +1060,8 @@ namespace Redcap
         /// <param name="action"></param>
         /// <param name="events">Array of unique event names</param>
         /// <returns>Number of Events deleted</returns>
-        public async Task<string> DeleteEventsAsync(string token, Content content, RedcapAction action, string[] events = null)
+        public async Task<string> DeleteEventsAsync(string token, Content content, RedcapAction action,
+            string[] events = null)
         {
             try
             {
@@ -1060,19 +1076,19 @@ namespace Redcap
 
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "action", action.GetDisplayName() }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"action", action.GetDisplayName()}
                 };
                 // Required
-                if (events?.Length > 0)
+                if (events.Length > 0)
                 {
                     for (var i = 0; i < events.Length; i++)
                     {
                         payload.Add($"events[{i}]", events[i]);
-
                     }
                 }
+
                 // Execute request
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -1085,7 +1101,9 @@ namespace Redcap
                 return Ex.Message;
             }
         }
+
         #endregion Events
+
         #region Field Names
 
         /// <summary>
@@ -1111,7 +1129,8 @@ namespace Redcap
         /// <returns>Returns a list of the export/import-specific version of field names for all fields (or for one field, if desired) in a project in the format specified and ordered by their field order . 
         /// The list that is returned will contain the three following attributes for each field/choice: 'original_field_name', 'choice_value', and 'export_field_name'. The choice_value attribute represents the raw coded value for a checkbox choice. For non-checkbox fields, the choice_value attribute will always be blank/empty. The export_field_name attribute represents the export/import-specific version of that field name.
         /// </returns>
-        public async Task<string> ExportFieldNamesAsync(string token, ReturnFormat format = ReturnFormat.json, string field = null, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportFieldNamesAsync(string token, ReturnFormat format = ReturnFormat.json,
+            string field = null, OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -1121,16 +1140,16 @@ namespace Redcap
                 this.CheckToken(token);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.ExportFieldNames.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
-
+                    {"token", token},
+                    {"content", Content.ExportFieldNames.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
-                if (!IsNullOrEmpty(field))
+                if (!string.IsNullOrEmpty(field))
                 {
                     payload.Add("field", field);
                 }
+
                 // Execute request
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -1169,7 +1188,9 @@ namespace Redcap
         /// <returns>Returns a list of the export/import-specific version of field names for all fields (or for one field, if desired) in a project in the format specified and ordered by their field order . 
         /// The list that is returned will contain the three following attributes for each field/choice: 'original_field_name', 'choice_value', and 'export_field_name'. The choice_value attribute represents the raw coded value for a checkbox choice. For non-checkbox fields, the choice_value attribute will always be blank/empty. The export_field_name attribute represents the export/import-specific version of that field name.
         /// </returns>
-        public async Task<string> ExportFieldNamesAsync(string token, Content content = Content.ExportFieldNames, ReturnFormat format = ReturnFormat.json, string field = null, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportFieldNamesAsync(string token, Content content = Content.ExportFieldNames,
+            ReturnFormat format = ReturnFormat.json, string field = null,
+            OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -1179,16 +1200,16 @@ namespace Redcap
                 this.CheckToken(token);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
-
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
-                if (!IsNullOrEmpty(field))
+                if (!string.IsNullOrEmpty(field))
                 {
                     payload.Add("field", field);
                 }
+
                 // Execute request
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -1201,7 +1222,9 @@ namespace Redcap
                 return Ex.Message;
             }
         }
+
         #endregion Field Names
+
         #region Files
 
         /// <summary>
@@ -1224,7 +1247,8 @@ namespace Redcap
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'xml'.</param>
         /// <param name="filePath">File path which the file will be saved.</param>
         /// <returns>the contents of the file</returns>
-        public async Task<string> ExportFileAsync(string token, string record, string field, string eventName, string repeatInstance = "1", OnErrorFormat onErrorFormat = OnErrorFormat.json, string filePath = null)
+        public async Task<string> ExportFileAsync(string token, string record, string field, string eventName,
+            string repeatInstance = "1", OnErrorFormat onErrorFormat = OnErrorFormat.json, string filePath = null)
         {
             try
             {
@@ -1232,40 +1256,45 @@ namespace Redcap
                  * Check for presence of token
                  */
                 this.CheckToken(token);
-                if (IsNullOrEmpty(filePath))
+                if (string.IsNullOrEmpty(filePath))
                 {
                     throw new ArgumentNullException($"Must contain a file path to save the file.");
                 }
+
                 /*
                  * FilePath check..
                  */
-                if (!Directory.Exists(filePath) && !IsNullOrEmpty(filePath))
+                if (!Directory.Exists(filePath) && !string.IsNullOrEmpty(filePath))
                 {
                     Log.Warning($"The directory provided does not exist! Creating a folder for you.");
                     Directory.CreateDirectory(filePath);
                 }
-                if (IsNullOrEmpty(record))
+
+                if (string.IsNullOrEmpty(record))
                 {
                     throw new InvalidOperationException($"No record provided to export");
                 }
-                if (IsNullOrEmpty(field) || IsNullOrEmpty(eventName))
+
+                if (string.IsNullOrEmpty(field) || string.IsNullOrEmpty(eventName))
                 {
                     throw new InvalidOperationException($"No field provided to export");
                 }
-                if (IsNullOrEmpty(eventName))
+
+                if (string.IsNullOrEmpty(eventName))
                 {
                     throw new InvalidOperationException($"No eventName provided to export");
                 }
+
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.File.GetDisplayName() },
-                    { "action", RedcapAction.Export.GetDisplayName() },
-                    { "record", record },
-                    { "field", field },
-                    { "event", eventName },
-                    { "returnFormat", onErrorFormat.GetDisplayName() },
-                    { "repeat_instance", repeatInstance  }
+                    {"token", token},
+                    {"content", Content.File.GetDisplayName()},
+                    {"action", RedcapAction.Export.GetDisplayName()},
+                    {"record", record},
+                    {"field", field},
+                    {"event", eventName},
+                    {"returnFormat", onErrorFormat.GetDisplayName()},
+                    {"repeat_instance", repeatInstance}
                 };
                 // Execute request
                 return await this.SendPostRequestAsync(payload, _uri);
@@ -1278,7 +1307,6 @@ namespace Redcap
                 Log.Error($"{Ex.Message}");
                 return Ex.Message;
             }
-
         }
 
         /// <summary>
@@ -1304,7 +1332,9 @@ namespace Redcap
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'xml'.</param>
         /// <param name="filePath">File path which the file will be saved.</param>
         /// <returns>the file name that was exported</returns>
-        public async Task<string> ExportFileAsync(string token, Content content, RedcapAction action, string record, string field, string eventName, string repeatInstance = "1", OnErrorFormat onErrorFormat = OnErrorFormat.json, string filePath = null)
+        public async Task<string> ExportFileAsync(string token, Content content, RedcapAction action, string record,
+            string field, string eventName, string repeatInstance = "1",
+            OnErrorFormat onErrorFormat = OnErrorFormat.json, string filePath = null)
         {
             try
             {
@@ -1312,34 +1342,37 @@ namespace Redcap
                  * Check for presence of token
                  */
                 this.CheckToken(token);
-                if (IsNullOrEmpty(filePath))
+                if (string.IsNullOrEmpty(filePath))
                 {
                     throw new ArgumentNullException($"Must contain a file path to save the file.");
                 }
+
                 /*
                  * FilePath check..
                  */
-                if (!Directory.Exists(filePath) && !IsNullOrEmpty(filePath))
+                if (!Directory.Exists(filePath) && !string.IsNullOrEmpty(filePath))
                 {
                     Log.Warning($"The directory provided does not exist! Creating a folder for you.");
                     Directory.CreateDirectory(filePath);
                 }
+
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "action", action.GetDisplayName() },
-                    { "record", record },
-                    { "field", field },
-                    { "event", eventName },
-                    { "returnFormat", onErrorFormat.GetDisplayName() },
-                    { "filePath", $@"{filePath}" }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"action", action.GetDisplayName()},
+                    {"record", record},
+                    {"field", field},
+                    {"event", eventName},
+                    {"returnFormat", onErrorFormat.GetDisplayName()},
+                    {"filePath", $@"{filePath}"}
                 };
                 // Optional
-                if (!IsNullOrEmpty(repeatInstance))
+                if (!string.IsNullOrEmpty(repeatInstance))
                 {
                     payload.Add("repeat_instance", repeatInstance);
                 }
+
                 // Execute request
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -1371,7 +1404,8 @@ namespace Redcap
         /// <param name="filePath">the path where the file is located</param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'xml'.</param>
         /// <returns>csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</returns>
-        public async Task<string> ImportFileAsync(string token, string record, string field, string eventName, string repeatInstance, string fileName, string filePath, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ImportFileAsync(string token, string record, string field, string eventName,
+            string repeatInstance, string fileName, string filePath, OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -1385,15 +1419,15 @@ namespace Redcap
                 ByteArrayContent _fileContent;
                 var payload = new MultipartFormDataContent()
                 {
-                        {new StringContent(token), "token" },
-                        {new StringContent(Content.File.GetDisplayName()) ,"content" },
-                        {new StringContent(RedcapAction.Import.GetDisplayName()), "action" },
-                        {new StringContent(record), "record" },
-                        {new StringContent(field), "field" },
-                        {new StringContent(eventName),  "event" },
-                        {new StringContent(onErrorFormat.GetDisplayName()), "returnFormat" }
+                    {new StringContent(token), "token"},
+                    {new StringContent(Content.File.GetDisplayName()), "content"},
+                    {new StringContent(RedcapAction.Import.GetDisplayName()), "action"},
+                    {new StringContent(record), "record"},
+                    {new StringContent(field), "field"},
+                    {new StringContent(eventName), "event"},
+                    {new StringContent(onErrorFormat.GetDisplayName()), "returnFormat"}
                 };
-                if (!IsNullOrEmpty(repeatInstance))
+                if (!string.IsNullOrEmpty(repeatInstance))
                 {
                     // add repeat instrument params if available
                     payload.Add(new StringContent(repeatInstance), "repeat_instance");
@@ -1402,11 +1436,10 @@ namespace Redcap
                 {
                     repeatInstance = "1";
                     payload.Add(new StringContent(repeatInstance), "repeat_instance");
-
                 }
-                if (IsNullOrEmpty(_fileName) || IsNullOrEmpty(_filePath))
-                {
 
+                if (string.IsNullOrEmpty(_fileName) || string.IsNullOrEmpty(_filePath))
+                {
                     throw new InvalidOperationException($"file can not be empty or null");
                 }
                 else
@@ -1416,6 +1449,7 @@ namespace Redcap
                     _fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
                     payload.Add(_fileContent, "file", _fileName);
                 }
+
                 return await this.SendPostRequestAsync(payload, _uri);
             }
             catch (Exception Ex)
@@ -1426,7 +1460,6 @@ namespace Redcap
                 Log.Error($"{Ex.Message}");
                 return Ex.Message;
             }
-
         }
 
         /// <summary>
@@ -1449,7 +1482,9 @@ namespace Redcap
         /// <param name="filePath">the path where the file is located</param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'xml'.</param>
         /// <returns>csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</returns>
-        public async Task<string> ImportFileAsync(string token, Content content, RedcapAction action, string record, string field, string eventName, string repeatInstance, string fileName, string filePath, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ImportFileAsync(string token, Content content, RedcapAction action, string record,
+            string field, string eventName, string repeatInstance, string fileName, string filePath,
+            OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -1463,15 +1498,15 @@ namespace Redcap
                 ByteArrayContent _fileContent;
                 var payload = new MultipartFormDataContent()
                 {
-                        {new StringContent(token), "token" },
-                        {new StringContent(content.GetDisplayName()) ,"content" },
-                        {new StringContent(action.GetDisplayName()), "action" },
-                        {new StringContent(record), "record" },
-                        {new StringContent(field), "field" },
-                        {new StringContent(eventName),  "event" },
-                        {new StringContent(onErrorFormat.GetDisplayName()), "returnFormat" }
+                    {new StringContent(token), "token"},
+                    {new StringContent(content.GetDisplayName()), "content"},
+                    {new StringContent(action.GetDisplayName()), "action"},
+                    {new StringContent(record), "record"},
+                    {new StringContent(field), "field"},
+                    {new StringContent(eventName), "event"},
+                    {new StringContent(onErrorFormat.GetDisplayName()), "returnFormat"}
                 };
-                if (!IsNullOrEmpty(repeatInstance))
+                if (!string.IsNullOrEmpty(repeatInstance))
                 {
                     // add repeat instrument params if available
                     payload.Add(new StringContent(repeatInstance), "repeat_instance");
@@ -1480,11 +1515,10 @@ namespace Redcap
                 {
                     repeatInstance = "1";
                     payload.Add(new StringContent(repeatInstance), "repeat_instance");
-
                 }
-                if (IsNullOrEmpty(_fileName) || IsNullOrEmpty(_filePath))
-                {
 
+                if (string.IsNullOrEmpty(_fileName) || string.IsNullOrEmpty(_filePath))
+                {
                     throw new InvalidOperationException($"file can not be empty or null");
                 }
                 else
@@ -1494,6 +1528,7 @@ namespace Redcap
                     _fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
                     payload.Add(_fileContent, "file", _fileName);
                 }
+
                 return await this.SendPostRequestAsync(payload, _uri);
             }
             catch (Exception Ex)
@@ -1504,7 +1539,6 @@ namespace Redcap
                 Log.Error($"{Ex.Message}");
                 return Ex.Message;
             }
-
         }
 
         /// <summary>
@@ -1522,7 +1556,8 @@ namespace Redcap
         /// <param name="repeatInstance">(only for projects with repeating instruments/events) The repeat instance number of the repeating event (if longitudinal) or the repeating instrument (if classic or longitudinal). Default value is '1'.</param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>String</returns>
-        public async Task<string> DeleteFileAsync(string token, string record, string field, string eventName, string repeatInstance, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> DeleteFileAsync(string token, string record, string field, string eventName,
+            string repeatInstance, OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -1532,15 +1567,15 @@ namespace Redcap
                 this.CheckToken(token);
                 var payload = new MultipartFormDataContent()
                 {
-                    {new StringContent(token), "token" },
-                    {new StringContent(Content.File.GetDisplayName()) ,"content" },
-                    {new StringContent(RedcapAction.Delete.GetDisplayName()), "action" },
-                    {new StringContent(record), "record" },
-                    {new StringContent(field), "field" },
-                    {new StringContent(eventName),  "event" },
-                    {new StringContent(onErrorFormat.GetDisplayName()), "returnFormat" }
+                    {new StringContent(token), "token"},
+                    {new StringContent(Content.File.GetDisplayName()), "content"},
+                    {new StringContent(RedcapAction.Delete.GetDisplayName()), "action"},
+                    {new StringContent(record), "record"},
+                    {new StringContent(field), "field"},
+                    {new StringContent(eventName), "event"},
+                    {new StringContent(onErrorFormat.GetDisplayName()), "returnFormat"}
                 };
-                if (!IsNullOrEmpty(repeatInstance))
+                if (!string.IsNullOrEmpty(repeatInstance))
                 {
                     // add repeat instrument params if available
                     payload.Add(new StringContent(repeatInstance), "repeat_instance");
@@ -1549,8 +1584,8 @@ namespace Redcap
                 {
                     repeatInstance = "1";
                     payload.Add(new StringContent(repeatInstance), "repeat_instance");
-
                 }
+
                 return await this.SendPostRequestAsync(payload, _uri);
             }
             catch (Exception Ex)
@@ -1580,7 +1615,8 @@ namespace Redcap
         /// <param name="repeatInstance">(only for projects with repeating instruments/events) The repeat instance number of the repeating event (if longitudinal) or the repeating instrument (if classic or longitudinal). Default value is '1'.</param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>String</returns>
-        public async Task<string> DeleteFileAsync(string token, Content content, RedcapAction action, string record, string field, string eventName, string repeatInstance, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> DeleteFileAsync(string token, Content content, RedcapAction action, string record,
+            string field, string eventName, string repeatInstance, OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -1590,15 +1626,15 @@ namespace Redcap
                 this.CheckToken(token);
                 var payload = new MultipartFormDataContent()
                 {
-                    {new StringContent(token), "token" },
-                    {new StringContent(content.GetDisplayName()) ,"content" },
-                    {new StringContent(action.GetDisplayName()), "action" },
-                    {new StringContent(record), "record" },
-                    {new StringContent(field), "field" },
-                    {new StringContent(eventName),  "event" },
-                    {new StringContent(onErrorFormat.GetDisplayName()), "returnFormat" }
+                    {new StringContent(token), "token"},
+                    {new StringContent(content.GetDisplayName()), "content"},
+                    {new StringContent(action.GetDisplayName()), "action"},
+                    {new StringContent(record), "record"},
+                    {new StringContent(field), "field"},
+                    {new StringContent(eventName), "event"},
+                    {new StringContent(onErrorFormat.GetDisplayName()), "returnFormat"}
                 };
-                if (!IsNullOrEmpty(repeatInstance))
+                if (!string.IsNullOrEmpty(repeatInstance))
                 {
                     // add repeat instrument params if available
                     payload.Add(new StringContent(repeatInstance), "repeat_instance");
@@ -1607,8 +1643,8 @@ namespace Redcap
                 {
                     repeatInstance = "1";
                     payload.Add(new StringContent(repeatInstance), "repeat_instance");
-
                 }
+
                 return await this.SendPostRequestAsync(payload, _uri);
             }
             catch (Exception Ex)
@@ -1620,7 +1656,9 @@ namespace Redcap
                 return Ex.Message;
             }
         }
+
         #endregion Files
+
         #region Instruments
 
         /// <summary>
@@ -1645,9 +1683,9 @@ namespace Redcap
                 this.CheckToken(token);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.Instrument.GetDisplayName() },
-                    { "format", format.GetDisplayName() }
+                    {"token", token},
+                    {"content", Content.Instrument.GetDisplayName()},
+                    {"format", format.GetDisplayName()}
                 };
                 // Execute request
                 return await this.SendPostRequestAsync(payload, _uri);
@@ -1675,7 +1713,8 @@ namespace Redcap
         /// <param name="content">instrument</param>
         /// <param name="format">csv, json [default], xml</param>
         /// <returns>Instruments for the project in the format specified and will be ordered according to their order in the project.</returns>
-        public async Task<string> ExportInstrumentsAsync(string token, Content content = Content.Instrument, ReturnFormat format = ReturnFormat.json)
+        public async Task<string> ExportInstrumentsAsync(string token, Content content = Content.Instrument,
+            ReturnFormat format = ReturnFormat.json)
         {
             try
             {
@@ -1685,9 +1724,9 @@ namespace Redcap
                 this.CheckToken(token);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "format", format.GetDisplayName() }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"format", format.GetDisplayName()}
                 };
                 // Execute request
                 return await this.SendPostRequestAsync(payload, _uri);
@@ -1720,7 +1759,9 @@ namespace Redcap
         /// <param name="allRecord">[The value of this parameter does not matter and is ignored.] If this parameter is passed with any value, it will export all instruments (and all events, if longitudinal) with data from all records. Note: If this parameter is passed, the parameters record, event, and instrument will be ignored.</param>
         /// <param name="onErrorFormat">csv, json [default] , xml- The returnFormat is only used with regard to the format of any error messages that might be returned.</param>
         /// <returns>A PDF file containing one or all data collection instruments from the project, in which the instruments will be blank (no data), contain data from a single record, or contain data from all records in the project, depending on the parameters passed in the API request.</returns>
-        public async Task<string> ExportPDFInstrumentsAsync(string token, string recordId = null, string eventName = null, string instrument = null, bool allRecord = false, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportPDFInstrumentsAsync(string token, string recordId = null,
+            string eventName = null, string instrument = null, bool allRecord = false,
+            OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -1731,27 +1772,31 @@ namespace Redcap
 
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.Pdf.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", Content.Pdf.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
                 // Add all optional parameters
-                if (!IsNullOrEmpty(recordId))
+                if (!string.IsNullOrEmpty(recordId))
                 {
                     payload.Add("record", recordId);
                 }
-                if (!IsNullOrEmpty(eventName))
+
+                if (!string.IsNullOrEmpty(eventName))
                 {
                     payload.Add("event", eventName);
                 }
-                if (!IsNullOrEmpty(instrument))
+
+                if (!string.IsNullOrEmpty(instrument))
                 {
                     payload.Add("instrument", instrument);
                 }
+
                 if (allRecord)
                 {
                     payload.Add("allRecords", allRecord.ToString());
                 }
+
                 // Execute request
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -1784,7 +1829,9 @@ namespace Redcap
         /// <param name="allRecord">[The value of this parameter does not matter and is ignored.] If this parameter is passed with any value, it will export all instruments (and all events, if longitudinal) with data from all records. Note: If this parameter is passed, the parameters record, event, and instrument will be ignored.</param>
         /// <param name="onErrorFormat">csv, json [default] , xml- The returnFormat is only used with regard to the format of any error messages that might be returned.</param>
         /// <returns>A PDF file containing one or all data collection instruments from the project, in which the instruments will be blank (no data), contain data from a single record, or contain data from all records in the project, depending on the parameters passed in the API request.</returns>
-        public async Task<string> ExportPDFInstrumentsAsync(string token, Content content = Content.Pdf, string recordId = null, string eventName = null, string instrument = null, bool allRecord = false, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportPDFInstrumentsAsync(string token, Content content = Content.Pdf,
+            string recordId = null, string eventName = null, string instrument = null, bool allRecord = false,
+            OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -1795,27 +1842,31 @@ namespace Redcap
 
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
                 // Add all optional parameters
-                if (!IsNullOrEmpty(recordId))
+                if (!string.IsNullOrEmpty(recordId))
                 {
                     payload.Add("record", recordId);
                 }
-                if (!IsNullOrEmpty(eventName))
+
+                if (!string.IsNullOrEmpty(eventName))
                 {
                     payload.Add("event", eventName);
                 }
-                if (!IsNullOrEmpty(instrument))
+
+                if (!string.IsNullOrEmpty(instrument))
                 {
                     payload.Add("instrument", instrument);
                 }
+
                 if (allRecord)
                 {
                     payload.Add("allRecords", allRecord.ToString());
                 }
+
                 // Execute request
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -1849,7 +1900,9 @@ namespace Redcap
         /// <param name="filePath">the path where the file is located</param>
         /// <param name="onErrorFormat">csv, json [default] , xml- The returnFormat is only used with regard to the format of any error messages that might be returned.</param>
         /// <returns>A PDF file containing one or all data collection instruments from the project, in which the instruments will be blank (no data), contain data from a single record, or contain data from all records in the project, depending on the parameters passed in the API request.</returns>
-        public async Task<string> ExportPDFInstrumentsAsync(string token, string recordId = null, string eventName = null, string instrument = null, bool allRecord = false, string filePath = null, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportPDFInstrumentsAsync(string token, string recordId = null,
+            string eventName = null, string instrument = null, bool allRecord = false, string filePath = null,
+            OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -1860,35 +1913,40 @@ namespace Redcap
                 /*
                  * FilePath check..
                  */
-                if (!Directory.Exists(filePath) && !IsNullOrEmpty(filePath))
+                if (!Directory.Exists(filePath) && !string.IsNullOrEmpty(filePath))
                 {
                     Log.Warning($"The directory provided does not exist! Creating a folder for you.");
                     Directory.CreateDirectory(filePath);
                 }
+
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.Pdf.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() },
-                    { "filePath", $@"{filePath}" }
+                    {"token", token},
+                    {"content", Content.Pdf.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()},
+                    {"filePath", $@"{filePath}"}
                 };
                 // Add all optional parameters
-                if (!IsNullOrEmpty(recordId))
+                if (!string.IsNullOrEmpty(recordId))
                 {
                     payload.Add("record", recordId);
                 }
-                if (!IsNullOrEmpty(eventName))
+
+                if (!string.IsNullOrEmpty(eventName))
                 {
                     payload.Add("event", eventName);
                 }
-                if (!IsNullOrEmpty(instrument))
+
+                if (!string.IsNullOrEmpty(instrument))
                 {
                     payload.Add("instrument", instrument);
                 }
+
                 if (allRecord)
                 {
                     payload.Add("allRecords", allRecord.ToString());
                 }
+
                 // Execute request
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -1918,7 +1976,8 @@ namespace Redcap
         /// <param name="arms">an array of arm numbers that you wish to pull events for (by default, all events are pulled)</param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>Instrument-event mappings for the project in the format specified</returns>
-        public async Task<string> ExportInstrumentMappingAsync(string token, ReturnFormat format = ReturnFormat.json, string[] arms = null, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportInstrumentMappingAsync(string token, ReturnFormat format = ReturnFormat.json,
+            string[] arms = null, OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -1928,19 +1987,20 @@ namespace Redcap
                 this.CheckToken(token);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.FormEventMapping.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", Content.FormEventMapping.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
                 // Add all optional parameters
                 if (arms?.Length > 0)
                 {
                     for (var i = 0; i < arms.Length; i++)
                     {
-                        payload.Add($"arms[{i}]", arms[i].ToString());
+                        payload.Add($"arms[{i}]", arms[i]);
                     }
                 }
+
                 // Execute request
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -1971,7 +2031,9 @@ namespace Redcap
         /// <param name="arms">an array of arm numbers that you wish to pull events for (by default, all events are pulled)</param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>Instrument-event mappings for the project in the format specified</returns>
-        public async Task<string> ExportInstrumentMappingAsync(string token, Content content = Content.FormEventMapping, ReturnFormat format = ReturnFormat.json, string[] arms = null, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportInstrumentMappingAsync(string token, Content content = Content.FormEventMapping,
+            ReturnFormat format = ReturnFormat.json, string[] arms = null,
+            OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -1981,19 +2043,20 @@ namespace Redcap
                 this.CheckToken(token);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
                 // Add all optional parameters
                 if (arms?.Length > 0)
                 {
                     for (var i = 0; i < arms.Length; i++)
                     {
-                        payload.Add($"arms[{i}]", arms[i].ToString());
+                        payload.Add($"arms[{i}]", arms[i]);
                     }
                 }
+
                 // Execute request
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -2029,7 +2092,8 @@ namespace Redcap
         /// </param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>Number of Instrument-Event Mappings imported</returns>
-        public async Task<string> ImportInstrumentMappingAsync<T>(string token, ReturnFormat format, List<T> data, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ImportInstrumentMappingAsync<T>(string token, ReturnFormat format, List<T> data,
+            OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -2041,11 +2105,11 @@ namespace Redcap
                 var _serializedData = JsonConvert.SerializeObject(data);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.FormEventMapping.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() },
-                    { "data", _serializedData }
+                    {"token", token},
+                    {"content", Content.FormEventMapping.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()},
+                    {"data", _serializedData}
                 };
                 // Execute request
                 return await this.SendPostRequestAsync(payload, _uri);
@@ -2083,7 +2147,8 @@ namespace Redcap
         /// </param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>Number of Instrument-Event Mappings imported</returns>
-        public async Task<string> ImportInstrumentMappingAsync<T>(string token, Content content, ReturnFormat format, List<T> data, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ImportInstrumentMappingAsync<T>(string token, Content content, ReturnFormat format,
+            List<T> data, OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -2095,11 +2160,11 @@ namespace Redcap
                 var _serializedData = JsonConvert.SerializeObject(data);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() },
-                    { "data", _serializedData }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()},
+                    {"data", _serializedData}
                 };
                 // Execute request
                 return await this.SendPostRequestAsync(payload, _uri);
@@ -2113,8 +2178,11 @@ namespace Redcap
                 return Ex.Message;
             }
         }
+
         #endregion Instruments
+
         #region Metadata
+
         /// <summary>
         /// API Version 1.0.0+
         /// From Redcap Version 3.4.0+
@@ -2131,7 +2199,9 @@ namespace Redcap
         /// <param name="forms">an array of form names specifying specific data collection instruments for which you wish to pull metadata (by default, all metadata is pulled). NOTE: These 'forms' are not the form label values that are seen on the webpages, but instead they are the unique form names seen in Column B of the data dictionary.</param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>Metadata from the project (i.e. Data Dictionary values) in the format specified ordered by the field order</returns>
-        public async Task<string> ExportMetaDataAsync(string token, Content content = Content.MetaData, ReturnFormat format = ReturnFormat.json, string[] fields = null, string[] forms = null, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportMetaDataAsync(string token, Content content = Content.MetaData,
+            ReturnFormat format = ReturnFormat.json, string[] fields = null, string[] forms = null,
+            OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -2141,26 +2211,28 @@ namespace Redcap
                 this.CheckToken(token);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
                 // Optional
                 if (fields?.Length > 0)
                 {
                     for (var i = 0; i < fields.Length; i++)
                     {
-                        payload.Add($"fields[{i}]", fields[i].ToString());
+                        payload.Add($"fields[{i}]", fields[i]);
                     }
                 }
+
                 if (forms?.Length > 0)
                 {
                     for (var i = 0; i < forms.Length; i++)
                     {
-                        payload.Add($"forms[{i}]", forms[i].ToString());
+                        payload.Add($"forms[{i}]", forms[i]);
                     }
                 }
+
                 return await this.SendPostRequestAsync(payload, _uri);
             }
             catch (Exception Ex)
@@ -2172,6 +2244,7 @@ namespace Redcap
                 return Ex.Message;
             }
         }
+
         /// <summary>
         /// API Version 1.0.0+
         /// From Redcap Version 3.4.0+
@@ -2187,7 +2260,8 @@ namespace Redcap
         /// <param name="forms">an array of form names specifying specific data collection instruments for which you wish to pull metadata (by default, all metadata is pulled). NOTE: These 'forms' are not the form label values that are seen on the webpages, but instead they are the unique form names seen in Column B of the data dictionary.</param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>Metadata from the project (i.e. Data Dictionary values) in the format specified ordered by the field order</returns>
-        public async Task<string> ExportMetaDataAsync(string token, ReturnFormat format = ReturnFormat.json, string[] fields = null, string[] forms = null, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportMetaDataAsync(string token, ReturnFormat format = ReturnFormat.json,
+            string[] fields = null, string[] forms = null, OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -2197,26 +2271,28 @@ namespace Redcap
                 this.CheckToken(token);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.MetaData.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", Content.MetaData.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
                 // Optional
                 if (fields?.Length > 0)
                 {
                     for (var i = 0; i < fields.Length; i++)
                     {
-                        payload.Add($"fields[{i}]", fields[i].ToString());
+                        payload.Add($"fields[{i}]", fields[i]);
                     }
                 }
+
                 if (forms?.Length > 0)
                 {
                     for (var i = 0; i < forms.Length; i++)
                     {
-                        payload.Add($"forms[{i}]", forms[i].ToString());
+                        payload.Add($"forms[{i}]", forms[i]);
                     }
                 }
+
                 return await this.SendPostRequestAsync(payload, _uri);
             }
             catch (Exception Ex)
@@ -2228,6 +2304,7 @@ namespace Redcap
                 return Ex.Message;
             }
         }
+
         /// <summary>
         /// API Version 1.0.0+
         /// From Redcap Version 6.11.0 
@@ -2245,7 +2322,8 @@ namespace Redcap
         /// <param name="data">The formatted data to be imported.</param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>Number of fields imported</returns>
-        public async Task<string> ImportMetaDataAsync<T>(string token, ReturnFormat format, List<T> data, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ImportMetaDataAsync<T>(string token, ReturnFormat format, List<T> data,
+            OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -2256,11 +2334,11 @@ namespace Redcap
                 var _serializedData = JsonConvert.SerializeObject(data);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.MetaData.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() },
-                    { "data", _serializedData }
+                    {"token", token},
+                    {"content", Content.MetaData.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()},
+                    {"data", _serializedData}
                 };
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -2292,7 +2370,8 @@ namespace Redcap
         /// <param name="data">The formatted data to be imported.</param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>Number of fields imported</returns>
-        public async Task<string> ImportMetaDataAsync<T>(string token, Content content, ReturnFormat format, List<T> data, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ImportMetaDataAsync<T>(string token, Content content, ReturnFormat format,
+            List<T> data, OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -2303,11 +2382,11 @@ namespace Redcap
                 var _serializedData = JsonConvert.SerializeObject(data);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() },
-                    { "data", _serializedData }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()},
+                    {"data", _serializedData}
                 };
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -2320,8 +2399,11 @@ namespace Redcap
                 return Ex.Message;
             }
         }
+
         #endregion Metadata
+
         #region Projects
+
         /// <summary>
         /// API Version 1.0.0+
         /// From Redcap Version 6.11.0 
@@ -2349,7 +2431,8 @@ namespace Redcap
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <param name="odm">default: NULL - The 'odm' parameter must be an XML string in CDISC ODM XML format that contains project metadata (fields, forms, events, arms) and might optionally contain data to be imported as well. The XML contained in this parameter can come from a REDCap Project XML export file from REDCap itself, or may come from another system that is capable of exporting projects and data in CDISC ODM format. If the 'odm' parameter is included in the API request, it will use the XML to import its contents into the newly created project. This will allow you not only to create the project with the API request, but also to import all fields, forms, and project attributes (and events and arms, if longitudinal) as well as record data all at the same time.</param>
         /// <returns>When a project is created, a 32-character project-level API Token is returned (associated with both the project and user creating the project). This token could then ostensibly be used to make subsequent API calls to this project, such as for adding new events, fields, records, etc.</returns>
-        public async Task<string> CreateProjectAsync<T>(string token, ReturnFormat format, List<T> data, OnErrorFormat onErrorFormat = OnErrorFormat.json, string odm = null)
+        public async Task<string> CreateProjectAsync<T>(string token, ReturnFormat format, List<T> data,
+            OnErrorFormat onErrorFormat = OnErrorFormat.json, string odm = null)
         {
             try
             {
@@ -2360,16 +2443,17 @@ namespace Redcap
                 var _serializedData = JsonConvert.SerializeObject(data);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.Project.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() },
-                    { "data", _serializedData }
+                    {"token", token},
+                    {"content", Content.Project.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()},
+                    {"data", _serializedData}
                 };
-                if (!IsNullOrEmpty(odm))
+                if (!string.IsNullOrEmpty(odm))
                 {
                     payload.Add("odm", odm);
                 }
+
                 return await this.SendPostRequestAsync(payload, _uri);
             }
             catch (Exception Ex)
@@ -2380,7 +2464,6 @@ namespace Redcap
                 Log.Error($"{Ex.Message}");
                 return Ex.Message;
             }
-
         }
 
         /// <summary>
@@ -2411,7 +2494,8 @@ namespace Redcap
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <param name="odm">default: NULL - The 'odm' parameter must be an XML string in CDISC ODM XML format that contains project metadata (fields, forms, events, arms) and might optionally contain data to be imported as well. The XML contained in this parameter can come from a REDCap Project XML export file from REDCap itself, or may come from another system that is capable of exporting projects and data in CDISC ODM format. If the 'odm' parameter is included in the API request, it will use the XML to import its contents into the newly created project. This will allow you not only to create the project with the API request, but also to import all fields, forms, and project attributes (and events and arms, if longitudinal) as well as record data all at the same time.</param>
         /// <returns>When a project is created, a 32-character project-level API Token is returned (associated with both the project and user creating the project). This token could then ostensibly be used to make subsequent API calls to this project, such as for adding new events, fields, records, etc.</returns>
-        public async Task<string> CreateProjectAsync<T>(string token, Content content, ReturnFormat format, List<T> data, OnErrorFormat onErrorFormat = OnErrorFormat.json, string odm = null)
+        public async Task<string> CreateProjectAsync<T>(string token, Content content, ReturnFormat format,
+            List<T> data, OnErrorFormat onErrorFormat = OnErrorFormat.json, string odm = null)
         {
             try
             {
@@ -2422,16 +2506,17 @@ namespace Redcap
                 var _serializedData = JsonConvert.SerializeObject(data);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() },
-                    { "data", _serializedData }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()},
+                    {"data", _serializedData}
                 };
-                if (!IsNullOrEmpty(odm))
+                if (!string.IsNullOrEmpty(odm))
                 {
                     payload.Add("odm", odm);
                 }
+
                 return await this.SendPostRequestAsync(payload, _uri);
             }
             catch (Exception Ex)
@@ -2442,7 +2527,6 @@ namespace Redcap
                 Log.Error($"{Ex.Message}");
                 return Ex.Message;
             }
-
         }
 
         /// <summary>
@@ -2461,7 +2545,8 @@ namespace Redcap
         /// project_title, project_language, purpose, purpose_other, project_notes, custom_record_label, secondary_unique_field, is_longitudinal, surveys_enabled, scheduling_enabled, record_autonumbering_enabled, randomization_enabled, project_irb_number, project_grant_number, project_pi_firstname, project_pi_lastname, display_today_now_button
         /// </param>
         /// <returns>Returns the number of values accepted to be updated in the project settings (including values which remained the same before and after the import).</returns>
-        public async Task<string> ImportProjectInfoAsync(string token, Content content, ReturnFormat format, RedcapProjectInfo projectInfo)
+        public async Task<string> ImportProjectInfoAsync(string token, Content content, ReturnFormat format,
+            RedcapProjectInfo projectInfo)
         {
             try
             {
@@ -2473,10 +2558,10 @@ namespace Redcap
                 var _serializedData = JsonConvert.SerializeObject(projectInfo);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "data", _serializedData }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"data", _serializedData}
                 };
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -2488,8 +2573,8 @@ namespace Redcap
                 Log.Error($"{Ex.Message}");
                 return Ex.Message;
             }
-
         }
+
         /// <summary>
         /// API Version 1.0.0+
         /// Import Project Information
@@ -2505,7 +2590,8 @@ namespace Redcap
         /// project_title, project_language, purpose, purpose_other, project_notes, custom_record_label, secondary_unique_field, is_longitudinal, surveys_enabled, scheduling_enabled, record_autonumbering_enabled, randomization_enabled, project_irb_number, project_grant_number, project_pi_firstname, project_pi_lastname, display_today_now_button
         /// </param>
         /// <returns>Returns the number of values accepted to be updated in the project settings (including values which remained the same before and after the import).</returns>
-        public async Task<string> ImportProjectInfoAsync(string token, ReturnFormat format, RedcapProjectInfo projectInfo)
+        public async Task<string> ImportProjectInfoAsync(string token, ReturnFormat format,
+            RedcapProjectInfo projectInfo)
         {
             try
             {
@@ -2517,10 +2603,10 @@ namespace Redcap
                 var _serializedData = JsonConvert.SerializeObject(projectInfo);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.ProjectSettings.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "data", _serializedData }
+                    {"token", token},
+                    {"content", Content.ProjectSettings.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"data", _serializedData}
                 };
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -2532,7 +2618,6 @@ namespace Redcap
                 Log.Error($"{Ex.Message}");
                 return Ex.Message;
             }
-
         }
 
         /// <summary>
@@ -2552,7 +2637,8 @@ namespace Redcap
         /// Attributes for the project in the format specified. For any values that are boolean, they will be represented as either a '0' (no/false) or '1' (yes/true). Also, all date/time values will be returned in Y-M-D H:M:S format. The following attributes will be returned:
         /// project_id, project_title, creation_time, production_time, in_production, project_language, purpose, purpose_other, project_notes, custom_record_label, secondary_unique_field, is_longitudinal, surveys_enabled, scheduling_enabled, record_autonumbering_enabled, randomization_enabled, ddp_enabled, project_irb_number, project_grant_number, project_pi_firstname, project_pi_lastname, display_today_now_button
         /// </returns>
-        public async Task<string> ExportProjectInfoAsync(string token, Content content = Content.Project, ReturnFormat format = ReturnFormat.json, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportProjectInfoAsync(string token, Content content = Content.Project,
+            ReturnFormat format = ReturnFormat.json, OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -2563,10 +2649,10 @@ namespace Redcap
 
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -2579,6 +2665,7 @@ namespace Redcap
                 return Ex.Message;
             }
         }
+
         /// <summary>
         /// API Version 1.0.0+
         /// Export Project Information
@@ -2595,7 +2682,8 @@ namespace Redcap
         /// Attributes for the project in the format specified. For any values that are boolean, they will be represented as either a '0' (no/false) or '1' (yes/true). Also, all date/time values will be returned in Y-M-D H:M:S format. The following attributes will be returned:
         /// project_id, project_title, creation_time, production_time, in_production, project_language, purpose, purpose_other, project_notes, custom_record_label, secondary_unique_field, is_longitudinal, surveys_enabled, scheduling_enabled, record_autonumbering_enabled, randomization_enabled, ddp_enabled, project_irb_number, project_grant_number, project_pi_firstname, project_pi_lastname, display_today_now_button
         /// </returns>
-        public async Task<string> ExportProjectInfoAsync(string token, ReturnFormat format = ReturnFormat.json, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportProjectInfoAsync(string token, ReturnFormat format = ReturnFormat.json,
+            OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -2606,10 +2694,10 @@ namespace Redcap
 
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.Project.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", Content.Project.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -2647,7 +2735,10 @@ namespace Redcap
         /// <param name="filterLogic">String of logic text (e.g., [age] > 30) for filtering the data to be returned by this API method, in which the API will only return the records (or record-events, if a longitudinal project) where the logic evaluates as TRUE. This parameter is blank/null by default unless a value is supplied. Please note that if the filter logic contains any incorrect syntax, the API will respond with an error message. </param>
         /// <param name="exportFiles">true, false [default] - TRUE will cause the XML returned to include all files uploaded for File Upload and Signature fields for all records in the project, whereas FALSE will cause all such fields not to be included. NOTE: Setting this option to TRUE can make the export very large and may prevent it from completing if the project contains many files or very large files. </param>
         /// <returns>The entire REDCap project's metadata (and data, if specified) will be returned in CDISC ODM format as a single XML string.</returns>
-        public async Task<string> ExportProjectXmlAsync(string token, Content content, bool returnMetadataOnly = false, string[] records = null, string[] fields = null, string[] events = null, OnErrorFormat onErrorFormat = OnErrorFormat.json, bool exportSurveyFields = false, bool exportDataAccessGroups = false, string filterLogic = null, bool exportFiles = false)
+        public async Task<string> ExportProjectXmlAsync(string token, Content content, bool returnMetadataOnly = false,
+            string[] records = null, string[] fields = null, string[] events = null,
+            OnErrorFormat onErrorFormat = OnErrorFormat.json, bool exportSurveyFields = false,
+            bool exportDataAccessGroups = false, string filterLogic = null, bool exportFiles = false)
         {
             try
             {
@@ -2658,39 +2749,46 @@ namespace Redcap
 
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
                 // Optional
                 if (returnMetadataOnly)
                 {
                     payload.Add("returnMetadataOnly", returnMetadataOnly.ToString());
                 }
+
                 if (records?.Length > 0)
                 {
                     payload.Add("records", await this.ConvertArraytoString(records));
                 }
+
                 if (events?.Length > 0)
                 {
                     payload.Add("events", await this.ConvertArraytoString(events));
                 }
+
                 if (exportSurveyFields)
                 {
                     payload.Add("exportSurveyFields", exportSurveyFields.ToString());
                 }
+
                 if (exportDataAccessGroups)
                 {
                     payload.Add("exportDataAccessGroups", exportDataAccessGroups.ToString());
                 }
-                if (!IsNullOrEmpty(filterLogic))
+
+                if (!string.IsNullOrEmpty(filterLogic))
                 {
                     payload.Add("filterLogic", filterLogic);
                 }
+
                 if (exportFiles)
                 {
                     payload.Add("exportFiles", exportFiles.ToString());
                 }
+
                 return await this.SendPostRequestAsync(payload, _uri);
             }
             catch (Exception Ex)
@@ -2726,7 +2824,10 @@ namespace Redcap
         /// <param name="filterLogic">String of logic text (e.g., [age] > 30) for filtering the data to be returned by this API method, in which the API will only return the records (or record-events, if a longitudinal project) where the logic evaluates as TRUE. This parameter is blank/null by default unless a value is supplied. Please note that if the filter logic contains any incorrect syntax, the API will respond with an error message. </param>
         /// <param name="exportFiles">true, false [default] - TRUE will cause the XML returned to include all files uploaded for File Upload and Signature fields for all records in the project, whereas FALSE will cause all such fields not to be included. NOTE: Setting this option to TRUE can make the export very large and may prevent it from completing if the project contains many files or very large files. </param>
         /// <returns>The entire REDCap project's metadata (and data, if specified) will be returned in CDISC ODM format as a single XML string.</returns>
-        public async Task<string> ExportProjectXmlAsync(string token, bool returnMetadataOnly = false, string[] records = null, string[] fields = null, string[] events = null, OnErrorFormat onErrorFormat = OnErrorFormat.json, bool exportSurveyFields = false, bool exportDataAccessGroups = false, string filterLogic = null, bool exportFiles = false)
+        public async Task<string> ExportProjectXmlAsync(string token, bool returnMetadataOnly = false,
+            string[] records = null, string[] fields = null, string[] events = null,
+            OnErrorFormat onErrorFormat = OnErrorFormat.json, bool exportSurveyFields = false,
+            bool exportDataAccessGroups = false, string filterLogic = null, bool exportFiles = false)
         {
             try
             {
@@ -2737,39 +2838,46 @@ namespace Redcap
 
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.ProjectXml.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", Content.ProjectXml.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
                 // Optional
                 if (returnMetadataOnly)
                 {
                     payload.Add("returnMetadataOnly", returnMetadataOnly.ToString());
                 }
+
                 if (records?.Length > 0)
                 {
                     payload.Add("records", await this.ConvertArraytoString(records));
                 }
+
                 if (events?.Length > 0)
                 {
                     payload.Add("events", await this.ConvertArraytoString(events));
                 }
+
                 if (exportSurveyFields)
                 {
                     payload.Add("exportSurveyFields", exportSurveyFields.ToString());
                 }
+
                 if (exportDataAccessGroups)
                 {
                     payload.Add("exportDataAccessGroups", exportDataAccessGroups.ToString());
                 }
-                if (!IsNullOrEmpty(filterLogic))
+
+                if (!string.IsNullOrEmpty(filterLogic))
                 {
                     payload.Add("filterLogic", filterLogic);
                 }
+
                 if (exportFiles)
                 {
                     payload.Add("exportFiles", exportFiles.ToString());
                 }
+
                 return await this.SendPostRequestAsync(payload, _uri);
             }
             catch (Exception Ex)
@@ -2783,7 +2891,9 @@ namespace Redcap
         }
 
         #endregion Projects
+
         #region Records
+
         /// <summary>
         /// API Version 1.0.0+
         /// From Redcap Version 6.18.0
@@ -2809,8 +2919,8 @@ namespace Redcap
                 this.CheckToken(token);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.GenerateNextRecordName.GetDisplayName() },
+                    {"token", token},
+                    {"content", Content.GenerateNextRecordName.GetDisplayName()},
                 };
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -2850,8 +2960,8 @@ namespace Redcap
                 this.CheckToken(token);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
                 };
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -2889,7 +2999,12 @@ namespace Redcap
         /// <param name="exportDataAccessGroups">true, false [default] - specifies whether or not to export the 'redcap_data_access_group' field when data access groups are utilized in the project. If you do not pass in this flag, it will default to 'false'. NOTE: This flag is only viable if the user whose token is being used to make the API request is *not* in a data access group. If the user is in a group, then this flag will revert to its default value.</param>
         /// <param name="filterLogic">String of logic text (e.g., [age] > 30) for filtering the data to be returned by this API method, in which the API will only return the records (or record-events, if a longitudinal project) where the logic evaluates as TRUE. This parameter is blank/null by default unless a value is supplied. Please note that if the filter logic contains any incorrect syntax, the API will respond with an error message. </param>
         /// <returns>Data from the project in the format and type specified ordered by the record (primary key of project) and then by event id</returns>
-        public async Task<string> ExportRecordsAsync(string token, ReturnFormat format = ReturnFormat.json, RedcapDataType redcapDataType = RedcapDataType.flat, string[] records = null, string[] fields = null, string[] forms = null, string[] events = null, RawOrLabel rawOrLabel = RawOrLabel.raw, RawOrLabelHeaders rawOrLabelHeaders = RawOrLabelHeaders.raw, bool exportCheckboxLabel = false, OnErrorFormat onErrorFormat = OnErrorFormat.json, bool exportSurveyFields = false, bool exportDataAccessGroups = false, string filterLogic = null)
+        public async Task<string> ExportRecordsAsync(string token, ReturnFormat format = ReturnFormat.json,
+            RedcapDataType redcapDataType = RedcapDataType.flat, string[] records = null, string[] fields = null,
+            string[] forms = null, string[] events = null, RawOrLabel rawOrLabel = RawOrLabel.raw,
+            RawOrLabelHeaders rawOrLabelHeaders = RawOrLabelHeaders.raw, bool exportCheckboxLabel = false,
+            OnErrorFormat onErrorFormat = OnErrorFormat.json, bool exportSurveyFields = false,
+            bool exportDataAccessGroups = false, string filterLogic = null)
         {
             try
             {
@@ -2897,11 +3012,11 @@ namespace Redcap
 
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.Record.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() },
-                    { "type", redcapDataType.GetDisplayName() }
+                    {"token", token},
+                    {"content", Content.Record.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()},
+                    {"type", redcapDataType.GetDisplayName()}
                 };
 
                 // Optional
@@ -2909,47 +3024,55 @@ namespace Redcap
                 {
                     payload.Add("records", await this.ConvertArraytoString(records));
                 }
+
                 if (fields?.Length > 0)
                 {
                     payload.Add("fields", await this.ConvertArraytoString(fields));
                 }
+
                 if (forms?.Length > 0)
                 {
                     payload.Add("forms", await this.ConvertArraytoString(forms));
                 }
+
                 if (events?.Length > 0)
                 {
                     payload.Add("events", await this.ConvertArraytoString(events));
                 }
+
                 /*
                  * Pertains to CSV data only
                  */
                 var _rawOrLabelValue = rawOrLabelHeaders.ToString();
-                if (!IsNullOrEmpty(_rawOrLabelValue))
+                if (!string.IsNullOrEmpty(_rawOrLabelValue))
                 {
                     payload.Add("rawOrLabel", _rawOrLabelValue);
                 }
+
                 // Optional (defaults to false)
                 if (exportCheckboxLabel)
                 {
                     payload.Add("exportCheckboxLabel", exportCheckboxLabel.ToString());
                 }
+
                 // Optional (defaults to false)
                 if (exportSurveyFields)
                 {
                     payload.Add("exportSurveyFields", exportSurveyFields.ToString());
                 }
+
                 // Optional (defaults to false)
                 if (exportDataAccessGroups)
                 {
                     payload.Add("exportDataAccessGroups", exportDataAccessGroups.ToString());
                 }
-                if (!IsNullOrEmpty(filterLogic))
+
+                if (!string.IsNullOrEmpty(filterLogic))
                 {
                     payload.Add("filterLogic", filterLogic);
                 }
-                return await this.SendPostRequestAsync(payload, _uri);
 
+                return await this.SendPostRequestAsync(payload, _uri);
             }
             catch (Exception Ex)
             {
@@ -2959,7 +3082,6 @@ namespace Redcap
                 Log.Error($"{Ex.Message}");
                 return Ex.Message;
             }
-
         }
 
         /// <summary>
@@ -2987,7 +3109,12 @@ namespace Redcap
         /// <param name="exportDataAccessGroups">true, false [default] - specifies whether or not to export the 'redcap_data_access_group' field when data access groups are utilized in the project. If you do not pass in this flag, it will default to 'false'. NOTE: This flag is only viable if the user whose token is being used to make the API request is *not* in a data access group. If the user is in a group, then this flag will revert to its default value.</param>
         /// <param name="filterLogic">String of logic text (e.g., [age] > 30) for filtering the data to be returned by this API method, in which the API will only return the records (or record-events, if a longitudinal project) where the logic evaluates as TRUE. This parameter is blank/null by default unless a value is supplied. Please note that if the filter logic contains any incorrect syntax, the API will respond with an error message. </param>
         /// <returns>Data from the project in the format and type specified ordered by the record (primary key of project) and then by event id</returns>
-        public async Task<string> ExportRecordsAsync(string token, Content content, ReturnFormat format = ReturnFormat.json, RedcapDataType redcapDataType = RedcapDataType.flat, string[] records = null, string[] fields = null, string[] forms = null, string[] events = null, RawOrLabel rawOrLabel = RawOrLabel.raw, RawOrLabelHeaders rawOrLabelHeaders = RawOrLabelHeaders.raw, bool exportCheckboxLabel = false, OnErrorFormat onErrorFormat = OnErrorFormat.json, bool exportSurveyFields = false, bool exportDataAccessGroups = false, string filterLogic = null)
+        public async Task<string> ExportRecordsAsync(string token, Content content,
+            ReturnFormat format = ReturnFormat.json, RedcapDataType redcapDataType = RedcapDataType.flat,
+            string[] records = null, string[] fields = null, string[] forms = null, string[] events = null,
+            RawOrLabel rawOrLabel = RawOrLabel.raw, RawOrLabelHeaders rawOrLabelHeaders = RawOrLabelHeaders.raw,
+            bool exportCheckboxLabel = false, OnErrorFormat onErrorFormat = OnErrorFormat.json,
+            bool exportSurveyFields = false, bool exportDataAccessGroups = false, string filterLogic = null)
         {
             try
             {
@@ -2995,11 +3122,11 @@ namespace Redcap
 
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() },
-                    { "type", redcapDataType.GetDisplayName() }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()},
+                    {"type", redcapDataType.GetDisplayName()}
                 };
 
                 // Optional
@@ -3007,47 +3134,55 @@ namespace Redcap
                 {
                     payload.Add("records", await this.ConvertArraytoString(records));
                 }
+
                 if (fields?.Length > 0)
                 {
                     payload.Add("fields", await this.ConvertArraytoString(fields));
                 }
+
                 if (forms?.Length > 0)
                 {
                     payload.Add("forms", await this.ConvertArraytoString(forms));
                 }
+
                 if (events?.Length > 0)
                 {
                     payload.Add("events", await this.ConvertArraytoString(events));
                 }
+
                 /*
                  * Pertains to CSV data only
                  */
                 var _rawOrLabelValue = rawOrLabelHeaders.ToString();
-                if (!IsNullOrEmpty(_rawOrLabelValue))
+                if (!string.IsNullOrEmpty(_rawOrLabelValue))
                 {
                     payload.Add("rawOrLabel", _rawOrLabelValue);
                 }
+
                 // Optional (defaults to false)
                 if (exportCheckboxLabel)
                 {
                     payload.Add("exportCheckboxLabel", exportCheckboxLabel.ToString());
                 }
+
                 // Optional (defaults to false)
                 if (exportSurveyFields)
                 {
                     payload.Add("exportSurveyFields", exportSurveyFields.ToString());
                 }
+
                 // Optional (defaults to false)
                 if (exportDataAccessGroups)
                 {
                     payload.Add("exportDataAccessGroups", exportDataAccessGroups.ToString());
                 }
-                if (!IsNullOrEmpty(filterLogic))
+
+                if (!string.IsNullOrEmpty(filterLogic))
                 {
                     payload.Add("filterLogic", filterLogic);
                 }
-                return await this.SendPostRequestAsync(payload, _uri);
 
+                return await this.SendPostRequestAsync(payload, _uri);
             }
             catch (Exception Ex)
             {
@@ -3057,7 +3192,6 @@ namespace Redcap
                 Log.Error($"{Ex.Message}");
                 return Ex.Message;
             }
-
         }
 
         /// <summary>
@@ -3085,7 +3219,12 @@ namespace Redcap
         /// <param name="exportDataAccessGroups">true, false [default] - specifies whether or not to export the 'redcap_data_access_group' field when data access groups are utilized in the project. If you do not pass in this flag, it will default to 'false'. NOTE: This flag is only viable if the user whose token is being used to make the API request is *not* in a data access group. If the user is in a group, then this flag will revert to its default value.</param>
         /// <param name="filterLogic">String of logic text (e.g., [age] > 30) for filtering the data to be returned by this API method, in which the API will only return the records (or record-events, if a longitudinal project) where the logic evaluates as TRUE. This parameter is blank/null by default unless a value is supplied. Please note that if the filter logic contains any incorrect syntax, the API will respond with an error message. </param>
         /// <returns>Data from the project in the format and type specified ordered by the record (primary key of project) and then by event id</returns>
-        public async Task<string> ExportRecordAsync(string token, Content content, string record, ReturnFormat format = ReturnFormat.json, RedcapDataType redcapDataType = RedcapDataType.flat, string[] fields = null, string[] forms = null, string[] events = null, RawOrLabel rawOrLabel = RawOrLabel.raw, RawOrLabelHeaders rawOrLabelHeaders = RawOrLabelHeaders.raw, bool exportCheckboxLabel = false, OnErrorFormat onErrorFormat = OnErrorFormat.json, bool exportSurveyFields = false, bool exportDataAccessGroups = false, string filterLogic = null)
+        public async Task<string> ExportRecordAsync(string token, Content content, string record,
+            ReturnFormat format = ReturnFormat.json, RedcapDataType redcapDataType = RedcapDataType.flat,
+            string[] fields = null, string[] forms = null, string[] events = null,
+            RawOrLabel rawOrLabel = RawOrLabel.raw, RawOrLabelHeaders rawOrLabelHeaders = RawOrLabelHeaders.raw,
+            bool exportCheckboxLabel = false, OnErrorFormat onErrorFormat = OnErrorFormat.json,
+            bool exportSurveyFields = false, bool exportDataAccessGroups = false, string filterLogic = null)
         {
             try
             {
@@ -3093,12 +3232,12 @@ namespace Redcap
 
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "records", record },
-                    { "content", content.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() },
-                    { "type", redcapDataType.GetDisplayName() }
+                    {"token", token},
+                    {"records", record},
+                    {"content", content.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()},
+                    {"type", redcapDataType.GetDisplayName()}
                 };
 
                 // Optional
@@ -3106,43 +3245,50 @@ namespace Redcap
                 {
                     payload.Add("fields", await this.ConvertArraytoString(fields));
                 }
+
                 if (forms?.Length > 0)
                 {
                     payload.Add("forms", await this.ConvertArraytoString(forms));
                 }
+
                 if (events?.Length > 0)
                 {
                     payload.Add("events", await this.ConvertArraytoString(events));
                 }
+
                 /*
                  * Pertains to CSV data only
                  */
                 var _rawOrLabelValue = rawOrLabelHeaders.ToString();
-                if (!IsNullOrEmpty(_rawOrLabelValue))
+                if (!string.IsNullOrEmpty(_rawOrLabelValue))
                 {
                     payload.Add("rawOrLabel", _rawOrLabelValue);
                 }
+
                 // Optional (defaults to false)
                 if (exportCheckboxLabel)
                 {
                     payload.Add("exportCheckboxLabel", exportCheckboxLabel.ToString());
                 }
+
                 // Optional (defaults to false)
                 if (exportSurveyFields)
                 {
                     payload.Add("exportSurveyFields", exportSurveyFields.ToString());
                 }
+
                 // Optional (defaults to false)
                 if (exportDataAccessGroups)
                 {
                     payload.Add("exportDataAccessGroups", exportDataAccessGroups.ToString());
                 }
-                if (!IsNullOrEmpty(filterLogic))
+
+                if (!string.IsNullOrEmpty(filterLogic))
                 {
                     payload.Add("filterLogic", filterLogic);
                 }
-                return await this.SendPostRequestAsync(payload, _uri);
 
+                return await this.SendPostRequestAsync(payload, _uri);
             }
             catch (Exception Ex)
             {
@@ -3152,7 +3298,6 @@ namespace Redcap
                 Log.Error($"{Ex.Message}");
                 return Ex.Message;
             }
-
         }
 
 
@@ -3188,7 +3333,10 @@ namespace Redcap
         /// <param name="returnContent">count [default] - the number of records imported, ids - a list of all record IDs that were imported, auto_ids = (used only when forceAutoNumber=true) a list of pairs of all record IDs that were imported, includes the new ID created and the ID value that was sent in the API request (e.g., 323,10). </param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>the content specified by returnContent</returns>
-        public async Task<string> ImportRecordsAsync<T>(string token, ReturnFormat format, RedcapDataType redcapDataType, OverwriteBehavior overwriteBehavior, bool forceAutoNumber, List<T> data, string dateFormat = "", CsvDelimiter csvDelimiter = CsvDelimiter.tab, ReturnContent returnContent = ReturnContent.count, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ImportRecordsAsync<T>(string token, ReturnFormat format,
+            RedcapDataType redcapDataType, OverwriteBehavior overwriteBehavior, bool forceAutoNumber, List<T> data,
+            string dateFormat = "", CsvDelimiter csvDelimiter = CsvDelimiter.tab,
+            ReturnContent returnContent = ReturnContent.count, OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -3197,25 +3345,27 @@ namespace Redcap
 
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.Record.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "type", redcapDataType.GetDisplayName() },
-                    { "overwriteBehavior", overwriteBehavior.ToString() },
-                    { "forceAutoNumber", forceAutoNumber.ToString() },
-                    { "csvDelimiter", csvDelimiter.ToString() },
-                    { "data", _serializedData },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", Content.Record.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"type", redcapDataType.GetDisplayName()},
+                    {"overwriteBehavior", overwriteBehavior.ToString()},
+                    {"forceAutoNumber", forceAutoNumber.ToString()},
+                    {"csvDelimiter", csvDelimiter.ToString()},
+                    {"data", _serializedData},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
                 // Optional
-                if (!IsNullOrEmpty(dateFormat))
+                if (!string.IsNullOrEmpty(dateFormat))
                 {
                     payload.Add("dateFormat", dateFormat);
                 }
-                if (!IsNullOrEmpty(returnContent.ToString()))
+
+                if (!string.IsNullOrEmpty(returnContent.ToString()))
                 {
                     payload.Add("returnContent", returnContent.ToString());
                 }
+
                 return await this.SendPostRequestAsync(payload, _uri);
             }
             catch (Exception Ex)
@@ -3259,7 +3409,10 @@ namespace Redcap
         /// <param name="returnContent">count [default] - the number of records imported, ids - a list of all record IDs that were imported, auto_ids = (used only when forceAutoNumber=true) a list of pairs of all record IDs that were imported, includes the new ID created and the ID value that was sent in the API request (e.g., 323,10). </param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>the content specified by returnContent</returns>
-        public async Task<string> ImportRecordsAsync<T>(string token, Content content, ReturnFormat format, RedcapDataType redcapDataType, OverwriteBehavior overwriteBehavior, bool forceAutoNumber, List<T> data, string dateFormat = "", CsvDelimiter csvDelimiter = CsvDelimiter.tab, ReturnContent returnContent = ReturnContent.count, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ImportRecordsAsync<T>(string token, Content content, ReturnFormat format,
+            RedcapDataType redcapDataType, OverwriteBehavior overwriteBehavior, bool forceAutoNumber, List<T> data,
+            string dateFormat = "", CsvDelimiter csvDelimiter = CsvDelimiter.tab,
+            ReturnContent returnContent = ReturnContent.count, OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             var importRecordsResults = string.Empty;
             try
@@ -3269,25 +3422,27 @@ namespace Redcap
 
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "type", redcapDataType.GetDisplayName() },
-                    { "overwriteBehavior", overwriteBehavior.ToString() },
-                    { "forceAutoNumber", forceAutoNumber.ToString() },
-                    { "csvDelimiter", csvDelimiter.ToString() },
-                    { "data", _serializedData },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"type", redcapDataType.GetDisplayName()},
+                    {"overwriteBehavior", overwriteBehavior.ToString()},
+                    {"forceAutoNumber", forceAutoNumber.ToString()},
+                    {"csvDelimiter", csvDelimiter.ToString()},
+                    {"data", _serializedData},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
                 // Optional
-                if (!IsNullOrEmpty(dateFormat))
+                if (!string.IsNullOrEmpty(dateFormat))
                 {
                     payload.Add("dateFormat", dateFormat);
                 }
-                if (!IsNullOrEmpty(returnContent.ToString()))
+
+                if (!string.IsNullOrEmpty(returnContent.ToString()))
                 {
                     payload.Add("returnContent", returnContent.ToString());
                 }
+
                 importRecordsResults = await this.SendPostRequestAsync(payload, _uri);
                 return importRecordsResults;
             }
@@ -3319,15 +3474,16 @@ namespace Redcap
                 /*
                  * Check the required parameters for empty or null
                  */
-                if (IsNullOrEmpty(token))
+                if (string.IsNullOrEmpty(token))
                 {
-                    throw new ArgumentNullException("Please provide a valid Redcap token.");
+                    throw new ArgumentNullException(nameof(token));
                 }
+
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.Record.GetDisplayName() },
-                    { "action",  RedcapAction.Delete.GetDisplayName() }
+                    {"token", token},
+                    {"content", Content.Record.GetDisplayName()},
+                    {"action", RedcapAction.Delete.GetDisplayName()}
                 };
                 // Required
                 //payload.Add("records", await this.ConvertArraytoString(records));
@@ -3367,22 +3523,24 @@ namespace Redcap
         /// <param name="arm">the arm number of the arm in which the record(s) should be deleted. 
         /// (This can only be used if the project is longitudinal with more than one arm.) NOTE: If the arm parameter is not provided, the specified records will be deleted from all arms in which they exist. Whereas, if arm is provided, they will only be deleted from the specified arm. </param>
         /// <returns>the number of records deleted.</returns>
-        public async Task<string> DeleteRecordsAsync(string token, Content content, RedcapAction action, string[] records, int? arm)
+        public async Task<string> DeleteRecordsAsync(string token, Content content, RedcapAction action,
+            string[] records, int? arm)
         {
             try
             {
                 /*
                  * Check the required parameters for empty or null
                  */
-                if (IsNullOrEmpty(token))
+                if (string.IsNullOrEmpty(token))
                 {
-                    throw new ArgumentNullException("Please provide a valid Redcap token.");
+                    throw new ArgumentNullException(nameof(token));
                 }
+
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "action",  action.GetDisplayName() }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"action", action.GetDisplayName()}
                 };
                 // Required
                 //payload.Add("records", await this.ConvertArraytoString(records));
@@ -3405,7 +3563,9 @@ namespace Redcap
                 return Ex.Message;
             }
         }
+
         #endregion Records
+
         #region Repeating Instruments and Events
 
         /// <summary>
@@ -3419,7 +3579,8 @@ namespace Redcap
         /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="format">csv, json [default], xml odm ('odm' refers to CDISC ODM XML format, specifically ODM version 1.3.1)</param>
         /// <returns>Repeated instruments and events for the project in the format specified and will be ordered according to their order in the project.</returns>
-        public async Task<string> ExportRepeatingInstrumentsAndEvents(string token, ReturnFormat format = ReturnFormat.json)
+        public async Task<string> ExportRepeatingInstrumentsAndEvents(string token,
+            ReturnFormat format = ReturnFormat.json)
         {
             try
             {
@@ -3429,9 +3590,9 @@ namespace Redcap
                 this.CheckToken(token);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.RepeatingFormsEvents.GetDisplayName() },
-                    { "format", format.GetDisplayName() }
+                    {"token", token},
+                    {"content", Content.RepeatingFormsEvents.GetDisplayName()},
+                    {"format", format.GetDisplayName()}
                 };
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -3457,7 +3618,8 @@ namespace Redcap
         /// <param name="content">repeatingFormsEvents</param>
         /// <param name="format">csv, json [default], xml odm ('odm' refers to CDISC ODM XML format, specifically ODM version 1.3.1)</param>
         /// <returns>Repeated instruments and events for the project in the format specified and will be ordered according to their order in the project.</returns>
-        public async Task<string> ExportRepeatingInstrumentsAndEvents(string token, Content content, ReturnFormat format = ReturnFormat.json)
+        public async Task<string> ExportRepeatingInstrumentsAndEvents(string token, Content content,
+            ReturnFormat format = ReturnFormat.json)
         {
             try
             {
@@ -3467,9 +3629,9 @@ namespace Redcap
                 this.CheckToken(token);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "format", format.GetDisplayName() }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"format", format.GetDisplayName()}
                 };
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -3482,6 +3644,7 @@ namespace Redcap
                 return Ex.Message;
             }
         }
+
         /// <summary>
         /// API Version 1.0.0+
         /// From Redcap Version 8.10.0
@@ -3495,7 +3658,9 @@ namespace Redcap
         /// <param name="format">csv, json [default], xml</param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>Repeated instruments and events for the project in the format specified and will be ordered according to their order in the project.</returns>
-        public async Task<string> ImportRepeatingInstrumentsAndEvents<T>(string token, List<T> data, Content content = Content.RepeatingFormsEvents, ReturnFormat format = ReturnFormat.json, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ImportRepeatingInstrumentsAndEvents<T>(string token, List<T> data,
+            Content content = Content.RepeatingFormsEvents, ReturnFormat format = ReturnFormat.json,
+            OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -3508,11 +3673,11 @@ namespace Redcap
 
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() },
-                    { "data", _serializedData }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()},
+                    {"data", _serializedData}
                 };
                 return await this.SendPostRequestAsync(payload, _uri);
             }
@@ -3527,7 +3692,9 @@ namespace Redcap
         }
 
         #endregion Repeating Instruments and Events
+
         #region Reports
+
         /// <summary>
         /// API Version 1.0.0+
         /// Export Reports
@@ -3546,7 +3713,10 @@ namespace Redcap
         /// <param name="rawOrLabelHeaders">raw [default], label - (for 'csv' format 'flat' type only) for the CSV headers, export the variable/field names (raw) or the field labels (label)</param>
         /// <param name="exportCheckboxLabel">true, false [default] - specifies the format of checkbox field values specifically when exporting the data as labels (i.e., when rawOrLabel=label). When exporting labels, by default (without providing the exportCheckboxLabel flag or if exportCheckboxLabel=false), all checkboxes will either have a value 'Checked' if they are checked or 'Unchecked' if not checked. But if exportCheckboxLabel is set to true, it will instead export the checkbox value as the checkbox option's label (e.g., 'Choice 1') if checked or it will be blank/empty (no value) if not checked. If rawOrLabel=false, then the exportCheckboxLabel flag is ignored.</param>
         /// <returns>Data from the project in the format and type specified ordered by the record (primary key of project) and then by event id</returns>
-        public async Task<string> ExportReportsAsync(string token, int reportId, ReturnFormat format = ReturnFormat.json, OnErrorFormat onErrorFormat = OnErrorFormat.json, RawOrLabel rawOrLabel = RawOrLabel.raw, RawOrLabelHeaders rawOrLabelHeaders = RawOrLabelHeaders.raw, bool exportCheckboxLabel = false)
+        public async Task<string> ExportReportsAsync(string token, int reportId,
+            ReturnFormat format = ReturnFormat.json, OnErrorFormat onErrorFormat = OnErrorFormat.json,
+            RawOrLabel rawOrLabel = RawOrLabel.raw, RawOrLabelHeaders rawOrLabelHeaders = RawOrLabelHeaders.raw,
+            bool exportCheckboxLabel = false)
         {
             try
             {
@@ -3556,23 +3726,25 @@ namespace Redcap
                 this.CheckToken(token);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.Report.GetDisplayName() },
-                    { "report_id", reportId.ToString() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", Content.Report.GetDisplayName()},
+                    {"report_id", reportId.ToString()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
                 // Optional
                 var _rawOrLabel = rawOrLabel.ToString();
-                if (!IsNullOrEmpty(_rawOrLabel))
+                if (!string.IsNullOrEmpty(_rawOrLabel))
                 {
                     payload.Add("rawOrLabel", _rawOrLabel);
                 }
+
                 var _rawOrLabelHeaders = rawOrLabelHeaders.ToString();
-                if (!IsNullOrEmpty(_rawOrLabelHeaders))
+                if (!string.IsNullOrEmpty(_rawOrLabelHeaders))
                 {
                     payload.Add("rawOrLabelHeaders", _rawOrLabelHeaders);
                 }
+
                 if (exportCheckboxLabel)
                 {
                     payload.Add("exportCheckboxLabel", exportCheckboxLabel.ToString());
@@ -3609,7 +3781,10 @@ namespace Redcap
         /// <param name="rawOrLabelHeaders">raw [default], label - (for 'csv' format 'flat' type only) for the CSV headers, export the variable/field names (raw) or the field labels (label)</param>
         /// <param name="exportCheckboxLabel">true, false [default] - specifies the format of checkbox field values specifically when exporting the data as labels (i.e., when rawOrLabel=label). When exporting labels, by default (without providing the exportCheckboxLabel flag or if exportCheckboxLabel=false), all checkboxes will either have a value 'Checked' if they are checked or 'Unchecked' if not checked. But if exportCheckboxLabel is set to true, it will instead export the checkbox value as the checkbox option's label (e.g., 'Choice 1') if checked or it will be blank/empty (no value) if not checked. If rawOrLabel=false, then the exportCheckboxLabel flag is ignored.</param>
         /// <returns>Data from the project in the format and type specified ordered by the record (primary key of project) and then by event id</returns>
-        public async Task<string> ExportReportsAsync(string token, Content content, int reportId, ReturnFormat format = ReturnFormat.json, OnErrorFormat onErrorFormat = OnErrorFormat.json, RawOrLabel rawOrLabel = RawOrLabel.raw, RawOrLabelHeaders rawOrLabelHeaders = RawOrLabelHeaders.raw, bool exportCheckboxLabel = false)
+        public async Task<string> ExportReportsAsync(string token, Content content, int reportId,
+            ReturnFormat format = ReturnFormat.json, OnErrorFormat onErrorFormat = OnErrorFormat.json,
+            RawOrLabel rawOrLabel = RawOrLabel.raw, RawOrLabelHeaders rawOrLabelHeaders = RawOrLabelHeaders.raw,
+            bool exportCheckboxLabel = false)
         {
             try
             {
@@ -3619,23 +3794,25 @@ namespace Redcap
                 this.CheckToken(token);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "report_id", reportId.ToString() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"report_id", reportId.ToString()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
                 // Optional
                 var _rawOrLabel = rawOrLabel.ToString();
-                if (!IsNullOrEmpty(_rawOrLabel))
+                if (!string.IsNullOrEmpty(_rawOrLabel))
                 {
                     payload.Add("rawOrLabel", _rawOrLabel);
                 }
+
                 var _rawOrLabelHeaders = rawOrLabelHeaders.ToString();
-                if (!IsNullOrEmpty(_rawOrLabelHeaders))
+                if (!string.IsNullOrEmpty(_rawOrLabelHeaders))
                 {
                     payload.Add("rawOrLabelHeaders", _rawOrLabelHeaders);
                 }
+
                 if (exportCheckboxLabel)
                 {
                     payload.Add("exportCheckboxLabel", exportCheckboxLabel.ToString());
@@ -3652,7 +3829,9 @@ namespace Redcap
                 return Ex.Message;
             }
         }
+
         #endregion Reports
+
         #region Redcap
 
         /// <summary>
@@ -3668,7 +3847,8 @@ namespace Redcap
         /// <param name="content"></param>
         /// <param name="format">csv, json [default], xml</param>
         /// <returns>The current REDCap version number (three numbers delimited with two periods) as plain text - e.g., 4.13.18, 5.12.2, 6.0.0</returns>
-        public async Task<string> ExportRedcapVersionAsync(string token, Content content = Content.Version, ReturnFormat format = ReturnFormat.json)
+        public async Task<string> ExportRedcapVersionAsync(string token, Content content = Content.Version,
+            ReturnFormat format = ReturnFormat.json)
         {
             try
             {
@@ -3678,9 +3858,9 @@ namespace Redcap
                 this.CheckToken(token);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "format", format.GetDisplayName() }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"format", format.GetDisplayName()}
                 };
 
                 return await this.SendPostRequestAsync(payload, _uri);
@@ -3717,9 +3897,9 @@ namespace Redcap
                 this.CheckToken(token);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.Version.GetDisplayName() },
-                    { "format", format.GetDisplayName() }
+                    {"token", token},
+                    {"content", Content.Version.GetDisplayName()},
+                    {"format", format.GetDisplayName()}
                 };
 
                 return await this.SendPostRequestAsync(payload, _uri);
@@ -3733,8 +3913,11 @@ namespace Redcap
                 return Ex.Message;
             }
         }
+
         #endregion Reports
+
         #region Surveys
+
         /// <summary>
         /// API Version 1.0.0+
         /// From Redcap Version 6.4.0
@@ -3752,7 +3935,8 @@ namespace Redcap
         /// <param name="repeatInstance">(only for projects with repeating instruments/events) The repeat instance number of the repeating event (if longitudinal) or the repeating instrument (if classic or longitudinal). Default value is '1'.</param>
         /// <param name="onErrorFormat">csv, json [default], xml - The returnFormat is only used with regard to the format of any error messages that might be returned.</param>
         /// <returns>Returns a unique survey link (i.e., a URL) in plain text format for the specified record and instrument (and event, if longitudinal).</returns>
-        public async Task<string> ExportSurveyLinkAsync(string token, string record, string instrument, string eventName, int repeatInstance, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportSurveyLinkAsync(string token, string record, string instrument,
+            string eventName, int repeatInstance, OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -3762,13 +3946,13 @@ namespace Redcap
                 this.CheckToken(token);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.SurveyLink.GetDisplayName() },
-                    { "record", record },
-                    { "instrument", instrument },
-                    { "event", eventName },
-                    { "repeat_instance", repeatInstance.ToString() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", Content.SurveyLink.GetDisplayName()},
+                    {"record", record},
+                    {"instrument", instrument},
+                    {"event", eventName},
+                    {"repeat_instance", repeatInstance.ToString()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
 
                 return await this.SendPostRequestAsync(payload, _uri);
@@ -3801,7 +3985,8 @@ namespace Redcap
         /// <param name="repeatInstance">(only for projects with repeating instruments/events) The repeat instance number of the repeating event (if longitudinal) or the repeating instrument (if classic or longitudinal). Default value is '1'.</param>
         /// <param name="onErrorFormat">csv, json [default], xml - The returnFormat is only used with regard to the format of any error messages that might be returned.</param>
         /// <returns>Returns a unique survey link (i.e., a URL) in plain text format for the specified record and instrument (and event, if longitudinal).</returns>
-        public async Task<string> ExportSurveyLinkAsync(string token, Content content, string record, string instrument, string eventName, int repeatInstance, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportSurveyLinkAsync(string token, Content content, string record, string instrument,
+            string eventName, int repeatInstance, OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -3811,13 +3996,13 @@ namespace Redcap
                 this.CheckToken(token);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "record", record },
-                    { "instrument", instrument },
-                    { "event", eventName },
-                    { "repeat_instance", repeatInstance.ToString() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"record", record},
+                    {"instrument", instrument},
+                    {"event", eventName},
+                    {"repeat_instance", repeatInstance.ToString()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
 
                 return await this.SendPostRequestAsync(payload, _uri);
@@ -3847,7 +4032,8 @@ namespace Redcap
         /// <param name="format">csv, json [default], xml</param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>Returns the list of all participants for the specified survey instrument [and event] in the desired format. The following fields are returned: email, email_occurrence, identifier, invitation_sent_status, invitation_send_time, response_status, survey_access_code, survey_link. The attribute 'email_occurrence' represents the current count that the email address has appeared in the list (because emails can be used more than once), thus email + email_occurrence represent a unique value pair. 'invitation_sent_status' is '0' if an invitation has not yet been sent to the participant, and is '1' if it has. 'invitation_send_time' is the date/time in which the next invitation will be sent, and is blank if there is no invitation that is scheduled to be sent. 'response_status' represents whether the participant has responded to the survey, in which its value is 0, 1, or 2 for 'No response', 'Partial', or 'Completed', respectively. Note: If an incorrect event_id or instrument name is used or if the instrument has not been enabled as a survey, then an error will be returned.</returns>
-        public async Task<string> ExportSurveyParticipantsAsync(string token, string instrument, string eventName, ReturnFormat format = ReturnFormat.json, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportSurveyParticipantsAsync(string token, string instrument, string eventName,
+            ReturnFormat format = ReturnFormat.json, OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -3857,12 +4043,12 @@ namespace Redcap
                 this.CheckToken(token);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.ParticipantList.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "instrument", instrument },
-                    { "event", eventName },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", Content.ParticipantList.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"instrument", instrument},
+                    {"event", eventName},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
 
                 return await this.SendPostRequestAsync(payload, _uri);
@@ -3893,7 +4079,8 @@ namespace Redcap
         /// <param name="format">csv, json [default], xml</param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>Returns the list of all participants for the specified survey instrument [and event] in the desired format. The following fields are returned: email, email_occurrence, identifier, invitation_sent_status, invitation_send_time, response_status, survey_access_code, survey_link. The attribute 'email_occurrence' represents the current count that the email address has appeared in the list (because emails can be used more than once), thus email + email_occurrence represent a unique value pair. 'invitation_sent_status' is '0' if an invitation has not yet been sent to the participant, and is '1' if it has. 'invitation_send_time' is the date/time in which the next invitation will be sent, and is blank if there is no invitation that is scheduled to be sent. 'response_status' represents whether the participant has responded to the survey, in which its value is 0, 1, or 2 for 'No response', 'Partial', or 'Completed', respectively. Note: If an incorrect event_id or instrument name is used or if the instrument has not been enabled as a survey, then an error will be returned.</returns>
-        public async Task<string> ExportSurveyParticipantsAsync(string token, Content content, string instrument, string eventName, ReturnFormat format = ReturnFormat.json, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportSurveyParticipantsAsync(string token, Content content, string instrument,
+            string eventName, ReturnFormat format = ReturnFormat.json, OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -3903,12 +4090,12 @@ namespace Redcap
                 this.CheckToken(token);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "instrument", instrument },
-                    { "event", eventName },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"instrument", instrument},
+                    {"event", eventName},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
 
                 return await this.SendPostRequestAsync(payload, _uri);
@@ -3937,7 +4124,8 @@ namespace Redcap
         /// <param name="record">the record ID. The name of the record in the project.</param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>Returns a unique Survey Queue link (i.e., a URL) in plain text format for the specified record in the project.</returns>
-        public async Task<string> ExportSurveyQueueLinkAsync(string token, string record, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportSurveyQueueLinkAsync(string token, string record,
+            OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -3947,10 +4135,10 @@ namespace Redcap
                 this.CheckToken(token);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.SurveyQueueLink.GetDisplayName() },
-                    { "record", record },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", Content.SurveyQueueLink.GetDisplayName()},
+                    {"record", record},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
 
                 return await this.SendPostRequestAsync(payload, _uri);
@@ -3980,7 +4168,8 @@ namespace Redcap
         /// <param name="record">the record ID. The name of the record in the project.</param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>Returns a unique Survey Queue link (i.e., a URL) in plain text format for the specified record in the project.</returns>
-        public async Task<string> ExportSurveyQueueLinkAsync(string token, Content content, string record, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportSurveyQueueLinkAsync(string token, Content content, string record,
+            OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
@@ -3990,10 +4179,10 @@ namespace Redcap
                 this.CheckToken(token);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "record", record },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"record", record},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
 
                 return await this.SendPostRequestAsync(payload, _uri);
@@ -4024,26 +4213,28 @@ namespace Redcap
         /// <param name="repeatInstance">(only for projects with repeating instruments/events) The repeat instance number of the repeating event (if longitudinal) or the repeating instrument (if classic or longitudinal). Default value is '1'.</param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>Returns a unique Return Code in plain text format for the specified record and instrument (and event, if longitudinal).</returns>
-        public async Task<string> ExportSurveyReturnCodeAsync(string token, string record, string instrument, string eventName, string repeatInstance, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportSurveyReturnCodeAsync(string token, string record, string instrument,
+            string eventName, string repeatInstance, OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
                 /*
                  * Check the required parameters for empty or null
                  */
-                if (IsNullOrEmpty(token))
+                if (string.IsNullOrEmpty(token))
                 {
-                    throw new ArgumentNullException("Please provide a valid Redcap token.");
+                    throw new ArgumentNullException(nameof(token));
                 }
+
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.SurveyReturnCode.GetDisplayName() },
-                    { "record", record },
-                    { "instrument", instrument },
-                    { "event", eventName },
-                    { "repeat_instance", repeatInstance.ToString()},
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", Content.SurveyReturnCode.GetDisplayName()},
+                    {"record", record},
+                    {"instrument", instrument},
+                    {"event", eventName},
+                    {"repeat_instance", repeatInstance},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
 
                 return await this.SendPostRequestAsync(payload, _uri);
@@ -4075,41 +4266,40 @@ namespace Redcap
         /// <param name="repeatInstance">(only for projects with repeating instruments/events) The repeat instance number of the repeating event (if longitudinal) or the repeating instrument (if classic or longitudinal). Default value is '1'.</param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>Returns a unique Return Code in plain text format for the specified record and instrument (and event, if longitudinal).</returns>
-        public async Task<string> ExportSurveyReturnCodeAsync(string token, Content content, string record, string instrument, string eventName, string repeatInstance, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportSurveyReturnCodeAsync(string token, Content content, string record, string instrument, string eventName, string repeatInstance,
+            OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
-                /*
-                 * Check the required parameters for empty or null
-                 */
-                if (IsNullOrEmpty(token))
+                if (string.IsNullOrEmpty(token))
                 {
-                    throw new ArgumentNullException("Please provide a valid Redcap token.");
+                    throw new ArgumentNullException(nameof(token));
                 }
+
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "record", record },
-                    { "instrument", instrument },
-                    { "event", eventName },
-                    { "repeat_instance", repeatInstance.ToString()},
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"record", record},
+                    {"instrument", instrument},
+                    {"event", eventName},
+                    {"repeat_instance", repeatInstance},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
 
                 return await this.SendPostRequestAsync(payload, _uri);
             }
             catch (Exception Ex)
             {
-                /*
-                 * We'll just log the error and return the error message.
-                 */
                 Log.Error($"{Ex.Message}");
                 return Ex.Message;
             }
         }
+
         #endregion Surveys
+
         #region Users & User Privileges
+
         /// <summary>
         /// API Version 1.0.0+
         /// From Redcap Version 4.7.0
@@ -4130,23 +4320,25 @@ namespace Redcap
         /// Form Rights: 0=No Access, 2=Read Only, 1=View records/responses and edit records(survey responses are read-only), 3=Edit survey responses
         /// Other attribute values: 0=No Access, 1=Access.
         /// </example>
-        public async Task<string> ExportUsersAsync(string token, ReturnFormat format = ReturnFormat.json, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportUsersAsync(string token, ReturnFormat format = ReturnFormat.json,
+            OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
                 /*
                  * Check the required parameters for empty or null
                  */
-                if (IsNullOrEmpty(token))
+                if (string.IsNullOrEmpty(token))
                 {
-                    throw new ArgumentNullException("Please provide a valid Redcap token.");
+                    throw new ArgumentNullException(nameof(token));
                 }
+
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.User.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", Content.User.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
 
                 return await this.SendPostRequestAsync(payload, _uri);
@@ -4182,32 +4374,29 @@ namespace Redcap
         /// Form Rights: 0=No Access, 2=Read Only, 1=View records/responses and edit records(survey responses are read-only), 3=Edit survey responses
         /// Other attribute values: 0=No Access, 1=Access.
         /// </example>
-        public async Task<string> ExportUsersAsync(string token, Content content = Content.User, ReturnFormat format = ReturnFormat.json, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ExportUsersAsync(string token, Content content = Content.User,
+            ReturnFormat format = ReturnFormat.json, OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
-                /*
-                 * Check the required parameters for empty or null
-                 */
-                if (IsNullOrEmpty(token))
+               
+                if (string.IsNullOrEmpty(token))
                 {
-                    throw new ArgumentNullException("Please provide a valid Redcap token.");
+                    throw new ArgumentNullException(nameof(token));
                 }
+
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()}
                 };
 
                 return await this.SendPostRequestAsync(payload, _uri);
             }
             catch (Exception Ex)
             {
-                /*
-                 * We'll just log the error and return the error message.
-                 */
                 Log.Error($"{Ex.Message}");
                 return Ex.Message;
             }
@@ -4254,35 +4443,34 @@ namespace Redcap
         /// <param name="format">csv, json [default], xml</param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>Number of users added or updated</returns>
-        public async Task<string> ImportUsersAsync<T>(string token, List<T> data, ReturnFormat format = ReturnFormat.json, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ImportUsersAsync<T>(string token, List<T> data,
+            ReturnFormat format = ReturnFormat.json, OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
                 /*
                  * Check the required parameters for empty or null
                  */
-                if (IsNullOrEmpty(token))
+                if (string.IsNullOrEmpty(token))
                 {
-                    throw new ArgumentNullException("Please provide a valid Redcap token.");
+                    throw new ArgumentNullException(nameof(token));
                 }
+
                 // Handle formats
                 var _serializedData = JsonConvert.SerializeObject(data);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", Content.User.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() },
-                    { "data", _serializedData }
+                    {"token", token},
+                    {"content", Content.User.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()},
+                    {"data", _serializedData}
                 };
 
                 return await this.SendPostRequestAsync(payload, _uri);
             }
             catch (Exception Ex)
             {
-                /*
-                 * We'll just log the error and return the error message.
-                 */
                 Log.Error($"{Ex.Message}");
                 return Ex.Message;
             }
@@ -4330,42 +4518,37 @@ namespace Redcap
         /// <param name="format">csv, json [default], xml</param>
         /// <param name="onErrorFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <returns>Number of users added or updated</returns>
-        public async Task<string> ImportUsersAsync<T>(string token, Content content, List<T> data, ReturnFormat format = ReturnFormat.json, OnErrorFormat onErrorFormat = OnErrorFormat.json)
+        public async Task<string> ImportUsersAsync<T>(string token, Content content, List<T> data,
+            ReturnFormat format = ReturnFormat.json, OnErrorFormat onErrorFormat = OnErrorFormat.json)
         {
             try
             {
-                /*
-                 * Check the required parameters for empty or null
-                 */
-                if (IsNullOrEmpty(token))
+               
+                if (string.IsNullOrEmpty(token))
                 {
-                    throw new ArgumentNullException("Please provide a valid Redcap token.");
+                    throw new ArgumentNullException(nameof(token));
                 }
+
                 // Handle formats
                 var _serializedData = JsonConvert.SerializeObject(data);
                 var payload = new Dictionary<string, string>
                 {
-                    { "token", token },
-                    { "content", content.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", onErrorFormat.GetDisplayName() },
-                    { "data", _serializedData }
+                    {"token", token},
+                    {"content", content.GetDisplayName()},
+                    {"format", format.GetDisplayName()},
+                    {"returnFormat", onErrorFormat.GetDisplayName()},
+                    {"data", _serializedData}
                 };
 
                 return await this.SendPostRequestAsync(payload, _uri);
             }
             catch (Exception Ex)
             {
-                /*
-                 * We'll just log the error and return the error message.
-                 */
                 Log.Error($"{Ex.Message}");
                 return Ex.Message;
             }
         }
-        #endregion Users & User Privileges
 
-        
-        
+        #endregion Users & User Privileges
     }
 }

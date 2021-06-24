@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
 using Newtonsoft.Json;
 
 namespace Redcap.Models
@@ -21,12 +20,12 @@ namespace Redcap.Models
         /// 
         [JsonProperty("data_access_group_name")]
         public string GroupName { get; set; }
+
         /// <summary>
         /// auto-generated unique group name
         /// </summary>
         /// 
         [JsonProperty("unique_group_name")]
-
         public string UniqueGroupName { get; set; }
     }
 }

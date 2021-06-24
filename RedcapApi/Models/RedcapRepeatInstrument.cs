@@ -7,9 +7,8 @@ namespace Redcap.Models
     /// The instrument that is repeated in a project that has repeating instruments enabled.
     /// This can support "repeat entire event" or "repeat instruments" mode.
     /// </summary>
-    public class RedcapRepeatInstrument: RedcapEvent
+    public class RedcapRepeatInstrument : RedcapEvent
     {
-
         /// <summary>
         /// The unique instrument/form name that is repeated for the specific event.
         /// e.g demographics
