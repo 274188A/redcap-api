@@ -8,6 +8,7 @@ namespace RedcapApi.Tests;
 
 public class UtilitiesTests
 {
+    private const string Token = "token123";
     private readonly Redcap.RedcapApi _api = new("http://localhost/");
 
     [Fact]
@@ -218,7 +219,7 @@ public class UtilitiesTests
         using var server = new LocalHttpServer(_ => new TestResponse(200, "access-code"));
         var api = new Redcap.RedcapApi(server.Url.ToString());
 
-        var response = await api.ExportSurveyAccessCodeAsync("token123", "1", "survey_form", "event_1", 2);
+        var response = await api.ExportSurveyAccessCodeAsync(Token, "1", "survey_form", "event_1", 2);
 
         Assert.Equal("access-code", response);
         Assert.True(server.Requests.TryPeek(out var request));
@@ -235,7 +236,7 @@ public class UtilitiesTests
         using var server = new LocalHttpServer(_ => new TestResponse(200, "1"));
         var api = new Redcap.RedcapApi(server.Url.ToString());
 
-        var response = await api.DeleteRecordsAsync("token123", new[] { "1", "2" }, 1, deleteLogging: true);
+        var response = await api.DeleteRecordsAsync(Token, new[] { "1", "2" }, 1, deleteLogging: true);
 
         Assert.Equal("1", response);
         Assert.True(server.Requests.TryPeek(out var request));
@@ -252,7 +253,7 @@ public class UtilitiesTests
         using var server = new LocalHttpServer(_ => new TestResponse(200, "group-a"));
         var api = new Redcap.RedcapApi(server.Url.ToString());
 
-        var response = await api.RandomizeRecord("token123", "1", "99", RedcapFormat.json, returnAlt: true);
+        var response = await api.RandomizeRecord(Token, "1", "99", RedcapFormat.json, returnAlt: true);
 
         Assert.Equal("group-a", response);
         Assert.True(server.Requests.TryPeek(out var request));
