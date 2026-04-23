@@ -10,20 +10,20 @@ namespace Redcap.Models
         /// <summary>
         /// Instrument is incomplete for the record
         /// </summary>
-        [Display(Name ="Incomplete")]
+        [Display(Name = "Incomplete")]
         Incomplete = 0,
         /// <summary>
         /// Instrument is unverified for the record
         /// </summary>
         ///
-        [Display(Name ="Unverified")]
+        [Display(Name = "Unverified")]
         Unverified = 1,
 
         /// <summary>
         /// Instrument is complete for the record
         /// </summary>
         /// 
-        [Display(Name ="Complete")]
+        [Display(Name = "Complete")]
         Complete = 2
     }
 }

@@ -1,5 +1,3 @@
-using System.Net.Http;
-
 using Redcap.Interfaces;
 using Redcap.Utilities;
 

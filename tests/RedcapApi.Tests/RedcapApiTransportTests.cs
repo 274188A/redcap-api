@@ -1,10 +1,7 @@
-using System.Net.Http;
-
-using Xunit;
-
 using Redcap.Exceptions;
 using Redcap.Interfaces;
 using Redcap.Models;
+using Xunit;
 
 namespace RedcapApi.Tests;
 
@@ -140,7 +137,7 @@ public class RedcapApiTransportTests
     }
 
     [Fact]
-    public async Task GenerateNextRecordNameAsync_DefaultOverload_UsesExpectedPayload()
+    public async Task GenerateNextRecordNameAsync_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
         var api = new Redcap.RedcapApi("http://localhost/", transport);
@@ -148,19 +145,8 @@ public class RedcapApiTransportTests
         await api.GenerateNextRecordNameAsync("token123");
 
         Assert.NotNull(transport.LastDictionaryPayload);
-        Assert.Equal("generateNextRecordName", transport.LastDictionaryPayload!["content"]);
-    }
-
-    [Fact]
-    public async Task GenerateNextRecordNameAsync_ContentOverload_UsesExpectedPayload()
-    {
-        var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
-
-        await api.GenerateNextRecordNameAsync("token123");
-
-        Assert.NotNull(transport.LastDictionaryPayload);
-        Assert.Equal("generateNextRecordName", transport.LastDictionaryPayload!["content"]);
+        Assert.Equal("token123", transport.LastDictionaryPayload!["token"]);
+        Assert.Equal("generateNextRecordName", transport.LastDictionaryPayload["content"]);
     }
 
     [Fact]
@@ -284,9 +270,22 @@ public class RedcapApiTransportTests
 
         Assert.NotNull(transport.LastDictionaryPayload);
         {
-            Assert.Equal("7", transport.LastDictionaryPayload!["records"]);
+            Assert.Equal("record", transport.LastDictionaryPayload!["content"]);
+            Assert.Equal("csv", transport.LastDictionaryPayload["format"]);
+            Assert.Equal("flat", transport.LastDictionaryPayload["type"]);
+            Assert.Equal("7", transport.LastDictionaryPayload["records"]);
+            Assert.Equal("field_a", transport.LastDictionaryPayload["fields[0]"]);
+            Assert.Equal("form_a", transport.LastDictionaryPayload["forms[0]"]);
+            Assert.Equal("event_a", transport.LastDictionaryPayload["events[0]"]);
+            Assert.Equal("label", transport.LastDictionaryPayload["rawOrLabel"]);
             Assert.Equal("label", transport.LastDictionaryPayload["rawOrLabelHeaders"]);
+            Assert.Equal("True", transport.LastDictionaryPayload["exportCheckboxLabel"]);
             Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
+            Assert.Equal("True", transport.LastDictionaryPayload["exportSurveyFields"]);
+            Assert.Equal("True", transport.LastDictionaryPayload["exportDataAccessGroups"]);
+            Assert.Equal("[id] = 7", transport.LastDictionaryPayload["filterLogic"]);
+            Assert.Equal("comma", transport.LastDictionaryPayload["csvDelimiter"]);
+            Assert.Equal("dot", transport.LastDictionaryPayload["decimalCharacter"]);
             Assert.Equal("True", transport.LastDictionaryPayload["exportBlankForGrayFormStatus"]);
             Assert.Equal("True", transport.LastDictionaryPayload["combineCheckboxOptions"]);
         }
@@ -324,7 +323,11 @@ public class RedcapApiTransportTests
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("record", transport.LastDictionaryPayload!["content"]);
+        Assert.Equal("json", transport.LastDictionaryPayload["format"]);
+        Assert.Equal("flat", transport.LastDictionaryPayload["type"]);
         Assert.Equal("normal", transport.LastDictionaryPayload["overwriteBehavior"]);
+        Assert.Equal("False", transport.LastDictionaryPayload["forceAutoNumber"]);
+        Assert.Equal("False", transport.LastDictionaryPayload["backgroundProcess"]);
         Assert.Contains("Bob", transport.LastDictionaryPayload["data"]);
     }
 
@@ -380,7 +383,11 @@ public class RedcapApiTransportTests
 
         Assert.NotNull(transport.LastDictionaryPayload);
         {
-            Assert.Equal("demographics", transport.LastDictionaryPayload!["instrument"]);
+            Assert.Equal("record", transport.LastDictionaryPayload!["content"]);
+            Assert.Equal("delete", transport.LastDictionaryPayload["action"]);
+            Assert.Equal("1", transport.LastDictionaryPayload["records[0]"]);
+            Assert.Equal("2", transport.LastDictionaryPayload["arm"]);
+            Assert.Equal("demographics", transport.LastDictionaryPayload["instrument"]);
             Assert.Equal("event_1_arm_1", transport.LastDictionaryPayload["event"]);
             Assert.Equal("3", transport.LastDictionaryPayload["repeat_instance"]);
             Assert.Equal("True", transport.LastDictionaryPayload["delete_logging"]);
@@ -425,7 +432,9 @@ public class RedcapApiTransportTests
 
         Assert.NotNull(transport.LastDictionaryPayload);
         {
-            Assert.Equal("old-id", transport.LastDictionaryPayload!["record"]);
+            Assert.Equal("record", transport.LastDictionaryPayload!["content"]);
+            Assert.Equal("rename", transport.LastDictionaryPayload["action"]);
+            Assert.Equal("old-id", transport.LastDictionaryPayload["record"]);
             Assert.Equal("new-id", transport.LastDictionaryPayload["new_record_name"]);
             Assert.Equal("1", transport.LastDictionaryPayload["arm"]);
         }
@@ -470,6 +479,7 @@ public class RedcapApiTransportTests
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("repeatingFormsEvents", transport.LastDictionaryPayload!["content"]);
+        Assert.Equal("json", transport.LastDictionaryPayload["format"]);
     }
 
     [Fact]
@@ -483,6 +493,7 @@ public class RedcapApiTransportTests
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("repeatingFormsEvents", transport.LastDictionaryPayload!["content"]);
+        Assert.Equal("json", transport.LastDictionaryPayload["format"]);
         Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
         Assert.Contains("form_a", transport.LastDictionaryPayload["data"]);
     }
@@ -564,6 +575,7 @@ public class RedcapApiTransportTests
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("user", transport.LastDictionaryPayload!["content"]);
+        Assert.Equal("json", transport.LastDictionaryPayload["format"]);
     }
 
     [Fact]
@@ -610,6 +622,7 @@ public class RedcapApiTransportTests
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("user", transport.LastDictionaryPayload!["content"]);
+        Assert.Equal("json", transport.LastDictionaryPayload["format"]);
         Assert.Contains("bob", transport.LastDictionaryPayload["data"]);
     }
 
@@ -759,6 +772,7 @@ public class RedcapApiTransportTests
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("event", transport.LastDictionaryPayload!["content"]);
         Assert.Equal("csv", transport.LastDictionaryPayload["format"]);
+        Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
         Assert.Equal("1", transport.LastDictionaryPayload["arms[0]"]);
     }
 
@@ -790,6 +804,9 @@ public class RedcapApiTransportTests
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("event", transport.LastDictionaryPayload!["content"]);
         Assert.Equal("import", transport.LastDictionaryPayload["action"]);
+        Assert.Equal("false", transport.LastDictionaryPayload["override"]);
+        Assert.Equal("json", transport.LastDictionaryPayload["format"]);
+        Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
         Assert.Contains("baseline", transport.LastDictionaryPayload["data"]);
     }
 
@@ -1045,6 +1062,7 @@ public class RedcapApiTransportTests
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("arm", transport.LastDictionaryPayload!["content"]);
         Assert.Equal("csv", transport.LastDictionaryPayload["format"]);
+        Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
         Assert.Equal("1", transport.LastDictionaryPayload["arms[0]"]);
     }
 
@@ -1185,7 +1203,7 @@ public class RedcapApiTransportTests
         }
         finally
         {
-            if(Directory.Exists(tempFolder))
+            if (Directory.Exists(tempFolder))
             {
                 Directory.Delete(tempFolder, true);
             }
@@ -1211,7 +1229,7 @@ public class RedcapApiTransportTests
         }
         finally
         {
-            if(Directory.Exists(tempFolder))
+            if (Directory.Exists(tempFolder))
             {
                 Directory.Delete(tempFolder, true);
             }
@@ -1248,7 +1266,7 @@ public class RedcapApiTransportTests
         }
         finally
         {
-            if(Directory.Exists(tempFolder))
+            if (Directory.Exists(tempFolder))
             {
                 Directory.Delete(tempFolder, true);
             }
@@ -1272,7 +1290,7 @@ public class RedcapApiTransportTests
         }
         finally
         {
-            if(Directory.Exists(tempFolder))
+            if (Directory.Exists(tempFolder))
             {
                 Directory.Delete(tempFolder, true);
             }
@@ -1691,7 +1709,7 @@ public class RedcapApiTransportTests
         }
         finally
         {
-            if(Directory.Exists(tempFolder))
+            if (Directory.Exists(tempFolder))
             {
                 Directory.Delete(tempFolder, true);
             }
@@ -1830,15 +1848,15 @@ public class RedcapApiTransportTests
     {
         var fields = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        foreach(var part in payload)
+        foreach (var part in payload)
         {
             var name = part.Headers.ContentDisposition?.Name?.Trim('"');
-            if(string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
                 continue;
             }
 
-            if(part.Headers.ContentDisposition?.FileName is not null)
+            if (part.Headers.ContentDisposition?.FileName is not null)
             {
                 fields[name] = "<binary>";
                 continue;

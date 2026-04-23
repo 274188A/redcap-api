@@ -805,8 +805,8 @@ namespace Redcap
                 payload["format"] = format.GetDisplayName();
                 payload["returnFormat"] = returnFormat.GetDisplayName();
                 if (!IsNullOrEmpty(folderId)) payload["folder_id"] = folderId!;
-                if (!IsNullOrEmpty(dagId))    payload["dag_id"]    = dagId!;
-                if (!IsNullOrEmpty(roleId))   payload["role_id"]   = roleId!;
+                if (!IsNullOrEmpty(dagId)) payload["dag_id"] = dagId!;
+                if (!IsNullOrEmpty(roleId)) payload["role_id"] = roleId!;
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -1248,13 +1248,13 @@ namespace Redcap
                     { "returnFormat", returnFormat.GetDisplayName() },
                     { "data", _serializedData }
                 };
-                if(!IsNullOrEmpty(odm))
+                if (!IsNullOrEmpty(odm))
                 {
                     payload.Add("odm", odm);
                 }
                 return await this.SendPostRequestAsync(payload, _uri, cancellationToken: cancellationToken, timeOutSeconds);
             }
-            catch(Exception Ex)
+            catch (Exception Ex)
             {
                 Log.Error(Ex, "REDCap API call failed");
                 throw new RedcapApiException(Ex.Message, Ex);
@@ -1423,9 +1423,9 @@ namespace Redcap
         public async Task<string> ExportRecordsAsync(string token, RedcapFormat format = RedcapFormat.json, RedcapDataType redcapDataType = RedcapDataType.flat, string[]? records = default, string[]? fields = default, string[]? forms = default, string[]? events = default, RawOrLabel rawOrLabel = RawOrLabel.raw, RawOrLabelHeaders rawOrLabelHeaders = RawOrLabelHeaders.raw, bool exportCheckboxLabel = false, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, bool exportSurveyFields = false, bool exportDataAccessGroups = false, string? filterLogic = null, DateTime? dateRangeBegin = default, DateTime? dateRangeEnd = default, CsvDelimiter csvDelimiter = CsvDelimiter.comma, DecimalCharacter decimalCharacter = DecimalCharacter.none, bool exportBlankForGrayFormStatus = false, bool combineCheckboxOptions = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             var recordsStr = records?.Length > 0 ? await this.ConvertArraytoString(records) : null;
-            var fieldsStr  = fields?.Length > 0  ? await this.ConvertArraytoString(fields)  : null;
-            var formsStr   = forms?.Length > 0   ? await this.ConvertArraytoString(forms)   : null;
-            var eventsStr  = events?.Length > 0  ? await this.ConvertArraytoString(events)  : null;
+            var fieldsStr = fields?.Length > 0 ? await this.ConvertArraytoString(fields) : null;
+            var formsStr = forms?.Length > 0 ? await this.ConvertArraytoString(forms) : null;
+            var eventsStr = events?.Length > 0 ? await this.ConvertArraytoString(events) : null;
             return await ExecuteAsync(token, payload =>
             {
                 payload["token"] = token;
@@ -1435,9 +1435,9 @@ namespace Redcap
                 payload["type"] = redcapDataType.GetDisplayName();
                 payload["exportBlankForGrayFormStatus"] = exportBlankForGrayFormStatus.ToString();
                 if (recordsStr != null) payload["records"] = recordsStr;
-                if (fieldsStr != null)  payload["fields"]  = fieldsStr;
-                if (formsStr != null)   payload["forms"]   = formsStr;
-                if (eventsStr != null)  payload["events"]  = eventsStr;
+                if (fieldsStr != null) payload["fields"] = fieldsStr;
+                if (formsStr != null) payload["forms"] = formsStr;
+                if (eventsStr != null) payload["events"] = eventsStr;
                 var _rawOrLabel = rawOrLabel.ToString();
                 if (!IsNullOrEmpty(_rawOrLabel)) payload["rawOrLabel"] = _rawOrLabel;
                 var _rawOrLabelHeaders = rawOrLabelHeaders.ToString();
@@ -1447,7 +1447,7 @@ namespace Redcap
                 if (exportDataAccessGroups) payload["exportDataAccessGroups"] = exportDataAccessGroups.ToString();
                 if (!IsNullOrEmpty(filterLogic)) payload["filterLogic"] = filterLogic!;
                 if (dateRangeBegin.HasValue) payload["dateRangeBegin"] = dateRangeBegin.Value.ToString("yyyy-MM-dd hh:mm:ss");
-                if (dateRangeEnd.HasValue)   payload["dateRangeEnd"]   = dateRangeEnd.Value.ToString("yyyy-MM-dd hh:mm:ss");
+                if (dateRangeEnd.HasValue) payload["dateRangeEnd"] = dateRangeEnd.Value.ToString("yyyy-MM-dd hh:mm:ss");
                 if (format == RedcapFormat.csv) payload["csvDelimiter"] = csvDelimiter.ToString();
                 if (decimalCharacter != DecimalCharacter.none) payload["decimalCharacter"] = decimalCharacter.ToString();
                 if (combineCheckboxOptions) payload["combineCheckboxOptions"] = combineCheckboxOptions.ToString();
@@ -1489,7 +1489,7 @@ namespace Redcap
         public async Task<string> ExportRecordAsync(string token, string record, RedcapFormat format = RedcapFormat.json, RedcapDataType redcapDataType = RedcapDataType.flat, string[]? fields = null, string[]? forms = null, string[]? events = null, RawOrLabel rawOrLabel = RawOrLabel.raw, RawOrLabelHeaders rawOrLabelHeaders = RawOrLabelHeaders.raw, bool exportCheckboxLabel = false, RedcapReturnFormat onErrorFormat = RedcapReturnFormat.json, bool exportSurveyFields = false, bool exportDataAccessGroups = false, string? filterLogic = null, DateTime? dateRangeBegin = default, DateTime? dateRangeEnd = default, CsvDelimiter csvDelimiter = CsvDelimiter.comma, DecimalCharacter decimalCharacter = DecimalCharacter.none, bool exportBlankForGrayFormStatus = false, bool combineCheckboxOptions = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             var fieldsStr = fields?.Length > 0 ? await this.ConvertArraytoString(fields) : null;
-            var formsStr  = forms?.Length > 0  ? await this.ConvertArraytoString(forms)  : null;
+            var formsStr = forms?.Length > 0 ? await this.ConvertArraytoString(forms) : null;
             var eventsStr = events?.Length > 0 ? await this.ConvertArraytoString(events) : null;
             return await ExecuteAsync(token, payload =>
             {
@@ -1500,7 +1500,7 @@ namespace Redcap
                 payload["returnFormat"] = onErrorFormat.GetDisplayName();
                 payload["type"] = redcapDataType.GetDisplayName();
                 if (fieldsStr != null) payload["fields"] = fieldsStr;
-                if (formsStr != null)  payload["forms"]  = formsStr;
+                if (formsStr != null) payload["forms"] = formsStr;
                 if (eventsStr != null) payload["events"] = eventsStr;
                 var _rawOrLabel = rawOrLabel.ToString();
                 if (!IsNullOrEmpty(_rawOrLabel)) payload["rawOrLabel"] = _rawOrLabel;
@@ -1511,7 +1511,7 @@ namespace Redcap
                 if (exportDataAccessGroups) payload["exportDataAccessGroups"] = exportDataAccessGroups.ToString();
                 if (!IsNullOrEmpty(filterLogic)) payload["filterLogic"] = filterLogic!;
                 if (dateRangeBegin.HasValue) payload["dateRangeBegin"] = dateRangeBegin.Value.ToString("yyyy-MM-dd hh:mm:ss");
-                if (dateRangeEnd.HasValue)   payload["dateRangeEnd"]   = dateRangeEnd.Value.ToString("yyyy-MM-dd hh:mm:ss");
+                if (dateRangeEnd.HasValue) payload["dateRangeEnd"] = dateRangeEnd.Value.ToString("yyyy-MM-dd hh:mm:ss");
                 if (format == RedcapFormat.csv) payload["csvDelimiter"] = csvDelimiter.ToString();
                 if (decimalCharacter != DecimalCharacter.none) payload["decimalCharacter"] = decimalCharacter.ToString();
                 if (combineCheckboxOptions) payload["combineCheckboxOptions"] = combineCheckboxOptions.ToString();

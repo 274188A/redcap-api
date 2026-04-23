@@ -1,12 +1,8 @@
-using System.Net.Http;
-using System.Text;
-
-using Xunit;
-
-using Redcap;
 using Redcap.Http;
 using Redcap.Models;
 using Redcap.Utilities;
+using System.Text;
+using Xunit;
 
 namespace RedcapApi.Tests;
 

@@ -10,13 +10,13 @@ namespace Redcap.Models
         /// <summary>
         /// Create Folder
         /// </summary>
-        [Display(Name ="createFolder")]
+        [Display(Name = "createFolder")]
         CreateFolder,
 
         /// <summary>
         /// List Folders
         /// </summary>
-        [Display(Name ="list")]
+        [Display(Name = "list")]
         List,
 
         /// <summary>

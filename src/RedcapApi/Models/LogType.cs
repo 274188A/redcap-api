@@ -52,7 +52,7 @@ namespace Redcap.Models
         /// <summary>
         /// Record locking and e-signatures
         /// </summary>
-        [Display(Name ="lock_record")]
+        [Display(Name = "lock_record")]
         LockRecord,
         /// <summary>
         /// Page views

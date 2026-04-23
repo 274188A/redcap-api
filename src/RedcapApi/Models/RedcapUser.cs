@@ -131,7 +131,7 @@ namespace Redcap.Models
         /// <summary>
         /// record create tool
         /// </summary>
-        [Display(Name ="record_create_tool")]
+        [Display(Name = "record_create_tool")]
         public string? RecordCreateTool { get; set; }
 
         /// <summary>

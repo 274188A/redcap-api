@@ -11,7 +11,7 @@ namespace Redcap.Models
         /// <summary>
         /// Log
         /// </summary>
-        [Display(Name ="log")]
+        [Display(Name = "log")]
         Log,
         /// <summary>
         /// User-Mapping
@@ -73,7 +73,7 @@ namespace Redcap.Models
         /// File Repository
         /// </summary>
         /// 
-        [Display(Name ="fileRepository")]
+        [Display(Name = "fileRepository")]
         FileRepository,
 
         /// <summary>
@@ -215,7 +215,7 @@ namespace Redcap.Models
         /// <summary>
         /// User Role
         /// </summary>
-        [Display(Name ="userRole")]
+        [Display(Name = "userRole")]
         UserRole,
         /// <summary>
         /// User Role Mapping

@@ -1,8 +1,6 @@
-using Xunit;
-
 using Redcap.Models;
-
 using System.Text.Json;
+using Xunit;
 namespace RedcapApi.Tests
 {
     public class TestPerson
@@ -12,7 +10,7 @@ namespace RedcapApi.Tests
         public string? last_name { get; set; }
     }
     [Xunit.Trait("Category", "E2E")]
-        public class RecordsTest
+    public class RecordsTest
     {
         [SkippableFact]
         public async Task ExportRecords_ShouldReturn_ListRecords()
@@ -32,14 +30,14 @@ namespace RedcapApi.Tests
             string[] forms = [form];
             var apiResult = await redcapApi.ExportRecordAsync(
                 token: token,
-                
+
                 record: recordId,
                 format: RedcapFormat.json,
                 redcapDataType: RedcapDataType.flat,
                 fields: fields,
                 forms: forms,
                 events: null,
-                rawOrLabel:  RawOrLabel.raw,
+                rawOrLabel: RawOrLabel.raw,
                 rawOrLabelHeaders: RawOrLabelHeaders.raw,
                 exportCheckboxLabel: false,
                 onErrorFormat: RedcapReturnFormat.json,

@@ -263,7 +263,5 @@ RedcapApi/Properties
 RedcapApiDemo/Properties
 RedcapApi/nuget.config
 
-# Local-only demo settings — README documents that this file holds secrets and must not be committed.
-demo/RedcapApiDemo/appsettings.Development.json
 .claude/settings.local.json
-.claude/settings.local.json
+HANDOFF.md
