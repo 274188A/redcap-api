@@ -8,9 +8,8 @@ Three .NET 10 projects held together by `RedcapApi.sln`:
 
 - `src/RedcapApi` — the library (NuGet package `RedcapAPI`, version 2.0.0)
 - `tests/RedcapApi.Tests` — xUnit test project (transport-level + a few E2E tests)
-- `demo/RedcapApiDemo` — console app that exercises every endpoint against a live REDCap instance
 
-All three target `net10.0`. The library depends only on `Newtonsoft.Json` and `Serilog`.
+Both target `net10.0`. The library depends only on `Newtonsoft.Json` and `Serilog`.
 
 ## Common Commands
 
@@ -31,10 +30,6 @@ dotnet test tests/RedcapApi.Tests/RedcapApi.Tests.csproj --collect:"XPlat Code C
 
 # pack the NuGet
 dotnet pack src/RedcapApi/RedcapApi.csproj -c Release -o artifacts
-
-# run the demo (prompts for URI and token; accepts -m <MethodName> to run a single operation)
-dotnet run --project demo/RedcapApiDemo/RedcapApiDemo.csproj
-dotnet run --project demo/RedcapApiDemo/RedcapApiDemo.csproj -- -m ImportRecordsAsync
 ```
 
 ## Architecture
@@ -54,10 +49,6 @@ The REDCap API is form-encoded with lower-case string parameters (`content=recor
 ### Overload fan-out
 
 `IRedcap` deliberately exposes many overloads per operation (varying which optional parameters are present, and whether `Content` is passed explicitly). When adding or changing an endpoint, check whether parity is needed across the existing overload set — tests in this repo explicitly cover overload parity and the 2.0.0 release notes call out "overload parity across API method variants" as a dimension of the coverage work.
-
-### Demo project: configuration precedence
-
-`demo/RedcapApiDemo` is not a sample in `src/` — it lives at the repo root and is a fully interactive console app. Configuration resolves in this order: environment variables (`REDCAP_DEMO_BASE_URI`, `REDCAP_DEMO_PROJECT_TOKEN`, `REDCAP_DEMO_SUPER_TOKEN`, or `RedcapDemo__*`) → `demo/RedcapApiDemo/appsettings.Development.json` (git-ignored; a `.example.json` is checked in) → hard-coded defaults in `Program.cs`. Pressing Enter at prompts accepts whichever value won. `Program.cs` is split across `Program.Configuration.cs`, `Program.Methods.cs`, `Program.Preflight.cs`, `Program.ResponseFormatting.cs`, and `Program.SingleMethod.cs` (the `-m` selector).
 
 ### E2E tests
 

@@ -21,10 +21,8 @@ The repository now follows standard .NET conventions:
 ```
 ├── src/
 │   └── RedcapApi/              # Library source code
-├── tests/
-│   └── RedcapApi.Tests/        # Unit tests
-└── demo/
-    └── RedcapApiDemo/          # Example console application
+└── tests/
+    └── RedcapApi.Tests/        # Unit tests
 ```
 
 ## 🔧 Improvements & Fixes

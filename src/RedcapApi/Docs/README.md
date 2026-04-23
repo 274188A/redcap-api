@@ -43,7 +43,6 @@ __Usage__:
 
     - `src/RedcapApi` — library source
     - `tests/RedcapApi.Tests` — test project
-    - `demo/RedcapApiDemo` — demo console app
 
 __Sample / Example__
 ```csharp
