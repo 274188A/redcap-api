@@ -17,7 +17,7 @@ namespace Redcap
     /// <summary>
     /// This api interacts with redcap instances. https://project-redcap.org
     /// Go to your http://redcap_instance/api/help for Redcap Api documentations
-    /// Author: Michael Tran tranpl@outlook.com, tranpl@vcu.edu
+    /// Author: John Barrett 274188A@curtin.edu.au
     /// </summary>
     public class RedcapApi : IRedcap
     {

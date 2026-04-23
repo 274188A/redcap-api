@@ -1,32 +1,28 @@
-[![Build Status](https://dev.azure.com/cctrbic/redcap-api/_apis/build/status/redcap-api?branchName=master)](https://dev.azure.com/cctrbic/redcap-api/_build/latest?definitionId=122&branchName=master)
+[![.NET](https://github.com/274188A/redcap-api/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/274188A/redcap-api/actions/workflows/ci.yml)
 
 [![NuGet](https://img.shields.io/nuget/dt/RedcapApi.svg?style=for-the-badge)](https://www.nuget.org/packages/RedcapAPI) 
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=for-the-badge)](https://github.com/cctrbic/redcap-api/blob/master/LICENSE.md)
-
-Project Feedback, using REDCap of course: https://redcap.vcu.edu/surveys/?s=KJLHWRTJYA
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=for-the-badge)](https://github.com/274188A/redcap-api/blob/master/LICENSE.md)
 
 # REDCap API Library for .NET
 The REDCap Api Library for .NET provides the ability to interact with REDCap programmatically using various .NET languages(C#,F#,VB.NET);
 
-## What's New in 2.0.0
+## What's New in 3.0.0
 
-Version 2.0.0 is a cleanup and parity release focused on bringing the library in line with documented REDCap API behavior while modernizing the repository structure.
+Version 3.0.0 is a breaking-change release focused on correctness, security, and maintainability.
 
-- Full documented `help.php` endpoint parity audit against REDCap 17.0.2
-- Added `ExportSurveyAccessCodeAsync`
-- Added interface coverage for randomization and user role mapping endpoints
-- Added `combineCheckboxOptions` support for record export methods
-- Added `delete_logging` support for record deletion methods
-- Added ODM format support where REDCap supports it
-- Expanded `Content` coverage for newer REDCap content values
-- Fixed `ExportProjectXmlAsync` default content mapping
-- Reorganized the repository into conventional `.NET` folders: `src`, `tests`, and `demo`
+- Removed global static `UseInsecureCertificate` — callers inject their own `HttpMessageHandler` for custom TLS
+- All endpoints now throw `RedcapApiException` on error instead of returning the exception message as a string
+- Shared `HttpClient` per `DefaultRedcapTransport` instance (eliminates socket exhaustion)
+- Full nullable annotations on the public surface
+- `ExecuteAsync` / `ExecuteMultipartAsync` helpers eliminate per-method boilerplate
+- Fixed `ReadAsFileAsync` path traversal vulnerability and inverted existence check
+- Synced `IRedcap` interface defaults with implementation across all File Repository methods
 
 __Prerequisites__
-1.  Local redcap instance installed (visit https://project-redcap.org) if you need to download files(assuming you have access)
-2.  Create a new project with "Demographics" for the template; this gives you a basic project to work with.
-3.  Create an api token for yourself, replace that with the tokens you see on the "RedcapApiTests.cs" files, and others
-4.  You'll may need to add a field type of "file_upload" so that you can test the file upload interface of the API
+1.  Local REDCap instance installed (visit https://project-redcap.org)
+2.  Create a new project with "Demographics" for the template
+3.  Create an API token and set `REDCAP_DEMO_BASE_URI` / `REDCAP_DEMO_PROJECT_TOKEN` environment variables
+4.  You may need to add a field type of `file_upload` to test the file upload API
 5.  Build the solution, then run the tests
 
 __Highlights__
@@ -39,81 +35,28 @@ __Highlights__
 
 __Usage__:
 
-1. dotnet restore
+1. `dotnet restore`
 2. Add a reference to the package or project
-3. Add "using Redcap" namespace
-4. Add "using Redcap.Models" for convenience
-5. Use the sample data dictionary in `src/RedcapApi/Docs` if you want a quick test project setup
-6. The repository is organized as follows:
+3. Add `using Redcap;` namespace
+4. Add `using Redcap.Models;` for convenience
+5. The repository is organized as follows:
 
-    - `src/RedcapApi` - library source
-    - `tests/RedcapApi.Tests` - test project
-    - `demo/RedcapApiDemo` - demo console app
-
-7. Feel free to contribute
+    - `src/RedcapApi` — library source
+    - `tests/RedcapApi.Tests` — test project
+    - `demo/RedcapApiDemo` — demo console app
 
 __Sample / Example__
-```C# 
-
-using System;
+```csharp
 using Newtonsoft.Json;
 using Redcap;
 using Redcap.Models;
 
-namespace RedcapApiDemo
-{
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            Console.WriteLine("Redcap Api Demo Started!");
-            // Use your own API Token here...
-            var apiToken = "3D57A7FA57C8A43F6C8803A84BB3957B";
-            var redcap_api = new RedcapApi("https://localhost/redcap/api/");
-
-            Console.WriteLine("Exporting all records from project.");
-            var result = redcap_api.ExportRecordsAsync(apiToken).Result;
-
-            var data = JsonConvert.DeserializeObject(result);
-            Console.WriteLine(data);
-            Console.ReadLine();
-
-        }
-    }
-}
-
+var redcap_api = new RedcapApi("https://localhost/redcap/api/");
+var result = await redcap_api.ExportRecordsAsync("YOUR_API_TOKEN");
+Console.WriteLine(JsonConvert.DeserializeObject(result));
 ```
 
-__Install directly in Package Manager Console or Command Line Interface__
-```C#
-Package Manager
-
-Install-Package RedcapAPI -Version 2.0.0
-
+__Install__
 ```
-
-```C#
-.NET CLI
-
-dotnet add package RedcapAPI --version 2.0.0
-
- ```
-
-```C#
-Paket CLI
-
-paket add RedcapAPI --version 2.0.0
-
+dotnet add package RedcapAPI --version 3.0.0
 ```
-
-__Example Project__
-
-A console project has been included with the source code to get started. Some examples of method usage. You can use this to get started potentially.
-
-__Test Project__
-
-A project with associated test cases is included. Make sure to change the api token
-
-# Please Cite Us
-Publications resulting from the use of this software should cite the Wright Center's Clinical and Translational Science Award (CTSA) grant #UL1TR002649, National Center for Advancing Translational Sciences, NIH.
-

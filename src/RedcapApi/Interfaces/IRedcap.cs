@@ -7,8 +7,8 @@ namespace Redcap.Interfaces
     /// to connect to REDCap. Please read the provided documentations from REDCap for more details
     /// on what specific set of API are allowed to be executed.
     /// 
-    /// Virginia Commonwealth University
-    /// Author: Michael Tran tranpl@outlook.com, tranpl@vcu.edu
+    /// Curtin University
+    /// Author: John Barrett 274188A@curtin.edu.au
     /// </summary>
     public interface IRedcap
     {

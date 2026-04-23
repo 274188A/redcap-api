@@ -1,7 +1,7 @@
-[![.NET](https://github.com/cctrbic/redcap-api/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/cctrbic/redcap-api/actions/workflows/ci.yml)
+[![.NET](https://github.com/274188A/redcap-api/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/274188A/redcap-api/actions/workflows/ci.yml)
 
 [![NuGet](https://img.shields.io/nuget/dt/RedcapApi.svg?style=for-the-badge)](https://www.nuget.org/packages/RedcapAPI) 
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=for-the-badge)](https://github.com/cctrbic/redcap-api/blob/master/LICENSE.md)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=for-the-badge)](https://github.com/274188A/redcap-api/blob/master/LICENSE.md)
 
 # REDCap API Library for .NET
 The REDCap Api Library provides the ability to interact with REDCap programmatically using various .NET languages(C#,F#,VB.NET);

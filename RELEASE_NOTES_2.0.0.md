@@ -64,15 +64,15 @@ The library now provides comprehensive REDCap API support including:
 - Record randomization
 
 ## 🔗 Resources
-- [GitHub Repository](https://github.com/cctrbic/redcap-api)
+- [GitHub Repository](https://github.com/274188A/redcap-api)
 - [REDCap Project](https://project-redcap.org)
 - [REDCap API Documentation](https://project-redcap.org/api/)
 
 ## 📝 Notes
 - **Requires**: Local REDCap instance or access to a REDCap server
 - **Supported Languages**: C#, F#, VB.NET
-- **Maintainer**: Michael Tran (Virginia Commonwealth University)
+- **Maintainer**: John Barrett (Curtin University)
 
 ---
 
-**Thank you for using the REDCap API Library for .NET!** We welcome contributions and feedback. For issues or questions, please visit our [GitHub Issues page](https://github.com/cctrbic/redcap-api/issues).
+**Thank you for using the REDCap API Library for .NET!** We welcome contributions and feedback. For issues or questions, please visit our [GitHub Issues page](https://github.com/274188A/redcap-api/issues).
