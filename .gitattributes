@@ -1,0 +1,52 @@
+###############################################################################
+# Default: auto-detect text, normalize line endings on commit.
+###############################################################################
+* text=auto
+
+###############################################################################
+# Source — force LF in the repository so cross-platform diffs stay clean.
+###############################################################################
+*.cs          text eol=lf diff=csharp
+*.fs          text eol=lf
+*.vb          text eol=lf
+*.cshtml      text eol=lf
+*.razor       text eol=lf
+*.json        text eol=lf
+*.xml         text eol=lf
+*.yml         text eol=lf
+*.yaml        text eol=lf
+*.md          text eol=lf
+*.sh          text eol=lf
+
+###############################################################################
+# Project / solution files — keep CRLF to match Visual Studio tooling.
+###############################################################################
+*.sln         text eol=crlf
+*.csproj      text eol=crlf
+*.vbproj      text eol=crlf
+*.fsproj      text eol=crlf
+*.props       text eol=crlf
+*.targets     text eol=crlf
+
+###############################################################################
+# Windows-native scripts — keep CRLF.
+###############################################################################
+*.bat         text eol=crlf
+*.cmd         text eol=crlf
+*.ps1         text eol=crlf
+
+###############################################################################
+# Binary assets — never munge.
+###############################################################################
+*.png         binary
+*.jpg         binary
+*.jpeg        binary
+*.gif         binary
+*.ico         binary
+*.pdf         binary
+*.snk         binary
+*.dll         binary
+*.exe         binary
+*.pdb         binary
+*.nupkg       binary
+*.snupkg      binary

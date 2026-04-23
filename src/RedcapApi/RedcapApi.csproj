@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<Nullable>enable</Nullable>
+    <Authors>Michael Tran</Authors>
+    <Company>Virginia Commonwealth University</Company>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <RepositoryUrl>https://github.com/cctrbic/redcap-api</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <PackageProjectUrl>https://github.com/cctrbic/redcap-api/</PackageProjectUrl>
+    <Description>This library allows applications on the .NET platform to make http calls to REDCap instances.</Description>
+    <Product>Redcap Api Library</Product>
+    <PackageId>RedcapAPI</PackageId>
+    <Version>2.0.0</Version>
+    <AssemblyVersion>2.0.0</AssemblyVersion>
+    <PackageTags>redcap api library vcu</PackageTags>
+    <ApplicationIcon />
+    <OutputType>Library</OutputType>
+    <NeutralLanguage>en</NeutralLanguage>
+    <FileVersion>2.0.0</FileVersion>
+    <Copyright>https://github.com/cctrbic/redcap-api/blob/master/LICENSE.md</Copyright>
+    <PackageIcon>vcu.png</PackageIcon>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <Title>Redcap Api</Title>
+    <PackageReleaseNotes>See https://github.com/cctrbic/redcap-api/blob/master/RELEASE_NOTES_2.0.0.md</PackageReleaseNotes>
+	<PackageReadmeFile>README.md</PackageReadmeFile>
+	<GenerateDocumentationFile>True</GenerateDocumentationFile>
+	<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\LICENSE.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+    <None Include="..\..\README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+    <None Include="..\..\vcu.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+    <Compile Remove="bin\**" />
+    <EmbeddedResource Remove="bin\**" />
+    <None Remove="bin\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="Serilog" Version="4.3.1" />
+  </ItemGroup>
+</Project>
