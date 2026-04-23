@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Layout
 
-Three .NET 10 projects held together by `RedcapApi.sln`:
+Two .NET 10 projects held together by `RedcapApi.slnxx`:
 
 - `src/RedcapApi` — the library (NuGet package `RedcapAPI`, version 2.0.0)
 - `tests/RedcapApi.Tests` — xUnit test project (transport-level + a few E2E tests)
@@ -15,8 +15,8 @@ Both target `net10.0`. The library depends only on `Newtonsoft.Json` and `Serilo
 
 ```bash
 # restore / build / test the full solution
-dotnet restore RedcapApi.sln
-dotnet build RedcapApi.sln -c Release --no-restore
+dotnet restore RedcapApi.slnx
+dotnet build RedcapApi.slnx -c Release --no-restore
 dotnet test tests/RedcapApi.Tests/RedcapApi.Tests.csproj --verbosity minimal
 
 # run a single test by fully-qualified name
