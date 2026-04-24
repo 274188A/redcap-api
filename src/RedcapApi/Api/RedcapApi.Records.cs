@@ -76,10 +76,10 @@ namespace Redcap
         /// <returns>Data from the project in the format and type specified ordered by the record (primary key of project) and then by event id</returns>
         public async Task<string> ExportRecordsAsync(string token, RedcapFormat format = RedcapFormat.json, RedcapDataType redcapDataType = RedcapDataType.flat, string[]? records = default, string[]? fields = default, string[]? forms = default, string[]? events = default, RawOrLabel rawOrLabel = RawOrLabel.raw, RawOrLabelHeaders rawOrLabelHeaders = RawOrLabelHeaders.raw, bool exportCheckboxLabel = false, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, bool exportSurveyFields = false, bool exportDataAccessGroups = false, string? filterLogic = null, DateTime? dateRangeBegin = default, DateTime? dateRangeEnd = default, CsvDelimiter csvDelimiter = CsvDelimiter.comma, DecimalCharacter decimalCharacter = DecimalCharacter.none, bool exportBlankForGrayFormStatus = false, bool combineCheckboxOptions = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
-            var recordsStr = records?.Length > 0 ? await this.ConvertArraytoString(records) : null;
-            var fieldsStr = fields?.Length > 0 ? await this.ConvertArraytoString(fields) : null;
-            var formsStr = forms?.Length > 0 ? await this.ConvertArraytoString(forms) : null;
-            var eventsStr = events?.Length > 0 ? await this.ConvertArraytoString(events) : null;
+            var recordsStr = records?.Length > 0 ? this.ConvertArraytoString(records) : null;
+            var fieldsStr = fields?.Length > 0 ? this.ConvertArraytoString(fields) : null;
+            var formsStr = forms?.Length > 0 ? this.ConvertArraytoString(forms) : null;
+            var eventsStr = events?.Length > 0 ? this.ConvertArraytoString(events) : null;
             return await ExecuteAsync(token, payload =>
             {
                 payload["token"] = token;
@@ -142,9 +142,9 @@ namespace Redcap
         /// <returns>Data from the project in the format and type specified ordered by the record (primary key of project) and then by event id</returns>
         public async Task<string> ExportRecordAsync(string token, string record, RedcapFormat format = RedcapFormat.json, RedcapDataType redcapDataType = RedcapDataType.flat, string[]? fields = null, string[]? forms = null, string[]? events = null, RawOrLabel rawOrLabel = RawOrLabel.raw, RawOrLabelHeaders rawOrLabelHeaders = RawOrLabelHeaders.raw, bool exportCheckboxLabel = false, RedcapReturnFormat onErrorFormat = RedcapReturnFormat.json, bool exportSurveyFields = false, bool exportDataAccessGroups = false, string? filterLogic = null, DateTime? dateRangeBegin = default, DateTime? dateRangeEnd = default, CsvDelimiter csvDelimiter = CsvDelimiter.comma, DecimalCharacter decimalCharacter = DecimalCharacter.none, bool exportBlankForGrayFormStatus = false, bool combineCheckboxOptions = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
-            var fieldsStr = fields?.Length > 0 ? await this.ConvertArraytoString(fields) : null;
-            var formsStr = forms?.Length > 0 ? await this.ConvertArraytoString(forms) : null;
-            var eventsStr = events?.Length > 0 ? await this.ConvertArraytoString(events) : null;
+            var fieldsStr = fields?.Length > 0 ? this.ConvertArraytoString(fields) : null;
+            var formsStr = forms?.Length > 0 ? this.ConvertArraytoString(forms) : null;
+            var eventsStr = events?.Length > 0 ? this.ConvertArraytoString(events) : null;
             return await ExecuteAsync(token, payload =>
             {
                 payload["token"] = token;

@@ -33,11 +33,11 @@ public class UtilitiesTests
     }
 
     [Fact]
-    public async Task ConvertArrayToString_FormatsValues()
+    public void ConvertArrayToString_FormatsValues()
     {
-        var single = await _api.ConvertArraytoString(new[] { "one" });
-        var multiple = await _api.ConvertArraytoString(new[] { "one", "two", "three" });
-        var invalid = await _api.ConvertArraytoString<string>(null!);
+        var single = _api.ConvertArraytoString(new[] { "one" });
+        var multiple = _api.ConvertArraytoString(new[] { "one", "two", "three" });
+        var invalid = _api.ConvertArraytoString<string>(null!);
 
         Assert.Equal("one", single);
         Assert.Equal("one,two,three", multiple);
@@ -45,11 +45,11 @@ public class UtilitiesTests
     }
 
     [Fact]
-    public async Task ConvertIntArrayToString_FormatsValues()
+    public void ConvertIntArrayToString_FormatsValues()
     {
-        var single = await _api.ConvertIntArraytoString(new[] { 1 });
-        var multiple = await _api.ConvertIntArraytoString(new[] { 1, 2, 3 });
-        var invalid = await _api.ConvertIntArraytoString(null!);
+        var single = _api.ConvertIntArraytoString(new[] { 1 });
+        var multiple = _api.ConvertIntArraytoString(new[] { 1, 2, 3 });
+        var invalid = _api.ConvertIntArraytoString(null!);
 
         Assert.Equal("1", single);
         Assert.Equal("1,2,3", multiple);
@@ -57,18 +57,18 @@ public class UtilitiesTests
     }
 
     [Fact]
-    public async Task HandleReturnContent_ReturnsExpectedValues()
+    public void HandleReturnContent_ReturnsExpectedValues()
     {
-        Assert.Equal("ids", await _api.HandleReturnContent(ReturnContent.ids));
-        Assert.Equal("count", await _api.HandleReturnContent(ReturnContent.count));
-        Assert.Equal("count", await _api.HandleReturnContent((ReturnContent)999));
+        Assert.Equal("ids", _api.HandleReturnContent(ReturnContent.ids));
+        Assert.Equal("count", _api.HandleReturnContent(ReturnContent.count));
+        Assert.Equal("count", _api.HandleReturnContent((ReturnContent)999));
     }
 
     [Fact]
-    public async Task HandleFormat_ReturnsExpectedTuple()
+    public void HandleFormat_ReturnsExpectedTuple()
     {
-        var result = await _api.HandleFormat(RedcapFormat.odm, RedcapReturnFormat.xml, RedcapDataType.longitudinal);
-        var fallback = await _api.HandleFormat((RedcapFormat)999, (RedcapReturnFormat)999, (RedcapDataType)999);
+        var result = _api.HandleFormat(RedcapFormat.odm, RedcapReturnFormat.xml, RedcapDataType.longitudinal);
+        var fallback = _api.HandleFormat((RedcapFormat)999, (RedcapReturnFormat)999, (RedcapDataType)999);
 
         Assert.Equal("odm", result.format);
         Assert.Equal("xml", result.onErrorFormat);
@@ -80,15 +80,15 @@ public class UtilitiesTests
     }
 
     [Fact]
-    public async Task ExtractBehaviorAsync_ReturnsExpectedValue()
+    public void ExtractBehavior_ReturnsExpectedValue()
     {
-        Assert.Equal("normal", await _api.ExtractBehaviorAsync(OverwriteBehavior.normal));
-        Assert.Equal("overwrite", await _api.ExtractBehaviorAsync(OverwriteBehavior.overwrite));
-        Assert.Equal("overwrite", await _api.ExtractBehaviorAsync((OverwriteBehavior)999));
+        Assert.Equal("normal", _api.ExtractBehavior(OverwriteBehavior.normal));
+        Assert.Equal("overwrite", _api.ExtractBehavior(OverwriteBehavior.overwrite));
+        Assert.Equal("overwrite", _api.ExtractBehavior((OverwriteBehavior)999));
     }
 
     [Fact]
-    public async Task GetProperties_UsesLowerCaseKeysAndConvertsNullableTypes()
+    public void GetProperties_UsesLowerCaseKeysAndConvertsNullableTypes()
     {
         var sample = new SampleProperties
         {
@@ -98,7 +98,7 @@ public class UtilitiesTests
             OptionalValue = null
         };
 
-        var properties = await _api.GetProperties(sample);
+        var properties = _api.GetProperties(sample);
 
         Assert.Equal("Alice", properties["name"]);
         Assert.Equal("1", properties["isactive"]);
@@ -108,15 +108,15 @@ public class UtilitiesTests
     }
 
     [Fact]
-    public async Task ExtractHelpers_SplitDelimitedValues()
+    public void ExtractHelpers_SplitDelimitedValues()
     {
         var delimiters = new[] { ',', ';' };
 
-        Assert.Equal(new[] { "event_1", "event_2" }, await _api.ExtractEventsAsync("event_1,event_2", delimiters));
-        Assert.Equal(new[] { "field_1", "field_2" }, await _api.ExtractFieldsAsync("field_1;field_2", delimiters));
-        Assert.Equal(new[] { "1", "2" }, await _api.ExtractRecordsAsync("1,2", delimiters));
-        Assert.Equal(new[] { "form_1", "form_2" }, await _api.ExtractFormsAsync("form_1;form_2", delimiters));
-        Assert.Equal(new[] { "1", "2" }, await _api.ExtractArmsAsync<string>("1,2", delimiters));
+        Assert.Equal(new[] { "event_1", "event_2" }, _api.ExtractEvents("event_1,event_2", delimiters));
+        Assert.Equal(new[] { "field_1", "field_2" }, _api.ExtractFields("field_1;field_2", delimiters));
+        Assert.Equal(new[] { "1", "2" }, _api.ExtractRecords("1,2", delimiters));
+        Assert.Equal(new[] { "form_1", "form_2" }, _api.ExtractForms("form_1;form_2", delimiters));
+        Assert.Equal(new[] { "1", "2" }, _api.ExtractArms<string>("1,2", delimiters));
     }
 
     [Fact]

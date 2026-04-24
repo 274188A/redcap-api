@@ -161,7 +161,7 @@ namespace Redcap
         /// <typeparam name="T">The type of elements in the array.</typeparam>
         /// <param name="inputArray">The array to convert.</param>
         /// <returns>A comma-separated string representation of the array elements.</returns>
-        protected virtual Task<string> ConvertArraytoString<T>(T[] inputArray)
+        protected virtual string ConvertArraytoString<T>(T[] inputArray)
         {
             return Utils.ConvertArraytoString(this, inputArray);
         }
@@ -171,7 +171,7 @@ namespace Redcap
         /// </summary>
         /// <param name="inputArray">The integer array to convert.</param>
         /// <returns>A comma-separated string representation of the array elements.</returns>
-        protected virtual Task<string> ConvertIntArraytoString(int[] inputArray)
+        protected virtual string ConvertIntArraytoString(int[] inputArray)
         {
             return Utils.ConvertIntArraytoString(this, inputArray);
         }
@@ -183,7 +183,7 @@ namespace Redcap
         /// <param name="onErrorFormat">The format for error messages.</param>
         /// <param name="redcapDataType">The REDCap data type.</param>
         /// <returns>A tuple containing the processed format, error format, and data type strings.</returns>
-        protected virtual Task<(string format, string onErrorFormat, string redcapDataType)> HandleFormat(RedcapFormat? format = RedcapFormat.json, RedcapReturnFormat? onErrorFormat = RedcapReturnFormat.json, RedcapDataType? redcapDataType = RedcapDataType.flat)
+        protected virtual (string format, string onErrorFormat, string redcapDataType) HandleFormat(RedcapFormat? format = RedcapFormat.json, RedcapReturnFormat? onErrorFormat = RedcapReturnFormat.json, RedcapDataType? redcapDataType = RedcapDataType.flat)
         {
             return Utils.HandleFormat(this, format, onErrorFormat, redcapDataType);
         }
@@ -193,7 +193,7 @@ namespace Redcap
         /// </summary>
         /// <param name="returnContent">The type of content to return in the response.</param>
         /// <returns>The processed return content string value.</returns>
-        protected virtual Task<string> HandleReturnContent(ReturnContent returnContent = ReturnContent.count)
+        protected virtual string HandleReturnContent(ReturnContent returnContent = ReturnContent.count)
         {
             return Utils.HandleReturnContent(this, returnContent);
         }
@@ -203,9 +203,9 @@ namespace Redcap
         /// </summary>
         /// <param name="overwriteBehavior">The behavior to use when overwriting existing data.</param>
         /// <returns>The processed overwrite behavior string value.</returns>
-        protected virtual Task<string> ExtractBehaviorAsync(OverwriteBehavior overwriteBehavior)
+        protected virtual string ExtractBehavior(OverwriteBehavior overwriteBehavior)
         {
-            return Utils.ExtractBehaviorAsync(this, overwriteBehavior);
+            return Utils.ExtractBehavior(this, overwriteBehavior);
         }
     }
 }

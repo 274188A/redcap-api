@@ -102,7 +102,7 @@ namespace Redcap.Utilities
         /// <param name="redcapApi"></param>
         /// <param name="inputArray"></param>
         /// <returns>string[]</returns>
-        public static Task<string> ConvertArraytoString<T>(this RedcapApi redcapApi, T[] inputArray)
+        public static string ConvertArraytoString<T>(this RedcapApi redcapApi, T[] inputArray)
         {
             try
             {
@@ -116,16 +116,16 @@ namespace Redcap.Utilities
                     builder.Append(v);
                     if (inputArray.Length <= 1)
                     {
-                        return Task.FromResult(builder.ToString());
+                        return builder.ToString();
                     }
                     builder.Append(",");
                 }
-                return Task.FromResult(builder.ToString().TrimEnd(','));
+                return builder.ToString().TrimEnd(',');
             }
             catch (Exception Ex)
             {
                 Log.Error(Ex, "REDCap API call failed");
-                return Task.FromResult(String.Empty);
+                return String.Empty;
             }
         }
 
@@ -135,7 +135,7 @@ namespace Redcap.Utilities
         /// <param name="redcapApi"></param>
         /// <param name="inputArray"></param>
         /// <returns>string</returns>
-        public static Task<string> ConvertIntArraytoString(this RedcapApi redcapApi, int[] inputArray)
+        public static string ConvertIntArraytoString(this RedcapApi redcapApi, int[] inputArray)
         {
             return ConvertArraytoString<int>(redcapApi, inputArray);
         }
@@ -147,9 +147,9 @@ namespace Redcap.Utilities
         /// <param name="redcapApi"></param>
         /// <param name="returnContent"></param>
         /// <returns>string</returns>
-        public static Task<string> HandleReturnContent(this RedcapApi redcapApi, ReturnContent returnContent = ReturnContent.count)
+        public static string HandleReturnContent(this RedcapApi redcapApi, ReturnContent returnContent = ReturnContent.count)
         {
-            return Task.FromResult(Enum.IsDefined(returnContent) ? returnContent.ToString() : ReturnContent.count.ToString());
+            return Enum.IsDefined(returnContent) ? returnContent.ToString() : ReturnContent.count.ToString();
         }
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace Redcap.Utilities
         /// <param name="onErrorFormat"></param>
         /// <param name="redcapDataType"></param>
         /// <returns>tuple, string, string, string</returns>
-        public static Task<(string format, string onErrorFormat, string redcapDataType)> HandleFormat(this RedcapApi redcapApi, RedcapFormat? format = RedcapFormat.json, RedcapReturnFormat? onErrorFormat = RedcapReturnFormat.json, RedcapDataType? redcapDataType = RedcapDataType.flat)
+        public static (string format, string onErrorFormat, string redcapDataType) HandleFormat(this RedcapApi redcapApi, RedcapFormat? format = RedcapFormat.json, RedcapReturnFormat? onErrorFormat = RedcapReturnFormat.json, RedcapDataType? redcapDataType = RedcapDataType.flat)
         {
             var f = format ?? RedcapFormat.json;
             var e = onErrorFormat ?? RedcapReturnFormat.json;
@@ -168,7 +168,7 @@ namespace Redcap.Utilities
             var _format = Enum.IsDefined(f) ? f.ToString() : RedcapFormat.json.ToString();
             var _onErrorFormat = Enum.IsDefined(e) ? e.ToString() : RedcapReturnFormat.json.ToString();
             var _redcapDataType = Enum.IsDefined(d) ? d.ToString() : RedcapDataType.flat.ToString();
-            return Task.FromResult((_format, _onErrorFormat, _redcapDataType));
+            return (_format, _onErrorFormat, _redcapDataType);
         }
 
         /// <summary>
@@ -177,9 +177,9 @@ namespace Redcap.Utilities
         /// <param name="redcapApi"></param>
         /// <param name="overwriteBehavior"></param>
         /// <returns>string</returns>
-        public static Task<string> ExtractBehaviorAsync(this RedcapApi redcapApi, OverwriteBehavior overwriteBehavior)
+        public static string ExtractBehavior(this RedcapApi redcapApi, OverwriteBehavior overwriteBehavior)
         {
-            return Task.FromResult(Enum.IsDefined(overwriteBehavior) ? overwriteBehavior.ToString() : OverwriteBehavior.overwrite.ToString());
+            return Enum.IsDefined(overwriteBehavior) ? overwriteBehavior.ToString() : OverwriteBehavior.overwrite.ToString();
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace Redcap.Utilities
         /// <param name="redcapApi"></param>
         /// <param name="input">Object</param>
         /// <returns>Dictionary of key value pair.</returns>
-        public static Task<Dictionary<string, string?>> GetProperties(this RedcapApi redcapApi, object input)
+        public static Dictionary<string, string?> GetProperties(this RedcapApi redcapApi, object input)
         {
             try
             {
@@ -224,14 +224,14 @@ namespace Redcap.Utilities
                             obj.Add(propName, null);
                         }
                     }
-                    return Task.FromResult(obj);
+                    return obj;
                 }
-                return Task.FromResult(new Dictionary<string, string?> { });
+                return new Dictionary<string, string?> { };
             }
             catch (Exception Ex)
             {
                 Log.Error(Ex, "REDCap API call failed");
-                return Task.FromResult(new Dictionary<string, string?> { });
+                return new Dictionary<string, string?> { };
             }
         }
 
@@ -247,9 +247,9 @@ namespace Redcap.Utilities
         /// <param name="events"></param>
         /// <param name="delimiters">char[] e.g [';',',']</param>
         /// <returns>List of string</returns>
-        public static Task<List<string>> ExtractEventsAsync(this RedcapApi redcapApi, string events, char[] delimiters)
+        public static List<string> ExtractEvents(this RedcapApi redcapApi, string events, char[] delimiters)
         {
-            return Task.FromResult(SplitToList(events, delimiters));
+            return SplitToList(events, delimiters);
         }
 
         /// <summary>
@@ -259,9 +259,9 @@ namespace Redcap.Utilities
         /// <param name="fields"></param>
         /// <param name="delimiters">char[] e.g [';',',']</param>
         /// <returns>List of string</returns>
-        public static Task<List<string>> ExtractFieldsAsync(this RedcapApi redcapApi, string fields, char[] delimiters)
+        public static List<string> ExtractFields(this RedcapApi redcapApi, string fields, char[] delimiters)
         {
-            return Task.FromResult(SplitToList(fields, delimiters));
+            return SplitToList(fields, delimiters);
         }
 
         /// <summary>
@@ -271,9 +271,9 @@ namespace Redcap.Utilities
         /// <param name="records"></param>
         /// <param name="delimiters">char[] e.g [';',',']</param>
         /// <returns>List of string</returns>
-        public static Task<List<string>> ExtractRecordsAsync(this RedcapApi redcapApi, string records, char[] delimiters)
+        public static List<string> ExtractRecords(this RedcapApi redcapApi, string records, char[] delimiters)
         {
-            return Task.FromResult(SplitToList(records, delimiters));
+            return SplitToList(records, delimiters);
         }
 
         /// <summary>
@@ -283,9 +283,9 @@ namespace Redcap.Utilities
         /// <param name="forms"></param>
         /// <param name="delimiters">char[] e.g [';',',']</param>
         /// <returns>A list of string</returns>
-        public static Task<List<string>> ExtractFormsAsync(this RedcapApi redcapApi, string forms, char[] delimiters)
+        public static List<string> ExtractForms(this RedcapApi redcapApi, string forms, char[] delimiters)
         {
-            return Task.FromResult(SplitToList(forms, delimiters));
+            return SplitToList(forms, delimiters);
         }
 
         /// <summary>
@@ -411,11 +411,10 @@ namespace Redcap.Utilities
         /// <param name="redcapApi"></param>
         /// <param name="arms"></param>
         /// <param name="delimiters"></param>
-        /// <param name="cancellationToken"></param>
         /// <returns>List of string</returns>
-        public static Task<List<string>> ExtractArmsAsync<T>(this RedcapApi redcapApi, string arms, char[] delimiters, CancellationToken cancellationToken = default)
+        public static List<string> ExtractArms<T>(this RedcapApi redcapApi, string arms, char[] delimiters)
         {
-            return Task.FromResult(SplitToList(arms, delimiters));
+            return SplitToList(arms, delimiters);
         }
 
         /// <summary>

@@ -156,8 +156,8 @@ namespace Redcap
         /// <returns>The entire REDCap project's metadata (and data, if specified) will be returned in CDISC ODM format as a single XML string.</returns>
         public async Task<string> ExportProjectXmlAsync(string token, bool returnMetadataOnly = false, string[]? records = default, string[]? fields = default, string[]? events = default, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, bool exportSurveyFields = false, bool exportDataAccessGroups = false, string? filterLogic = default, bool exportFiles = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
-            var recordsStr = records?.Length > 0 ? await this.ConvertArraytoString(records) : null;
-            var eventsStr = events?.Length > 0 ? await this.ConvertArraytoString(events) : null;
+            var recordsStr = records?.Length > 0 ? this.ConvertArraytoString(records) : null;
+            var eventsStr = events?.Length > 0 ? this.ConvertArraytoString(events) : null;
             return await ExecuteAsync(token, payload =>
             {
                 payload["token"] = token;

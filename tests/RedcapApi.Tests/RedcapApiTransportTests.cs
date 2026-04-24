@@ -1999,10 +1999,10 @@ public class RedcapApiTransportTests
 
         await api.CallMultipartWrapper(new MultipartFormDataContent());
         await api.CallDictionaryStreamWrapper(new Dictionary<string, string> { { "token", Token } });
-        await api.CallConvertIntArrayWrapper(new[] { 1, 2 });
-        await api.CallHandleFormatWrapper(RedcapFormat.json, RedcapReturnFormat.xml, RedcapDataType.flat);
-        await api.CallHandleReturnContentWrapper(ReturnContent.count);
-        await api.CallExtractBehaviorWrapper(OverwriteBehavior.normal);
+        api.CallConvertIntArrayWrapper(new[] { 1, 2 });
+        api.CallHandleFormatWrapper(RedcapFormat.json, RedcapReturnFormat.xml, RedcapDataType.flat);
+        api.CallHandleReturnContentWrapper(ReturnContent.count);
+        api.CallExtractBehaviorWrapper(OverwriteBehavior.normal);
 
         Assert.NotNull(transport.LastDictionaryPayload);
     }
@@ -2081,17 +2081,17 @@ public class RedcapApiTransportTests
         public Task<Stream?> CallDictionaryStreamWrapper(Dictionary<string, string> payload)
             => base.GetStreamContentAsync(payload, new Uri("http://localhost/"));
 
-        public Task<string> CallConvertIntArrayWrapper(int[] input)
+        public string CallConvertIntArrayWrapper(int[] input)
             => base.ConvertIntArraytoString(input);
 
-        public Task<(string format, string onErrorFormat, string redcapDataType)> CallHandleFormatWrapper(RedcapFormat? format, RedcapReturnFormat? onErrorFormat, RedcapDataType? redcapDataType)
+        public (string format, string onErrorFormat, string redcapDataType) CallHandleFormatWrapper(RedcapFormat? format, RedcapReturnFormat? onErrorFormat, RedcapDataType? redcapDataType)
             => base.HandleFormat(format, onErrorFormat, redcapDataType);
 
-        public Task<string> CallHandleReturnContentWrapper(ReturnContent returnContent)
+        public string CallHandleReturnContentWrapper(ReturnContent returnContent)
             => base.HandleReturnContent(returnContent);
 
-        public Task<string> CallExtractBehaviorWrapper(OverwriteBehavior overwriteBehavior)
-            => base.ExtractBehaviorAsync(overwriteBehavior);
+        public string CallExtractBehaviorWrapper(OverwriteBehavior overwriteBehavior)
+            => base.ExtractBehavior(overwriteBehavior);
     }
 
     private sealed class FakeTransport : IRedcapTransport
