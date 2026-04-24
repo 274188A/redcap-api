@@ -1,6 +1,8 @@
+using Redcap.Exceptions;
 using Redcap.Http;
 using Redcap.Models;
 using Redcap.Utilities;
+using System.Net;
 using System.Text;
 using Xunit;
 
@@ -211,6 +213,36 @@ public class UtilitiesTests
 
         await Assert.ThrowsAsync<HttpRequestException>(async () =>
             await _api.SendPostRequest(new Dictionary<string, string> { ["token"] = "abc" }, server.Url, client));
+    }
+
+    [Theory]
+    [InlineData(400)]
+    [InlineData(500)]
+    public async Task SendPostRequestAsync_WithDictionary_ThrowsRedcapApiExceptionOnError(int statusCode)
+    {
+        using var server = new LocalHttpServer(_ => new TestResponse(statusCode, "error-body"));
+        using var client = new HttpClient();
+
+        var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
+            _api.SendPostRequestAsync(new Dictionary<string, string> { ["token"] = "abc" }, server.Url, client));
+
+        Assert.Equal((HttpStatusCode)statusCode, ex.StatusCode);
+        Assert.Equal("error-body", ex.ResponseBody);
+    }
+
+    [Theory]
+    [InlineData(401)]
+    [InlineData(500)]
+    public async Task GetStreamContentAsync_ThrowsRedcapApiExceptionOnError(int statusCode)
+    {
+        using var server = new LocalHttpServer(_ => new TestResponse(statusCode, "stream-error-body"));
+        using var client = new HttpClient();
+
+        var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
+            _api.GetStreamContentAsync(new Dictionary<string, string> { ["token"] = "abc" }, server.Url, client));
+
+        Assert.Equal((HttpStatusCode)statusCode, ex.StatusCode);
+        Assert.Equal("stream-error-body", ex.ResponseBody);
     }
 
     [Fact]

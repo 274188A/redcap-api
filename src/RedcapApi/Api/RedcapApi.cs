@@ -104,6 +104,11 @@ namespace Redcap
                 return await this.SendPostRequestAsync(payload, _uri,
                     cancellationToken: cancellationToken, timeOutSeconds);
             }
+            catch (RedcapApiException Ex)
+            {
+                Log.Error(Ex, "REDCap API call failed");
+                throw;
+            }
             catch (Exception Ex)
             {
                 Log.Error(Ex, "REDCap API call failed");
@@ -124,6 +129,11 @@ namespace Redcap
                 buildPayload(payload);
                 return await this.SendPostRequestAsync(payload, _uri,
                     cancellationToken: cancellationToken, timeOutSeconds);
+            }
+            catch (RedcapApiException Ex)
+            {
+                Log.Error(Ex, "REDCap API call failed");
+                throw;
             }
             catch (Exception Ex)
             {

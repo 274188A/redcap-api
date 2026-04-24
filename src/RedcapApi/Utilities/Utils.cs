@@ -1,3 +1,4 @@
+using Redcap.Exceptions;
 using Redcap.Http;
 using Redcap.Models;
 
@@ -297,19 +298,14 @@ namespace Redcap.Utilities
         /// <returns>Stream</returns>
         public static async Task<Stream?> GetStreamContentAsync(this RedcapApi redcapApi, Dictionary<string, string> payload, Uri uri, HttpClient client, CancellationToken cancellationToken = default)
         {
-            try
+            var content = new FormUrlEncodedContent(payload);
+            using var response = await client.PostAsync(uri, content, cancellationToken);
+            if (!response.IsSuccessStatusCode)
             {
-                var content = new FormUrlEncodedContent(payload);
-                using var response = await client.PostAsync(uri, content, cancellationToken);
-                if (response.IsSuccessStatusCode)
-                    return await response.Content.ReadAsStreamAsync();
-                return null;
+                var body = await response.Content.ReadAsStringAsync();
+                throw new RedcapApiException($"REDCap returned {(int)response.StatusCode} {response.ReasonPhrase}", response.StatusCode, body);
             }
-            catch (Exception Ex)
-            {
-                Log.Error(Ex, "REDCap API call failed");
-                return null;
-            }
+            return await response.Content.ReadAsStreamAsync();
         }
 
         /// <summary>
@@ -324,18 +320,13 @@ namespace Redcap.Utilities
         /// <returns>string</returns>
         public static async Task<string> SendPostRequestAsync(this RedcapApi redcapApi, MultipartFormDataContent payload, Uri uri, HttpClient client, CancellationToken cancellationToken = default)
         {
-            try
+            using var response = await client.PostAsync(uri, payload, cancellationToken);
+            if (!response.IsSuccessStatusCode)
             {
-                using var response = await client.PostAsync(uri, payload, cancellationToken);
-                return response.IsSuccessStatusCode
-                    ? await response.Content.ReadAsStringAsync()
-                    : Empty;
+                var body = await response.Content.ReadAsStringAsync();
+                throw new RedcapApiException($"REDCap returned {(int)response.StatusCode} {response.ReasonPhrase}", response.StatusCode, body);
             }
-            catch (Exception Ex)
-            {
-                Log.Error(Ex, "REDCap API call failed");
-                return Empty;
-            }
+            return await response.Content.ReadAsStringAsync();
         }
 
         /// <summary>
@@ -349,60 +340,51 @@ namespace Redcap.Utilities
         /// <returns></returns>
         public static async Task<string> SendPostRequestAsync(this RedcapApi redcapApi, Dictionary<string, string> payload, Uri uri, HttpClient client, CancellationToken cancellationToken = default)
         {
-            try
+            string _responseMessage = string.Empty;
+
+            // filePath is an internal key used to signal where to save downloaded files; it is not part of the REDCap wire format.
+            var localPayload = new Dictionary<string, string>(payload);
+            localPayload.TryGetValue("filePath", out var pathValue);
+            localPayload.Remove("filePath");
+
+            using var content = new CustomFormUrlEncodedContent(localPayload);
+            using var response = await client.PostAsync(uri, content, cancellationToken);
+            if (!response.IsSuccessStatusCode)
             {
-                string _responseMessage = string.Empty;
+                var body = await response.Content.ReadAsStringAsync();
+                throw new RedcapApiException($"REDCap returned {(int)response.StatusCode} {response.ReasonPhrase}", response.StatusCode, body);
+            }
 
-                // filePath is an internal key used to signal where to save downloaded files; it is not part of the REDCap wire format.
-                var localPayload = new Dictionary<string, string>(payload);
-                localPayload.TryGetValue("filePath", out var pathValue);
-                localPayload.Remove("filePath");
-
-                using var content = new CustomFormUrlEncodedContent(localPayload);
-                using var response = await client.PostAsync(uri, content, cancellationToken);
-                if (response.IsSuccessStatusCode)
+            var headers = response.Content.Headers;
+            var fileName = headers.ContentType?.Parameters.Select(x => x.Value).FirstOrDefault();
+            if (!string.IsNullOrEmpty(fileName))
+            {
+                response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
                 {
-                    var headers = response.Content.Headers;
-                    var fileName = headers.ContentType?.Parameters.Select(x => x.Value).FirstOrDefault();
-                    if (!string.IsNullOrEmpty(fileName))
-                    {
-                        var contentDisposition = response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
-                        {
-                            FileName = fileName
-                        };
-                    }
+                    FileName = fileName
+                };
+            }
 
-                    if (!string.IsNullOrEmpty(pathValue))
-                    {
-                        var fileExtension = localPayload.SingleOrDefault(x => x.Key == "content" && x.Value == "pdf").Value;
-                        if (!string.IsNullOrEmpty(fileExtension))
-                        {
-                            fileName = localPayload.SingleOrDefault(x => x.Key == "instrument").Value;
-                            await response.Content.ReadAsFileAsync(fileName!, pathValue, true, fileExtension, cancellationToken: cancellationToken);
-                        }
-                        else
-                        {
-                            await response.Content.ReadAsFileAsync(fileName!, pathValue, true, cancellationToken: cancellationToken);
-                        }
-                        _responseMessage = fileName ?? string.Empty;
-                    }
-                    else
-                    {
-                        _responseMessage = await response.Content.ReadAsStringAsync();
-                    }
+            if (!string.IsNullOrEmpty(pathValue))
+            {
+                var fileExtension = localPayload.SingleOrDefault(x => x.Key == "content" && x.Value == "pdf").Value;
+                if (!string.IsNullOrEmpty(fileExtension))
+                {
+                    fileName = localPayload.SingleOrDefault(x => x.Key == "instrument").Value;
+                    await response.Content.ReadAsFileAsync(fileName!, pathValue, true, fileExtension, cancellationToken: cancellationToken);
                 }
                 else
                 {
-                    _responseMessage = await response.Content.ReadAsStringAsync();
+                    await response.Content.ReadAsFileAsync(fileName!, pathValue, true, cancellationToken: cancellationToken);
                 }
-
-                return _responseMessage;
+                _responseMessage = fileName ?? string.Empty;
             }
-            catch (Exception Ex)
+            else
             {
-                Log.Error(Ex, "REDCap API call failed");
-                return Empty;
+                _responseMessage = await response.Content.ReadAsStringAsync();
             }
+
+            return _responseMessage;
         }
 
         /// <summary>
