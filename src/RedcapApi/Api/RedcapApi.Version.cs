@@ -1,0 +1,43 @@
+﻿using Newtonsoft.Json;
+
+using Redcap.Api;
+using Redcap.Exceptions;
+using Redcap.Interfaces;
+using Redcap.Models;
+using Redcap.Utilities;
+
+using Serilog;
+
+using System.Net.Http.Headers;
+
+using static System.String;
+
+namespace Redcap
+{
+    public partial class RedcapApi
+    {
+
+        /// <summary>
+        /// Export REDCap Version<br/>
+        /// This method returns the current REDCap version number as plain text (e.g., 4.13.18, 5.12.2, 6.0.0).
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// To use this method, you must have API Export privileges in the project.
+        /// </remarks>
+        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
+        /// <param name="format">csv, json [default], xml</param>
+        /// <param name="cancellationToken"></param>
+        /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
+        /// <returns>The current REDCap version number (three numbers delimited with two periods) as plain text - e.g., 4.13.18, 5.12.2, 6.0.0</returns>
+        public async Task<string> ExportRedcapVersionAsync(string token, RedcapFormat format = RedcapFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        {
+            return await ExecuteAsync(token, payload =>
+            {
+                payload["token"] = token;
+                payload["content"] = Content.Version.GetDisplayName();
+                payload["format"] = format.GetDisplayName();
+            }, cancellationToken, timeOutSeconds);
+        }
+    }
+}
