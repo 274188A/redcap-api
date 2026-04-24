@@ -180,7 +180,7 @@ public class UtilitiesTests
     {
         using var server = new LocalHttpServer(_ => new TestResponse(200, "stream-body"));
         using var client = new HttpClient();
-        using var stream = await _api.GetStreamContentAsync(new Dictionary<string, string> { ["token"] = "abc" }, server.Url, client);
+        using var stream = await Utils.GetStreamContentAsync(new Dictionary<string, string> { ["token"] = "abc" }, server.Url, client);
 
         Assert.NotNull(stream);
         Assert.False(stream!.CanRead);
@@ -197,22 +197,12 @@ public class UtilitiesTests
             ["content"] = "record"
         };
 
-        var response = await _api.SendPostRequestAsync(payload, server.Url, client);
+        var response = await Utils.SendPostRequestAsync(payload, server.Url, client);
 
         Assert.Equal("ok", response);
         Assert.True(server.Requests.TryPeek(out var request));
         Assert.Contains("token=abc", request!.Body);
         Assert.Contains("content=record", request.Body);
-    }
-
-    [Fact]
-    public async Task SendPostRequest_ThrowsWhenHttpStatusIsNotSuccessful()
-    {
-        using var server = new LocalHttpServer(_ => new TestResponse(500, "failure"));
-        using var client = new HttpClient();
-
-        await Assert.ThrowsAsync<HttpRequestException>(async () =>
-            await _api.SendPostRequest(new Dictionary<string, string> { ["token"] = "abc" }, server.Url, client));
     }
 
     [Theory]
@@ -224,7 +214,7 @@ public class UtilitiesTests
         using var client = new HttpClient();
 
         var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
-            _api.SendPostRequestAsync(new Dictionary<string, string> { ["token"] = "abc" }, server.Url, client));
+            Utils.SendPostRequestAsync(new Dictionary<string, string> { ["token"] = "abc" }, server.Url, client));
 
         Assert.Equal((HttpStatusCode)statusCode, ex.StatusCode);
         Assert.Equal("error-body", ex.ResponseBody);
@@ -239,7 +229,7 @@ public class UtilitiesTests
         using var client = new HttpClient();
 
         var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
-            _api.GetStreamContentAsync(new Dictionary<string, string> { ["token"] = "abc" }, server.Url, client));
+            Utils.GetStreamContentAsync(new Dictionary<string, string> { ["token"] = "abc" }, server.Url, client));
 
         Assert.Equal((HttpStatusCode)statusCode, ex.StatusCode);
         Assert.Equal("stream-error-body", ex.ResponseBody);

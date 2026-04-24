@@ -22,21 +22,27 @@ namespace Redcap.Api
         }
 
         /// <inheritdoc />
-        public Task<Stream?> GetStreamContentAsync(RedcapApi redcapApi, Dictionary<string, string> payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public Task<Stream?> GetStreamContentAsync(Dictionary<string, string> payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
-            return Utils.GetStreamContentAsync(redcapApi, payload, uri, _client, cancellationToken);
+            return Utils.GetStreamContentAsync(payload, uri, _client, cancellationToken);
         }
 
         /// <inheritdoc />
-        public Task<string> SendPostRequestAsync(RedcapApi redcapApi, MultipartFormDataContent payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public Task<string> SendPostRequestAsync(MultipartFormDataContent payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
-            return Utils.SendPostRequestAsync(redcapApi, payload, uri, _client, cancellationToken);
+            return Utils.SendPostRequestAsync(payload, uri, _client, cancellationToken);
         }
 
         /// <inheritdoc />
-        public Task<string> SendPostRequestAsync(RedcapApi redcapApi, Dictionary<string, string> payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public Task<string> SendPostRequestAsync(Dictionary<string, string> payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
-            return Utils.SendPostRequestAsync(redcapApi, payload, uri, _client, cancellationToken);
+            return Utils.SendPostRequestAsync(payload, uri, _client, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public Task<string> DownloadFileAsync(Dictionary<string, string> payload, Uri uri, string destinationPath, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        {
+            return Utils.DownloadFileAsync(payload, uri, _client, destinationPath, cancellationToken);
         }
 
         /// <inheritdoc />

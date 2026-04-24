@@ -101,12 +101,11 @@ namespace Redcap
                 Log.Warning("The directory provided does not exist! Creating a folder for you.");
                 Directory.CreateDirectory(filePath!);
             }
-            return await ExecuteAsync(token, payload =>
+            return await ExecuteDownloadAsync(token, filePath!, payload =>
             {
                 payload["token"] = token;
                 payload["content"] = Content.Pdf.GetDisplayName();
                 payload["returnFormat"] = returnFormat.GetDisplayName();
-                payload["filePath"] = $@"{filePath}";
                 if (!IsNullOrEmpty(recordId)) payload["record"] = recordId!;
                 if (!IsNullOrEmpty(eventName)) payload["event"] = eventName!;
                 if (!IsNullOrEmpty(instrument)) payload["instrument"] = instrument!;

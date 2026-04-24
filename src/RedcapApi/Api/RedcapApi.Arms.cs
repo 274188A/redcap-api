@@ -62,7 +62,7 @@ namespace Redcap
         /// </remarks>
         /// <typeparam name="T"></typeparam>
         /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
-        /// <param name="overrideBhavior">0 - false [default], 1 - true — You may use override=1 as a 'delete all + import' action in order to erase all existing Arms in the project while importing new Arms. If override=0, then you can only add new Arms or rename existing ones. </param>
+        /// <param name="overrideBehavior">false [default] — add/rename only; true — delete all existing Arms then import.</param>
         /// <param name="action">import</param>
         /// <param name="format">csv, json [default], xml</param>
         /// <param name="data">Contains the attributes 'arm_num' (referring to the arm number) and 'name' (referring to the arm's name) of each arm to be created/modified, in which they are provided in the specified format. 
@@ -74,7 +74,7 @@ namespace Redcap
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">The number of seconds beore the http request times out.</param>
         /// <returns>Number of Arms imported</returns>
-        public async Task<string> ImportArmsAsync<T>(string token, Override overrideBhavior, RedcapAction action, RedcapFormat format, List<T> data, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public async Task<string> ImportArmsAsync<T>(string token, bool overrideBehavior, RedcapAction action, RedcapFormat format, List<T> data, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             return await ExecuteAsync(token, payload =>
             {
@@ -82,7 +82,7 @@ namespace Redcap
                 payload["content"] = Content.Arm.GetDisplayName();
                 payload["action"] = action.GetDisplayName();
                 payload["format"] = format.GetDisplayName();
-                payload["override"] = overrideBhavior.GetDisplayName();
+                payload["override"] = overrideBehavior ? "true" : "false";
                 payload["returnFormat"] = returnFormat.GetDisplayName();
                 payload["data"] = JsonConvert.SerializeObject(data);
             }, cancellationToken, timeOutSeconds);

@@ -74,7 +74,7 @@ namespace Redcap
         /// <returns>The response content as a string.</returns>
         protected virtual Task<string> SendPostRequestAsync(Dictionary<string, string> payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
-            return _transport.SendPostRequestAsync(this, payload, uri, cancellationToken, timeOutSeconds);
+            return _transport.SendPostRequestAsync(payload, uri, cancellationToken, timeOutSeconds);
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace Redcap
         /// <returns>The response content as a string.</returns>
         protected virtual Task<string> SendPostRequestAsync(MultipartFormDataContent payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
-            return _transport.SendPostRequestAsync(this, payload, uri, cancellationToken, timeOutSeconds);
+            return _transport.SendPostRequestAsync(payload, uri, cancellationToken, timeOutSeconds);
         }
 
         private async Task<string> ExecuteAsync(
@@ -152,7 +152,42 @@ namespace Redcap
         /// <returns>The response content as a stream.</returns>
         protected virtual Task<Stream?> GetStreamContentAsync(Dictionary<string, string> payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
-            return _transport.GetStreamContentAsync(this, payload, uri, cancellationToken, timeOutSeconds);
+            return _transport.GetStreamContentAsync(payload, uri, cancellationToken, timeOutSeconds);
+        }
+
+        /// <summary>
+        /// Posts payload to the transport's download path and saves the response to <paramref name="destinationPath"/> on disk.
+        /// </summary>
+        protected virtual Task<string> DownloadFileAsync(Dictionary<string, string> payload, Uri uri, string destinationPath, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        {
+            return _transport.DownloadFileAsync(payload, uri, destinationPath, cancellationToken, timeOutSeconds);
+        }
+
+        private async Task<string> ExecuteDownloadAsync(
+            string token,
+            string destinationPath,
+            Action<Dictionary<string, string>> buildPayload,
+            CancellationToken cancellationToken = default,
+            long timeOutSeconds = 100)
+        {
+            try
+            {
+                this.CheckToken(token);
+                var payload = new Dictionary<string, string>();
+                buildPayload(payload);
+                return await this.DownloadFileAsync(payload, _uri, destinationPath,
+                    cancellationToken: cancellationToken, timeOutSeconds: timeOutSeconds);
+            }
+            catch (RedcapApiException Ex)
+            {
+                Log.Error(Ex, "REDCap API call failed");
+                throw;
+            }
+            catch (Exception Ex)
+            {
+                Log.Error(Ex, "REDCap API call failed");
+                throw new RedcapApiException(Ex.Message, Ex);
+            }
         }
 
         /// <summary>

@@ -290,13 +290,12 @@ namespace Redcap.Utilities
 
         /// <summary>
         /// </summary>
-        /// <param name="redcapApi"></param>
         /// <param name="payload">data</param>
         /// <param name="uri">URI of the api instance</param>
         /// <param name="client">Caller-owned <see cref="HttpClient"/>.</param>
         /// <param name="cancellationToken"></param>
         /// <returns>Stream</returns>
-        public static async Task<Stream?> GetStreamContentAsync(this RedcapApi redcapApi, Dictionary<string, string> payload, Uri uri, HttpClient client, CancellationToken cancellationToken = default)
+        public static async Task<Stream?> GetStreamContentAsync(Dictionary<string, string> payload, Uri uri, HttpClient client, CancellationToken cancellationToken = default)
         {
             var content = new FormUrlEncodedContent(payload);
             using var response = await client.PostAsync(uri, content, cancellationToken);
@@ -312,13 +311,12 @@ namespace Redcap.Utilities
         /// Method to send http request using MultipartFormDataContent
         /// Requests with attachments
         /// </summary>
-        /// <param name="redcapApi"></param>
         /// <param name="payload">data</param>
         /// <param name="uri">URI of the api instance</param>
         /// <param name="client">Caller-owned <see cref="HttpClient"/>.</param>
         /// <param name="cancellationToken"></param>
         /// <returns>string</returns>
-        public static async Task<string> SendPostRequestAsync(this RedcapApi redcapApi, MultipartFormDataContent payload, Uri uri, HttpClient client, CancellationToken cancellationToken = default)
+        public static async Task<string> SendPostRequestAsync(MultipartFormDataContent payload, Uri uri, HttpClient client, CancellationToken cancellationToken = default)
         {
             using var response = await client.PostAsync(uri, payload, cancellationToken);
             if (!response.IsSuccessStatusCode)
@@ -332,22 +330,35 @@ namespace Redcap.Utilities
         /// <summary>
         /// Sends request using http
         /// </summary>
-        /// <param name="redcapApi"></param>
         /// <param name="payload">data</param>
         /// <param name="uri">URI of the api instance</param>
         /// <param name="client">Caller-owned <see cref="HttpClient"/>.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static async Task<string> SendPostRequestAsync(this RedcapApi redcapApi, Dictionary<string, string> payload, Uri uri, HttpClient client, CancellationToken cancellationToken = default)
+        public static async Task<string> SendPostRequestAsync(Dictionary<string, string> payload, Uri uri, HttpClient client, CancellationToken cancellationToken = default)
         {
-            string _responseMessage = string.Empty;
+            using var content = new CustomFormUrlEncodedContent(payload);
+            using var response = await client.PostAsync(uri, content, cancellationToken);
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                throw new RedcapApiException($"REDCap returned {(int)response.StatusCode} {response.ReasonPhrase}", response.StatusCode, body);
+            }
+            return await response.Content.ReadAsStringAsync();
+        }
 
-            // filePath is an internal key used to signal where to save downloaded files; it is not part of the REDCap wire format.
-            var localPayload = new Dictionary<string, string>(payload);
-            localPayload.TryGetValue("filePath", out var pathValue);
-            localPayload.Remove("filePath");
-
-            using var content = new CustomFormUrlEncodedContent(localPayload);
+        /// <summary>
+        /// Posts <paramref name="payload"/> and saves the response body to <paramref name="destinationPath"/> on disk.
+        /// </summary>
+        /// <param name="payload">data</param>
+        /// <param name="uri">URI of the api instance</param>
+        /// <param name="client">Caller-owned <see cref="HttpClient"/>.</param>
+        /// <param name="destinationPath">Directory on disk where the downloaded file is saved.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>The saved filename, or empty string.</returns>
+        public static async Task<string> DownloadFileAsync(Dictionary<string, string> payload, Uri uri, HttpClient client, string destinationPath, CancellationToken cancellationToken = default)
+        {
+            using var content = new CustomFormUrlEncodedContent(payload);
             using var response = await client.PostAsync(uri, content, cancellationToken);
             if (!response.IsSuccessStatusCode)
             {
@@ -365,43 +376,17 @@ namespace Redcap.Utilities
                 };
             }
 
-            if (!string.IsNullOrEmpty(pathValue))
+            var isPdf = payload.TryGetValue("content", out var contentVal) && contentVal == "pdf";
+            if (isPdf)
             {
-                var fileExtension = localPayload.SingleOrDefault(x => x.Key == "content" && x.Value == "pdf").Value;
-                if (!string.IsNullOrEmpty(fileExtension))
-                {
-                    fileName = localPayload.SingleOrDefault(x => x.Key == "instrument").Value;
-                    await response.Content.ReadAsFileAsync(fileName!, pathValue, true, fileExtension, cancellationToken: cancellationToken);
-                }
-                else
-                {
-                    await response.Content.ReadAsFileAsync(fileName!, pathValue, true, cancellationToken: cancellationToken);
-                }
-                _responseMessage = fileName ?? string.Empty;
+                fileName = payload.TryGetValue("instrument", out var inst) ? inst : fileName;
+                await response.Content.ReadAsFileAsync(fileName!, destinationPath, true, "pdf", cancellationToken: cancellationToken);
             }
             else
             {
-                _responseMessage = await response.Content.ReadAsStringAsync();
+                await response.Content.ReadAsFileAsync(fileName!, destinationPath, true, cancellationToken: cancellationToken);
             }
-
-            return _responseMessage;
-        }
-
-        /// <summary>
-        /// Sends http request to api
-        /// </summary>
-        /// <param name="redcapApi"></param>
-        /// <param name="payload">data </param>
-        /// <param name="uri">URI of the api instance</param>
-        /// <param name="client">Caller-owned <see cref="HttpClient"/>.</param>
-        /// <param name="cancellationToken"></param>
-        /// <returns>string</returns>
-        public static async Task<string> SendPostRequest(this RedcapApi redcapApi, Dictionary<string, string> payload, Uri uri, HttpClient client, CancellationToken cancellationToken = default)
-        {
-            using var content = new FormUrlEncodedContent(payload);
-            using var response = await client.PostAsync(uri, content, cancellationToken);
-            response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync();
+            return fileName ?? string.Empty;
         }
 
         /// <summary>

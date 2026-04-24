@@ -63,7 +63,7 @@ namespace Redcap
         /// To use this method, you must have API Import/Update privileges *and* Project Design/Setup privileges in the project.
         /// </remarks>
         /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
-        /// <param name="overRideBehavior">0 - false [default], 1 - true — You may use override=1 as a 'delete all + import' action in order to erase all existing Events in the project while importing new Events. If override=0, then you can only add new Events or modify existing ones. </param>
+        /// <param name="overrideBehavior">false [default] — add/modify only; true — delete all existing Events then import.</param>
         /// <typeparam name="T"></typeparam>
         /// <param name="data">Contains the required attributes 'event_name' (referring to the name/label of the event) and 'arm_num' (referring to the arm number to which the event belongs - assumes '1' if project only contains one arm). In order to modify an existing event, you must provide the attribute 'unique_event_name' (referring to the auto-generated unique event name of the given event). If the project utilizes the Scheduling module, the you may optionally provide the following attributes, which must be numerical: day_offset, offset_min, offset_max. If the day_offset is not provided, then the events will be auto-numbered in the order in which they are provided in the API request. 
         /// [{"event_name":"Baseline","arm_num":"1","day_offset":"1","offset_min":"0",
@@ -78,7 +78,7 @@ namespace Redcap
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the HTTP request times out.</param>
         /// <returns>Number of Events imported</returns>
-        public async Task<string> ImportEventsAsync<T>(string token, Override overRideBehavior, RedcapFormat format, List<T> data, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public async Task<string> ImportEventsAsync<T>(string token, bool overrideBehavior, RedcapFormat format, List<T> data, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             return await ExecuteAsync(token, payload =>
             {
@@ -88,7 +88,7 @@ namespace Redcap
                 payload["content"] = Content.Event.GetDisplayName();
                 payload["action"] = RedcapAction.Import.GetDisplayName();
                 payload["format"] = format.GetDisplayName();
-                payload["override"] = overRideBehavior.GetDisplayName();
+                payload["override"] = overrideBehavior ? "true" : "false";
                 payload["returnFormat"] = returnFormat.GetDisplayName();
                 payload["data"] = JsonConvert.SerializeObject(data);
             }, cancellationToken, timeOutSeconds);

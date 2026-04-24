@@ -784,7 +784,7 @@ public class RedcapApiTransportTests
         var api = new Redcap.RedcapApi("http://localhost/", transport);
         var data = new List<RedcapEvent> { new() { EventName = "baseline", ArmNumber = "1" } };
 
-        await api.ImportEventsAsync(Token, Override.False, RedcapFormat.json, data, RedcapReturnFormat.xml);
+        await api.ImportEventsAsync(Token, false, RedcapFormat.json, data, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("event", transport.LastDictionaryPayload!["content"]);
@@ -800,7 +800,7 @@ public class RedcapApiTransportTests
         var api = new Redcap.RedcapApi("http://localhost/", transport);
         var data = new List<RedcapEvent> { new() { EventName = "baseline", ArmNumber = "1" } };
 
-        await api.ImportEventsAsync(Token, Override.False, RedcapFormat.json, data, RedcapReturnFormat.xml);
+        await api.ImportEventsAsync(Token, false, RedcapFormat.json, data, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("event", transport.LastDictionaryPayload!["content"]);
@@ -1074,7 +1074,7 @@ public class RedcapApiTransportTests
         var api = new Redcap.RedcapApi("http://localhost/", transport);
         var data = new List<TestArmPayload> { new() { arm_num = "1", name = "Arm A" } };
 
-        await api.ImportArmsAsync(Token, Override.False, RedcapAction.Import, RedcapFormat.json, data, RedcapReturnFormat.xml);
+        await api.ImportArmsAsync(Token, false, RedcapAction.Import, RedcapFormat.json, data, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("arm", transport.LastDictionaryPayload!["content"]);
@@ -1090,7 +1090,7 @@ public class RedcapApiTransportTests
         var api = new Redcap.RedcapApi("http://localhost/", transport);
         var data = new List<RedcapArm> { new() { ArmNumber = "1", Name = "Arm B" } };
 
-        await api.ImportArmsAsync(Token, Override.False, RedcapAction.Import, RedcapFormat.json, data, RedcapReturnFormat.xml);
+        await api.ImportArmsAsync(Token, false, RedcapAction.Import, RedcapFormat.json, data, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("arm", transport.LastDictionaryPayload!["content"]);
@@ -1105,7 +1105,7 @@ public class RedcapApiTransportTests
         var api = new Redcap.RedcapApi("http://localhost/", transport);
         var data = new List<RedcapArm> { new() { ArmNumber = "2", Name = "Arm C" } };
 
-        await api.ImportArmsAsync<RedcapArm>(Token, Override.False, RedcapAction.Import, RedcapFormat.json, data, RedcapReturnFormat.xml);
+        await api.ImportArmsAsync<RedcapArm>(Token, false, RedcapAction.Import, RedcapFormat.json, data, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("arm", transport.LastDictionaryPayload!["content"]);
@@ -1699,22 +1699,13 @@ public class RedcapApiTransportTests
         var api = new Redcap.RedcapApi("http://localhost/", transport);
         var tempFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
 
-        try
-        {
-            await api.ExportPDFInstrumentsAsync(Token, "1", "event_1_arm_1", "survey_a", true, tempFolder, RedcapReturnFormat.xml);
+        await api.ExportPDFInstrumentsAsync(Token, "1", "event_1_arm_1", "survey_a", true, tempFolder, RedcapReturnFormat.xml);
 
-            Assert.NotNull(transport.LastDictionaryPayload);
-            Assert.Equal("pdf", transport.LastDictionaryPayload!["content"]);
-            Assert.Equal(tempFolder, transport.LastDictionaryPayload["filePath"]);
-            Assert.Equal("True", transport.LastDictionaryPayload["allRecords"]);
-        }
-        finally
-        {
-            if (Directory.Exists(tempFolder))
-            {
-                Directory.Delete(tempFolder, true);
-            }
-        }
+        Assert.NotNull(transport.LastDictionaryPayload);
+        Assert.Equal("pdf", transport.LastDictionaryPayload!["content"]);
+        Assert.False(transport.LastDictionaryPayload.ContainsKey("filePath"));
+        Assert.Equal(tempFolder, transport.LastDownloadDestinationPath);
+        Assert.Equal("True", transport.LastDictionaryPayload["allRecords"]);
     }
 
     [Fact]
@@ -1876,7 +1867,7 @@ public class RedcapApiTransportTests
         var api = new Redcap.RedcapApi("http://localhost/", transport);
 
         var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
-            api.ImportEventsAsync(Token, Override.False, RedcapFormat.json, new List<object>()));
+            api.ImportEventsAsync(Token, false, RedcapFormat.json, new List<object>()));
 
         Assert.NotNull(ex);
         Assert.Null(transport.LastDictionaryPayload);
@@ -2100,21 +2091,30 @@ public class RedcapApiTransportTests
 
         public MultipartFormDataContent? LastMultipartPayload { get; private set; }
 
-        public Task<Stream?> GetStreamContentAsync(Redcap.RedcapApi redcapApi, Dictionary<string, string> payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public string? LastDownloadDestinationPath { get; private set; }
+
+        public Task<Stream?> GetStreamContentAsync(Dictionary<string, string> payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             LastDictionaryPayload = new Dictionary<string, string>(payload);
             return Task.FromResult<Stream?>(new MemoryStream());
         }
 
-        public Task<string> SendPostRequestAsync(Redcap.RedcapApi redcapApi, MultipartFormDataContent payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public Task<string> SendPostRequestAsync(MultipartFormDataContent payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             LastMultipartPayload = payload;
             return Task.FromResult("transport-response");
         }
 
-        public Task<string> SendPostRequestAsync(Redcap.RedcapApi redcapApi, Dictionary<string, string> payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public Task<string> SendPostRequestAsync(Dictionary<string, string> payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             LastDictionaryPayload = new Dictionary<string, string>(payload);
+            return Task.FromResult("transport-response");
+        }
+
+        public Task<string> DownloadFileAsync(Dictionary<string, string> payload, Uri uri, string destinationPath, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        {
+            LastDictionaryPayload = new Dictionary<string, string>(payload);
+            LastDownloadDestinationPath = destinationPath;
             return Task.FromResult("transport-response");
         }
     }

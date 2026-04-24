@@ -70,19 +70,25 @@ public class CancellationTests
 
     private sealed class CancellationRespectingTransport : IRedcapTransport
     {
-        public Task<Stream?> GetStreamContentAsync(Redcap.RedcapApi redcapApi, Dictionary<string, string> payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public Task<Stream?> GetStreamContentAsync(Dictionary<string, string> payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             cancellationToken.ThrowIfCancellationRequested();
             return Task.FromResult<Stream?>(new MemoryStream());
         }
 
-        public Task<string> SendPostRequestAsync(Redcap.RedcapApi redcapApi, MultipartFormDataContent payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public Task<string> SendPostRequestAsync(MultipartFormDataContent payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             cancellationToken.ThrowIfCancellationRequested();
             return Task.FromResult("transport-response");
         }
 
-        public Task<string> SendPostRequestAsync(Redcap.RedcapApi redcapApi, Dictionary<string, string> payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public Task<string> SendPostRequestAsync(Dictionary<string, string> payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return Task.FromResult("transport-response");
+        }
+
+        public Task<string> DownloadFileAsync(Dictionary<string, string> payload, Uri uri, string destinationPath, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             cancellationToken.ThrowIfCancellationRequested();
             return Task.FromResult("transport-response");
@@ -93,19 +99,25 @@ public class CancellationTests
     {
         public CancellationToken LastCancellationToken { get; private set; }
 
-        public Task<Stream?> GetStreamContentAsync(Redcap.RedcapApi redcapApi, Dictionary<string, string> payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public Task<Stream?> GetStreamContentAsync(Dictionary<string, string> payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             LastCancellationToken = cancellationToken;
             return Task.FromResult<Stream?>(new MemoryStream());
         }
 
-        public Task<string> SendPostRequestAsync(Redcap.RedcapApi redcapApi, MultipartFormDataContent payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public Task<string> SendPostRequestAsync(MultipartFormDataContent payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             LastCancellationToken = cancellationToken;
             return Task.FromResult("transport-response");
         }
 
-        public Task<string> SendPostRequestAsync(Redcap.RedcapApi redcapApi, Dictionary<string, string> payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public Task<string> SendPostRequestAsync(Dictionary<string, string> payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        {
+            LastCancellationToken = cancellationToken;
+            return Task.FromResult("transport-response");
+        }
+
+        public Task<string> DownloadFileAsync(Dictionary<string, string> payload, Uri uri, string destinationPath, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             LastCancellationToken = cancellationToken;
             return Task.FromResult("transport-response");
