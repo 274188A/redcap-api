@@ -243,7 +243,7 @@ namespace Redcap
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>the number of records deleted or (if instrument, event, and/or instance are provided) the number of items deleted over the total records specified.</returns>
-        public async Task<string> DeleteRecordsAsync(string token, string[] records, int? arm, CancellationToken cancellationToken = default, long timeOutSeconds = 100, bool deleteLogging = false)
+        public async Task<string> DeleteRecordsAsync(string token, string[] records, int? arm, bool deleteLogging = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             if (records?.Length < 1)
                 throw new RedcapApiException("Please provide the records you would like to remove.");
@@ -281,7 +281,7 @@ namespace Redcap
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>the number of records deleted or (if instrument, event, and/or instance are provided) the number of items deleted over the total records specified.</returns>
-        public async Task<string> DeleteRecordsAsync(string token, Content content, RedcapAction action, string[] records, int? arm, RedcapInstrument instrument, RedcapEvent redcapEvent, RedcapRepeatInstance repeatInstance, CancellationToken cancellationToken = default, long timeOutSeconds = 100, bool deleteLogging = false)
+        public async Task<string> DeleteRecordsAsync(string token, Content content, RedcapAction action, string[] records, int? arm, RedcapInstrument instrument, RedcapEvent redcapEvent, RedcapRepeatInstance repeatInstance, bool deleteLogging = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             if (records?.Length < 1)
                 throw new RedcapApiException("Please provide the records you would like to remove.");

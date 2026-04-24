@@ -122,7 +122,8 @@ public class UtilitiesTests
     [Fact]
     public void CheckToken_ThrowsForMissingToken()
     {
-        Assert.Throws<ArgumentNullException>(() => _api.CheckToken(string.Empty));
+        Assert.Throws<ArgumentException>(() => _api.CheckToken(string.Empty));
+        Assert.Throws<ArgumentNullException>(() => _api.CheckToken(null!));
         var ex = Xunit.Record.Exception(() => _api.CheckToken("token"));
         Assert.Null(ex);
     }

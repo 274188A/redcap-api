@@ -1,34 +1,26 @@
 # Session Handoff
 
 **Date:** 2026-04-24
-**Branch:** master (dirty — changes uncommitted)
+**Branch:** master (clean)
 
 ## Summary
 
-Ongoing architectural cleanup of the `redcap-api` library. This session completed todo #2 from the architectural review — fake-async helpers in `Utils.cs` were converted to synchronous methods and the `*Async` suffixes were dropped where they no longer made sense. See CLAUDE.md for build commands and architecture overview.
+Ongoing architectural cleanup of the `redcap-api` library. This session completed todos #6, #7, and #3 from the architectural review — all committed in `d3e0683`. See CLAUDE.md for build commands and architecture overview.
 
 ## What Was Accomplished
 
-- **Todo #2 done** — 11 fake-async utility methods converted to sync:
-  - `ConvertArraytoString`, `ConvertIntArraytoString`, `HandleReturnContent`, `HandleFormat` — `Task<>` wrappers removed
-  - `ExtractBehaviorAsync` → `ExtractBehavior`, `GetProperties`, `ExtractEventsAsync` → `ExtractEvents`, `ExtractFieldsAsync` → `ExtractFields`, `ExtractRecordsAsync` → `ExtractRecords`, `ExtractFormsAsync` → `ExtractForms`, `ExtractArmsAsync<T>` → `ExtractArms<T>`
-  - Protected virtual wrappers in `RedcapApi.cs` updated to match
-  - Call sites in `Records.cs` and `Projects.cs`: `await this.ConvertArraytoString(...)` → `this.ConvertArraytoString(...)`
-  - Tests updated: `async Task` → `void`, `await` removed, renamed method references fixed
-- **157 tests pass**, 0 failures (unchanged count — no new tests needed, existing ones cover the helpers)
-- Changes are **uncommitted** — ready to stage and commit
+- **Todo #6** — Dropped unused `RedcapApi redcapApi` first param from all `IRedcapTransport` methods, `DefaultRedcapTransport`, `Utils` static helpers, protected virtual wrappers in `RedcapApi.cs`, and all test transport doubles (`FakeTransport`, `CancellationRespectingTransport`, `TokenCapturingTransport`). Dead `Utils.SendPostRequest` (sync, used `EnsureSuccessStatusCode`) deleted; utilities tests updated to call `Utils.*` directly.
+- **Todo #7** — `Override` enum deleted (`src/RedcapApi/Models/Override.cs`). `ImportArmsAsync` and `ImportEventsAsync` now take `bool overrideBehavior`; wire value is `"true"`/`"false"`. Interface, implementation, XML docs, and test call sites updated.
+- **Todo #3** — `IRedcapTransport` gains `DownloadFileAsync(payload, uri, destinationPath, ...)`. File-saving logic moved out of `Utils.SendPostRequestAsync` into `Utils.DownloadFileAsync`. `ExportPDFInstrumentsAsync` (filePath overload) now routes through a new `ExecuteDownloadAsync` helper — `"filePath"` is never placed in the wire payload. `SendPostRequestAsync(Dictionary)` simplified to a plain POST + return body.
+- **Todo #8** — Fixed parameter ordering on both `DeleteRecordsAsync` overloads: `bool deleteLogging` moved before `CancellationToken cancellationToken` / `long timeOutSeconds` in interface and implementation. Test updated to use `ArgumentException` for empty string (now correctly reflecting `ThrowIfNullOrEmpty` behavior).
+- **Todo #9** — `Utils.CheckToken` now uses `ArgumentException.ThrowIfNullOrEmpty` instead of manual `string.IsNullOrEmpty` + `throw new ArgumentNullException`. Test extended to assert both null (`ArgumentNullException`) and empty (`ArgumentException`) cases.
+- **157 tests pass**, 0 failures.
 
 ## Current State
 
-Working tree is dirty with 6 modified files. Tests pass. Build is clean (0 errors, 0 warnings after fixing stale XML doc tag on `ExtractArms`).
+Working tree is clean. All changes committed.
 
-**Modified files:**
-- `src/RedcapApi/Utilities/Utils.cs` — all 11 fake-async methods converted
-- `src/RedcapApi/Api/RedcapApi.cs` — 5 protected virtual wrappers updated
-- `src/RedcapApi/Api/RedcapApi.Records.cs` — `await` removed from 5 call sites
-- `src/RedcapApi/Api/RedcapApi.Projects.cs` — `await` removed from 2 call sites
-- `tests/RedcapApi.Tests/UtilitiesTests.cs` — 7 test methods made sync, method renames applied
-- `tests/RedcapApi.Tests/RedcapApiTransportTests.cs` — 4 wrapper methods and call sites updated
+**Modified files:** None (clean)
 
 **Staged changes:** None
 
@@ -36,42 +28,43 @@ Working tree is dirty with 6 modified files. Tests pass. Build is clean (0 error
 
 ## Next Steps
 
-1. **Commit this work** — suggested message: `refactor: drop fake-async wrappers and Async suffix from sync utility helpers`
-2. **Pick the next todo** — #3, #6, or #7 are all self-contained and low-risk:
-   - **#3** — remove the `"filePath"` magic-string side channel from `Utils.cs` (requires new `DownloadFileAsync` on `IRedcapTransport`)
-   - **#6** — drop the unused `RedcapApi` parameter from every `IRedcapTransport` method (`src/RedcapApi/Interfaces/IRedcapTransport.cs`)
-   - **#7** — replace `Override` enum with `bool` (`src/RedcapApi/Models/Override.cs`)
-3. **Todos #4 and #5** are breaking changes — bundle for 2.1 or 3.0.
+Remaining todos from the architectural review (both are breaking changes — bundle for 2.1/3.0):
+
+1. **#4** — Pick one serialization strategy: `GetProperties` lowercases via reflection; `ImportRecordsAsync` / `ImportEventsAsync` call `JsonConvert.SerializeObject` directly. Breaking change — bundle for 2.1/3.0.
+2. **#5** — Move `token` into the constructor (every public method takes `string token`). Breaking change — bundle for 2.1/3.0.
+
+Modernization batch (#10–#13) is earmarked for 3.0: `System.Text.Json`, `ILogger` abstractions, `IHttpClientFactory`, sub-client partitioning.
 
 ## Architectural Todo List
 
 ### High severity
-- [x] **1. Stop swallowing errors in the transport.** ✅ Done in `e656fe3`.
+- [x] **1.** Stop swallowing errors in transport. ✅ `e656fe3`
 
 ### Medium severity
-- [x] **2. Finish the fake-async cleanup.** ✅ Done this session.
-- [ ] **3. Remove the `filePath` magic-string side channel.** `Utils.cs` sniffs the payload for `"filePath"`, strips it, uses it to decide whether to write response to disk. Fix: separate `DownloadFileAsync(payload, destination)` on the transport.
-- [ ] **4. Pick one serialization strategy.** `GetProperties` lowercases via reflection; `ImportRecordsAsync` and `ImportEventsAsync` call `JsonConvert.SerializeObject` directly.
-- [ ] **5. Move `token` into the constructor.** Every public method takes `string token`. Breaking change — bundle for 2.1/3.0.
-- [ ] **6. Drop `RedcapApi` from `IRedcapTransport`.** Every method takes `RedcapApi redcapApi` as first arg; implementations don't use it. Remove the parameter.
+- [x] **2.** Fake-async cleanup. ✅ `48b63c8`
+- [x] **3.** Remove `filePath` magic-string side channel. ✅ `d3e0683`
+- [ ] **4.** Pick one serialization strategy. Breaking — bundle for 2.1/3.0.
+- [ ] **5.** Move `token` into constructor. Breaking — bundle for 2.1/3.0.
+- [x] **6.** Drop `RedcapApi` from `IRedcapTransport`. ✅ `d3e0683`
 
 ### Low severity
-- [ ] **7. Replace `Override` enum with `bool`.** `src/RedcapApi/Models/Override.cs`
-- [ ] **8. Fix parameter ordering on `DeleteRecordsAsync`.** `bool deleteLogging` is after `CancellationToken`. (`RedcapApi.Records.cs:246`)
-- [ ] **9. Use `ArgumentException.ThrowIfNullOrEmpty`.** `Utils.CheckToken` throws wrong exception type for empty strings.
+- [x] **7.** Replace `Override` enum with `bool`. ✅ `d3e0683`
+- [x] **8.** Fix parameter ordering on `DeleteRecordsAsync`. ✅ (this session)
+- [x] **9.** Use `ArgumentException.ThrowIfNullOrEmpty` in `Utils.CheckToken`. ✅ (this session)
 
 ### Modernization (batch for 3.0)
-- [ ] **10. `Newtonsoft.Json` → `System.Text.Json`.**
-- [ ] **11. `Serilog` → `Microsoft.Extensions.Logging.Abstractions`.**
-- [ ] **12. Add `IHttpClientFactory` support.**
-- [ ] **13. Consider sub-client partitioning** — `IRedcap` has 76 methods on one interface.
+- [ ] **10.** `Newtonsoft.Json` → `System.Text.Json`
+- [ ] **11.** `Serilog` → `Microsoft.Extensions.Logging.Abstractions`
+- [ ] **12.** Add `IHttpClientFactory` support
+- [ ] **13.** Consider sub-client partitioning — `IRedcap` has 76 methods on one interface
 
 ## Relevant Files
 
-- `src/RedcapApi/Utilities/Utils.cs` — todos #3, #9 land here
-- `src/RedcapApi/Api/RedcapApi.cs` — protected virtual wrappers, constructor, token validation
-- `src/RedcapApi/Interfaces/IRedcapTransport.cs` + `src/RedcapApi/Api/DefaultRedcapTransport.cs` — todo #6
-- `src/RedcapApi/Models/Override.cs` — todo #7
+- `src/RedcapApi/Interfaces/IRedcapTransport.cs` — transport contract; next transport work lands here
+- `src/RedcapApi/Api/DefaultRedcapTransport.cs` — production transport implementation
+- `src/RedcapApi/Utilities/Utils.cs` — static HTTP helpers + utility extensions; todos #9 lands here
+- `src/RedcapApi/Api/RedcapApi.cs` — core class: constructors, `ExecuteAsync`, `ExecuteDownloadAsync`, protected virtuals
 - `src/RedcapApi/Api/RedcapApi.Records.cs:246` — todo #8 parameter ordering
-- `tests/RedcapApi.Tests/UtilitiesTests.cs` — unit tests for Utils helpers
-- `CLAUDE.md` — build commands, architecture overview
+- `tests/RedcapApi.Tests/RedcapApiTransportTests.cs` — payload-shape tests (house style); add tests here for any new endpoint work
+- `tests/RedcapApi.Tests/CancellationTests.cs` — cancellation token propagation tests
+- `CLAUDE.md` — build commands, architecture overview, test patterns

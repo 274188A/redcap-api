@@ -410,10 +410,7 @@ namespace Redcap.Utilities
         /// <returns></returns>
         public static void CheckToken(this RedcapApi redcapApi, string token)
         {
-            if (string.IsNullOrEmpty(token))
-            {
-                throw new ArgumentNullException("Please provide a valid Redcap token.");
-            }
+            ArgumentException.ThrowIfNullOrEmpty(token, nameof(token));
         }
 
     }
