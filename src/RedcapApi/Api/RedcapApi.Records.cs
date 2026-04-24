@@ -100,8 +100,8 @@ namespace Redcap
                 if (exportSurveyFields) payload["exportSurveyFields"] = exportSurveyFields.ToString();
                 if (exportDataAccessGroups) payload["exportDataAccessGroups"] = exportDataAccessGroups.ToString();
                 if (!IsNullOrEmpty(filterLogic)) payload["filterLogic"] = filterLogic!;
-                if (dateRangeBegin.HasValue) payload["dateRangeBegin"] = dateRangeBegin.Value.ToString("yyyy-MM-dd hh:mm:ss");
-                if (dateRangeEnd.HasValue) payload["dateRangeEnd"] = dateRangeEnd.Value.ToString("yyyy-MM-dd hh:mm:ss");
+                if (dateRangeBegin.HasValue) payload["dateRangeBegin"] = dateRangeBegin.Value.ToString("yyyy-MM-dd HH:mm:ss");
+                if (dateRangeEnd.HasValue) payload["dateRangeEnd"] = dateRangeEnd.Value.ToString("yyyy-MM-dd HH:mm:ss");
                 if (format == RedcapFormat.csv) payload["csvDelimiter"] = csvDelimiter.ToString();
                 if (decimalCharacter != DecimalCharacter.none) payload["decimalCharacter"] = decimalCharacter.ToString();
                 if (combineCheckboxOptions) payload["combineCheckboxOptions"] = combineCheckboxOptions.ToString();
@@ -164,8 +164,8 @@ namespace Redcap
                 if (exportSurveyFields) payload["exportSurveyFields"] = exportSurveyFields.ToString();
                 if (exportDataAccessGroups) payload["exportDataAccessGroups"] = exportDataAccessGroups.ToString();
                 if (!IsNullOrEmpty(filterLogic)) payload["filterLogic"] = filterLogic!;
-                if (dateRangeBegin.HasValue) payload["dateRangeBegin"] = dateRangeBegin.Value.ToString("yyyy-MM-dd hh:mm:ss");
-                if (dateRangeEnd.HasValue) payload["dateRangeEnd"] = dateRangeEnd.Value.ToString("yyyy-MM-dd hh:mm:ss");
+                if (dateRangeBegin.HasValue) payload["dateRangeBegin"] = dateRangeBegin.Value.ToString("yyyy-MM-dd HH:mm:ss");
+                if (dateRangeEnd.HasValue) payload["dateRangeEnd"] = dateRangeEnd.Value.ToString("yyyy-MM-dd HH:mm:ss");
                 if (format == RedcapFormat.csv) payload["csvDelimiter"] = csvDelimiter.ToString();
                 if (decimalCharacter != DecimalCharacter.none) payload["decimalCharacter"] = decimalCharacter.ToString();
                 if (combineCheckboxOptions) payload["combineCheckboxOptions"] = combineCheckboxOptions.ToString();

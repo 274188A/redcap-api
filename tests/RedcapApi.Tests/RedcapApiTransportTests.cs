@@ -1829,6 +1829,168 @@ public class RedcapApiTransportTests
         Assert.Equal("True", transport.LastDictionaryPayload["returnMetadataOnly"]);
     }
 
+    // ── Phase 1: DateTime format ────────────────────────────────────────────
+
+    [Fact]
+    public async Task ExportRecordsAsync_FormatsDateRangeAs24HourTime()
+    {
+        var transport = new FakeTransport();
+        var api = new Redcap.RedcapApi("http://localhost/", transport);
+
+        await api.ExportRecordsAsync(Token, dateRangeBegin: new DateTime(2024, 6, 15, 15, 4, 5), dateRangeEnd: new DateTime(2024, 6, 16, 23, 59, 0));
+
+        Assert.Equal("2024-06-15 15:04:05", transport.LastDictionaryPayload!["dateRangeBegin"]);
+        Assert.Equal("2024-06-16 23:59:00", transport.LastDictionaryPayload["dateRangeEnd"]);
+    }
+
+    [Fact]
+    public async Task ExportRecordAsync_FormatsDateRangeAs24HourTime()
+    {
+        var transport = new FakeTransport();
+        var api = new Redcap.RedcapApi("http://localhost/", transport);
+
+        await api.ExportRecordAsync(Token, "1", dateRangeBegin: new DateTime(2024, 6, 15, 15, 4, 5), dateRangeEnd: new DateTime(2024, 6, 16, 23, 59, 0));
+
+        Assert.Equal("2024-06-15 15:04:05", transport.LastDictionaryPayload!["dateRangeBegin"]);
+        Assert.Equal("2024-06-16 23:59:00", transport.LastDictionaryPayload["dateRangeEnd"]);
+    }
+
+    [Fact]
+    public async Task ExportRecordsAsync_OmitsDateRangeKeysWhenNull()
+    {
+        var transport = new FakeTransport();
+        var api = new Redcap.RedcapApi("http://localhost/", transport);
+
+        await api.ExportRecordsAsync(Token, dateRangeBegin: null, dateRangeEnd: null);
+
+        Assert.False(transport.LastDictionaryPayload!.ContainsKey("dateRangeBegin"));
+        Assert.False(transport.LastDictionaryPayload.ContainsKey("dateRangeEnd"));
+    }
+
+    // ── Phase 2: Untested guard clauses ─────────────────────────────────────
+
+    [Fact]
+    public async Task ImportEventsAsync_WithEmptyData_ThrowsRedcapApiException()
+    {
+        var transport = new FakeTransport();
+        var api = new Redcap.RedcapApi("http://localhost/", transport);
+
+        var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
+            api.ImportEventsAsync(Token, Override.False, RedcapFormat.json, new List<object>()));
+
+        Assert.NotNull(ex);
+        Assert.Null(transport.LastDictionaryPayload);
+    }
+
+    [Fact]
+    public async Task ImportFileRepositoryAsync_WithNoFile_ThrowsRedcapApiException()
+    {
+        var transport = new FakeTransport();
+        var api = new Redcap.RedcapApi("http://localhost/", transport);
+
+        var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
+            api.ImportFileRepositoryAsync(Token, file: null));
+
+        Assert.NotNull(ex);
+    }
+
+    [Fact]
+    public async Task ExportFileAsync_WithMissingField_ThrowsRedcapApiException()
+    {
+        var transport = new FakeTransport();
+        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(tempDir);
+        try
+        {
+            var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
+                api.ExportFileAsync(Token, "rec1", field: "", eventName: "", filePath: tempDir));
+
+            Assert.NotNull(ex);
+        }
+        finally
+        {
+            Directory.Delete(tempDir, recursive: true);
+        }
+    }
+
+    [Fact]
+    public async Task ExportRecordsAsync_WithEmptyToken_ThrowsRedcapApiException()
+    {
+        var transport = new FakeTransport();
+        var api = new Redcap.RedcapApi("http://localhost/", transport);
+
+        var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
+            api.ExportRecordsAsync(string.Empty));
+
+        Assert.NotNull(ex);
+        Assert.Null(transport.LastDictionaryPayload);
+    }
+
+    // ── Phase 3: Optional parameter omission ────────────────────────────────
+
+    [Fact]
+    public async Task ExportLoggingAsync_WhenNoOptionalFilters_OmitsOptionalKeys()
+    {
+        var transport = new FakeTransport();
+        var api = new Redcap.RedcapApi("http://localhost/", transport);
+
+        await api.ExportLoggingAsync(Token);
+
+        Assert.NotNull(transport.LastDictionaryPayload);
+        Assert.False(transport.LastDictionaryPayload!.ContainsKey("user"));
+        Assert.False(transport.LastDictionaryPayload.ContainsKey("record"));
+        Assert.False(transport.LastDictionaryPayload.ContainsKey("dag"));
+        Assert.False(transport.LastDictionaryPayload.ContainsKey("beginTime"));
+        Assert.False(transport.LastDictionaryPayload.ContainsKey("endTime"));
+        Assert.Equal("log", transport.LastDictionaryPayload["content"]);
+    }
+
+    [Fact]
+    public async Task ExportLoggingAsync_WhenFiltersProvided_IncludesOptionalKeys()
+    {
+        var transport = new FakeTransport();
+        var api = new Redcap.RedcapApi("http://localhost/", transport);
+
+        await api.ExportLoggingAsync(Token, user: "alice", record: "42", dag: "ca_site", beginTime: "2024-01-01 00:00", endTime: "2024-12-31 23:59");
+
+        Assert.Equal("alice", transport.LastDictionaryPayload!["user"]);
+        Assert.Equal("42", transport.LastDictionaryPayload["record"]);
+        Assert.Equal("ca_site", transport.LastDictionaryPayload["dag"]);
+        Assert.Equal("2024-01-01 00:00", transport.LastDictionaryPayload["beginTime"]);
+        Assert.Equal("2024-12-31 23:59", transport.LastDictionaryPayload["endTime"]);
+    }
+
+    [Fact]
+    public async Task ImportRecordsAsync_AlwaysIncludesRequiredFields()
+    {
+        var transport = new FakeTransport();
+        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var data = new List<TestRecordPayload> { new() { RecordId = "1", FirstName = "Alice" } };
+
+        await api.ImportRecordsAsync(Token, RedcapFormat.json, RedcapDataType.flat, OverwriteBehavior.normal, false, false, data);
+
+        Assert.NotNull(transport.LastDictionaryPayload);
+        Assert.Equal("record", transport.LastDictionaryPayload!["content"]);
+        Assert.Equal("json", transport.LastDictionaryPayload["format"]);
+        Assert.Equal("flat", transport.LastDictionaryPayload["type"]);
+        Assert.Equal("normal", transport.LastDictionaryPayload["overwriteBehavior"]);
+        Assert.True(transport.LastDictionaryPayload.ContainsKey("data"));
+        Assert.False(transport.LastDictionaryPayload.ContainsKey("dateFormat"));
+    }
+
+    [Fact]
+    public async Task ImportRecordsAsync_WhenDateFormatProvided_IncludesDateFormatKey()
+    {
+        var transport = new FakeTransport();
+        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var data = new List<TestRecordPayload> { new() { RecordId = "1" } };
+
+        await api.ImportRecordsAsync(Token, RedcapFormat.json, RedcapDataType.flat, OverwriteBehavior.normal, false, false, data, dateFormat: "MDY");
+
+        Assert.Equal("MDY", transport.LastDictionaryPayload!["dateFormat"]);
+    }
+
     [Fact]
     public async Task ProtectedWrapperMethods_AreReachableViaSubclass()
     {

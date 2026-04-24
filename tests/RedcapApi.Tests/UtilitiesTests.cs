@@ -320,6 +320,28 @@ public class UtilitiesTests
         }
     }
 
+    [Fact]
+    public async Task ReadAsFileAsync_WhenOverwriteFalse_ThrowsAndPreservesExistingFile()
+    {
+        var tempDir = Path.Combine(Path.GetTempPath(), "redcap-overwrite-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(tempDir);
+        try
+        {
+            var filePath = Path.Combine(tempDir, "output.txt");
+            await File.WriteAllTextAsync(filePath, "original");
+
+            using var newContent = new StringContent("replacement", Encoding.UTF8, "text/plain");
+            await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                newContent.ReadAsFileAsync("output", tempDir, overwrite: false, fileExtension: "txt"));
+
+            Assert.Equal("original", await File.ReadAllTextAsync(filePath));
+        }
+        finally
+        {
+            Directory.Delete(tempDir, recursive: true);
+        }
+    }
+
     private sealed class SampleProperties
     {
         public string Name { get; set; } = string.Empty;
