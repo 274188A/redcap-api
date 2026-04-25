@@ -94,9 +94,10 @@ Working list for turning `redcap-api` into a genuinely excellent library, not ju
   - Goal: lock down ownership behavior.
   - Done: `CancellationTests` verifies injected transports remain caller-owned and internally-created transports reject calls after the client is disposed.
 
-- [ ] Add more targeted tests for helper edge cases.
+- [x] Add more targeted tests for helper edge cases.
   - Examples: array conversion failures, malformed filenames, empty payload inputs, header parsing in the local test server.
   - Files: `tests/RedcapApi.Tests`
+  - Done: utility tests now cover array conversion failures, file-name safety, empty dictionary payloads, and local test server request header/path/charset parsing.
 
 - [ ] Keep the new `TcpListener` test server intentionally minimal and well-covered.
   - File: `tests/RedcapApi.Tests/LocalHttpServer.cs`

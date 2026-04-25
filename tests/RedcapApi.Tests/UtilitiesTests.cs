@@ -186,6 +186,53 @@ public class UtilitiesTests
         Assert.Contains("content=record", request.Body);
     }
 
+    [Fact]
+    public async Task SendPostRequestAsync_WithEmptyDictionary_SendsEmptyBody()
+    {
+        using var server = new LocalHttpServer(_ => new TestResponse(200, "ok"));
+        using var client = new HttpClient();
+
+        var response = await Utils.SendPostRequestAsync(new Dictionary<string, string>(), server.Url, client);
+
+        Assert.Equal("ok", response);
+        Assert.True(server.Requests.TryPeek(out var request));
+        Assert.Equal(string.Empty, request!.Body);
+    }
+
+    [Fact]
+    public async Task LocalHttpServer_CapturesHeadersCaseInsensitivelyAndRequestPath()
+    {
+        using var server = new LocalHttpServer(_ => new TestResponse(200, "ok"));
+        using var client = new HttpClient();
+        using var request = new HttpRequestMessage(HttpMethod.Post, new Uri(server.Url, "api/?record=1"))
+        {
+            Content = new StringContent("payload", Encoding.UTF8, "text/plain")
+        };
+        request.Headers.Add("X-Redcap-Test", "present");
+
+        using var response = await client.SendAsync(request);
+
+        response.EnsureSuccessStatusCode();
+        Assert.True(server.Requests.TryPeek(out var captured));
+        Assert.Equal("/api/?record=1", captured!.Path);
+        Assert.Equal("present", captured.Headers["x-redcap-test"]);
+        Assert.Equal("payload", captured.Body);
+    }
+
+    [Fact]
+    public async Task LocalHttpServer_DecodesRequestBodyUsingContentTypeCharset()
+    {
+        using var server = new LocalHttpServer(_ => new TestResponse(200, "ok"));
+        using var client = new HttpClient();
+        using var content = new StringContent("caf\u00E9", Encoding.Unicode, "text/plain");
+
+        using var response = await client.PostAsync(server.Url, content);
+
+        response.EnsureSuccessStatusCode();
+        Assert.True(server.Requests.TryPeek(out var request));
+        Assert.Equal("caf\u00E9", request!.Body);
+    }
+
     [Theory]
     [InlineData(400)]
     [InlineData(500)]
