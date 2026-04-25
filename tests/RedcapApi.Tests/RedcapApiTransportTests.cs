@@ -1594,6 +1594,43 @@ public class RedcapApiTransportTests
     }
 
     [Fact]
+    public async Task ExportFieldNamesTypedAsync_UsesJsonPayloadAndDeserializesResponse()
+    {
+        var transport = new FakeTransport
+        {
+            ResponseBody = "[{\"original_field_name\":\"symptoms\",\"choice_value\":\"1\",\"export_field_name\":\"symptoms___1\"},{\"original_field_name\":\"age\",\"choice_value\":\"\",\"export_field_name\":\"age\"}]"
+        };
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var result = await api.ExportFieldNamesTypedAsync("symptoms", RedcapReturnFormat.xml);
+
+        Assert.NotNull(transport.LastDictionaryPayload);
+        Assert.Equal("exportFieldNames", transport.LastDictionaryPayload!["content"]);
+        Assert.Equal("json", transport.LastDictionaryPayload["format"]);
+        Assert.Equal("symptoms", transport.LastDictionaryPayload["field"]);
+        Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
+        Assert.Equal(2, result.Count);
+        Assert.Equal("symptoms", result[0].OriginalFieldName);
+        Assert.Equal("1", result[0].ChoiceValue);
+        Assert.Equal("symptoms___1", result[0].ExportFieldName);
+        Assert.Equal("age", result[1].ExportFieldName);
+    }
+
+    [Fact]
+    public async Task ExportFieldNamesTypedAsync_WithInvalidJson_ThrowsRedcapApiException()
+    {
+        var transport = new FakeTransport
+        {
+            ResponseBody = "not-json"
+        };
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var ex = await Assert.ThrowsAsync<RedcapApiException>(() => api.ExportFieldNamesTypedAsync());
+
+        Assert.Equal("Failed to deserialize REDCap field-name response.", ex.Message);
+    }
+
+    [Fact]
     public async Task DeleteArmsAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
@@ -2199,6 +2236,48 @@ public class RedcapApiTransportTests
         Assert.Equal("record_edit", transport.LastDictionaryPayload["logtype"]);
         Assert.Equal("alice", transport.LastDictionaryPayload["user"]);
         Assert.Equal("1", transport.LastDictionaryPayload["record"]);
+    }
+
+    [Fact]
+    public async Task ExportLoggingTypedAsync_UsesJsonPayloadAndDeserializesResponse()
+    {
+        var transport = new FakeTransport
+        {
+            ResponseBody = "[{\"timestamp\":\"2024-01-01 10:00\",\"username\":\"alice\",\"action\":\"Update record\",\"record\":\"1\",\"instrument\":\"survey_a\",\"event\":\"event_1_arm_1\",\"dag\":\"ca_site\",\"details\":\"field changed\"}]"
+        };
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var result = await api.ExportLoggingTypedAsync(LogType.RecordEdit, user: "alice", record: "1", dag: "ca_site", beginTime: "2024-01-01 00:00", endTime: "2024-01-02 00:00", returnFormat: RedcapReturnFormat.xml);
+
+        Assert.NotNull(transport.LastDictionaryPayload);
+        Assert.Equal("log", transport.LastDictionaryPayload!["content"]);
+        Assert.Equal("json", transport.LastDictionaryPayload["format"]);
+        Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
+        Assert.Equal("record_edit", transport.LastDictionaryPayload["logtype"]);
+        Assert.Equal("alice", transport.LastDictionaryPayload["user"]);
+        Assert.Equal("1", transport.LastDictionaryPayload["record"]);
+        Assert.Equal("ca_site", transport.LastDictionaryPayload["dag"]);
+        Assert.Equal("2024-01-01 00:00", transport.LastDictionaryPayload["beginTime"]);
+        Assert.Equal("2024-01-02 00:00", transport.LastDictionaryPayload["endTime"]);
+        Assert.Single(result);
+        Assert.Equal("2024-01-01 10:00", result[0].Timestamp);
+        Assert.Equal("alice", result[0].Username);
+        Assert.Equal("Update record", result[0].Action);
+        Assert.Equal("field changed", result[0].Details);
+    }
+
+    [Fact]
+    public async Task ExportLoggingTypedAsync_WithInvalidJson_ThrowsRedcapApiException()
+    {
+        var transport = new FakeTransport
+        {
+            ResponseBody = "not-json"
+        };
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var ex = await Assert.ThrowsAsync<RedcapApiException>(() => api.ExportLoggingTypedAsync());
+
+        Assert.Equal("Failed to deserialize REDCap logging response.", ex.Message);
     }
 
     [Fact]

@@ -44,5 +44,37 @@ namespace Redcap
             }, cancellationToken, timeOutSeconds);
         }
 
+        /// <summary>
+        /// Exports field names and deserializes the JSON response into a list of <see cref="RedcapFieldName"/>.
+        /// </summary>
+        /// <remarks>
+        /// This typed overload always requests JSON from REDCap.
+        /// </remarks>
+        /// <param name="field">A field's variable name. By default, all fields are returned.</param>
+        /// <param name="returnFormat">json [default], xml, csv - specifies the format of error messages.</param>
+        /// <param name="cancellationToken">Cancellation token for the request.</param>
+        /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
+        /// <returns>The deserialized field-name mappings.</returns>
+        public async Task<IReadOnlyList<RedcapFieldName>> ExportFieldNamesTypedAsync(string? field = default, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        {
+            var response = await ExportFieldNamesAsync(RedcapFormat.json, field, returnFormat, cancellationToken, timeOutSeconds);
+
+            try
+            {
+                var fieldNames = JsonConvert.DeserializeObject<List<RedcapFieldName>>(response);
+                if (fieldNames == null)
+                {
+                    throw new RedcapApiException("REDCap returned an empty field-name payload.");
+                }
+
+                return fieldNames;
+            }
+            catch (JsonException ex)
+            {
+                Log.Error(ex, "Failed to deserialize REDCap field-name response.");
+                throw new RedcapApiException("Failed to deserialize REDCap field-name response.", ex);
+            }
+        }
+
     }
 }

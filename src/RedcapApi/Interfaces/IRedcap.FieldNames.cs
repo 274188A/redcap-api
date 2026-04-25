@@ -29,5 +29,18 @@ namespace Redcap.Interfaces
         /// The list that is returned will contain the three following attributes for each field/choice: 'original_field_name', 'choice_value', and 'export_field_name'. The choice_value attribute represents the raw coded value for a checkbox choice. For non-checkbox fields, the choice_value attribute will always be blank/empty. The export_field_name attribute represents the export/import-specific version of that field name.
         /// </returns>
         Task<string> ExportFieldNamesAsync(RedcapFormat format = RedcapFormat.json, string? field = default, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+
+        /// <summary>
+        /// Exports field names and deserializes the JSON response into a list of <see cref="RedcapFieldName"/>.
+        /// </summary>
+        /// <remarks>
+        /// This typed overload always requests JSON from REDCap.
+        /// </remarks>
+        /// <param name="field">A field's variable name. By default, all fields are returned.</param>
+        /// <param name="returnFormat">json [default], xml, csv - specifies the format of error messages.</param>
+        /// <param name="cancellationToken">Cancellation token for the request.</param>
+        /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
+        /// <returns>The deserialized field-name mappings.</returns>
+        Task<IReadOnlyList<RedcapFieldName>> ExportFieldNamesTypedAsync(string? field = default, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
     }
 }

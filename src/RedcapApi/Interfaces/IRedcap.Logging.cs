@@ -25,5 +25,23 @@ namespace Redcap.Interfaces
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>List of all changes made to this project, including data exports, data changes, and the creation or deletion of users.</returns>
         Task<string> ExportLoggingAsync(RedcapFormat format = RedcapFormat.json, LogType logType = LogType.All, string? user = default, string? record = default, string? dag = default, string? beginTime = default, string? endTime = default, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+
+        /// <summary>
+        /// Exports logging entries and deserializes the JSON response into a list of <see cref="RedcapLogEntry"/>.
+        /// </summary>
+        /// <remarks>
+        /// This typed overload always requests JSON from REDCap.
+        /// </remarks>
+        /// <param name="logType">You may choose event type to fetch result for specific event type.</param>
+        /// <param name="user">To return only the events belonging to a specific user, provide a username.</param>
+        /// <param name="record">To return only the events belonging to a specific record, provide a record name.</param>
+        /// <param name="dag">To return only the events belonging to a specific DAG, provide a group_id.</param>
+        /// <param name="beginTime">Lower timestamp bound in REDCap server time.</param>
+        /// <param name="endTime">Upper timestamp bound in REDCap server time.</param>
+        /// <param name="returnFormat">json [default], xml, csv - specifies the format of error messages.</param>
+        /// <param name="cancellationToken">Cancellation token for the request.</param>
+        /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
+        /// <returns>The deserialized logging entries.</returns>
+        Task<IReadOnlyList<RedcapLogEntry>> ExportLoggingTypedAsync(LogType logType = LogType.All, string? user = default, string? record = default, string? dag = default, string? beginTime = default, string? endTime = default, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
     }
 }

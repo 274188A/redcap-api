@@ -37,10 +37,10 @@ Working list for turning `redcap-api` into a genuinely excellent library, not ju
   - Goal: make the API feel native to modern .NET consumers.
   - Done: added `Async`-suffixed method names for the inconsistent task-returning members, kept obsolete compatibility shims for existing callers, and covered both paths with transport tests.
 
-- [ ] Review whether string-returning methods should expose richer typed results in key places.
+- [x] Review whether string-returning methods should expose richer typed results in key places.
   - Many methods return raw `string` even when the response shape is well known.
   - Goal: identify high-value typed overloads without breaking existing consumers unnecessarily.
-  - Started: added `ExportProjectInfoTypedAsync`, `ExportDagsTypedAsync`, `ExportUserDagAssignmentTypedAsync`, `ExportUsersTypedAsync`, `ExportArmsTypedAsync`, `ExportEventsTypedAsync`, `ExportMetaDataTypedAsync`, `ExportInstrumentsTypedAsync`, `ExportInstrumentMappingTypedAsync`, `ExportUserRolesTypedAsync`, `ExportUserRoleAssignmentTypedAsync`, and `ExportRepeatingInstrumentsAndEventsTypedAsync` as the first typed export overloads, using existing or newly-introduced models while preserving the original string-returning APIs.
+  - Done: added `ExportProjectInfoTypedAsync`, `ExportDagsTypedAsync`, `ExportUserDagAssignmentTypedAsync`, `ExportUsersTypedAsync`, `ExportArmsTypedAsync`, `ExportEventsTypedAsync`, `ExportMetaDataTypedAsync`, `ExportInstrumentsTypedAsync`, `ExportInstrumentMappingTypedAsync`, `ExportUserRolesTypedAsync`, `ExportUserRoleAssignmentTypedAsync`, `ExportRepeatingInstrumentsAndEventsTypedAsync`, `ExportFieldNamesTypedAsync`, and `ExportLoggingTypedAsync`, using existing or newly-introduced models while preserving the original string-returning APIs. Left inherently raw/dynamic endpoints like reports, records, files, links, and XML/version/count responses as strings because they do not have a stable JSON object shape worth modeling here.
 
 - [ ] Decide the long-term shape of the giant `IRedcap` surface.
   - Today the API is split across partial interfaces/files but still presents one very large client.

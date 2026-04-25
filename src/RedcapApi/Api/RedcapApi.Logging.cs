@@ -53,5 +53,42 @@ namespace Redcap
                 if (!IsNullOrEmpty(endTime)) payload["endTime"] = endTime!;
             }, cancellationToken, timeOutSeconds);
         }
+
+        /// <summary>
+        /// Exports logging entries and deserializes the JSON response into a list of <see cref="RedcapLogEntry"/>.
+        /// </summary>
+        /// <remarks>
+        /// This typed overload always requests JSON from REDCap.
+        /// </remarks>
+        /// <param name="logType">You may choose event type to fetch result for specific event type.</param>
+        /// <param name="user">To return only the events belonging to a specific user, provide a username.</param>
+        /// <param name="record">To return only the events belonging to a specific record, provide a record name.</param>
+        /// <param name="dag">To return only the events belonging to a specific DAG, provide a group_id.</param>
+        /// <param name="beginTime">Lower timestamp bound in REDCap server time.</param>
+        /// <param name="endTime">Upper timestamp bound in REDCap server time.</param>
+        /// <param name="returnFormat">json [default], xml, csv - specifies the format of error messages.</param>
+        /// <param name="cancellationToken">Cancellation token for the request.</param>
+        /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
+        /// <returns>The deserialized logging entries.</returns>
+        public async Task<IReadOnlyList<RedcapLogEntry>> ExportLoggingTypedAsync(LogType logType = LogType.All, string? user = default, string? record = default, string? dag = default, string? beginTime = default, string? endTime = default, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        {
+            var response = await ExportLoggingAsync(RedcapFormat.json, logType, user, record, dag, beginTime, endTime, returnFormat, cancellationToken, timeOutSeconds);
+
+            try
+            {
+                var entries = JsonConvert.DeserializeObject<List<RedcapLogEntry>>(response);
+                if (entries == null)
+                {
+                    throw new RedcapApiException("REDCap returned an empty logging payload.");
+                }
+
+                return entries;
+            }
+            catch (JsonException ex)
+            {
+                Log.Error(ex, "Failed to deserialize REDCap logging response.");
+                throw new RedcapApiException("Failed to deserialize REDCap logging response.", ex);
+            }
+        }
     }
 }
