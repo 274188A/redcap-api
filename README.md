@@ -85,6 +85,10 @@ End-to-end tests against a real REDCap instance are skipped by default. Set thes
 | `REDCAP_E2E_RECORD_ID` | A valid record ID in your project |
 | `REDCAP_E2E_FORM` | A valid instrument/form name |
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the endpoint workflow, transport-test expectations, and guidance for adding REDCap API surface area.
+
 ## Project layout
 
 ```

@@ -114,9 +114,10 @@ Working list for turning `redcap-api` into a genuinely excellent library, not ju
   - Goal: help existing consumers move from per-call tokens to client-owned tokens cleanly.
   - Done: `README.md` now includes a 2.x migration note showing the move from per-call tokens to constructor-owned tokens.
 
-- [ ] Add contributor guidance for adding new endpoints.
+- [x] Add contributor guidance for adding new endpoints.
   - House style already exists informally in tests; codify it in docs.
   - Goal: make future changes consistent without tribal knowledge.
+  - Done: added `CONTRIBUTING.md` with endpoint workflow, transport-test expectations, overload parity guidance, and local HTTP server usage notes; linked it from `README.md`.
 
 ## P2 Modernization Candidates
 
