@@ -31,12 +31,15 @@ namespace Redcap
         /// <returns>The current REDCap version number (three numbers delimited with two periods) as plain text - e.g., 4.13.18, 5.12.2, 6.0.0</returns>
         public async Task<string> ExportRedcapVersionAsync(RedcapFormat format = RedcapFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
-            return await ExecuteAsync(payload =>
+            var version = await ExecuteAsync(payload =>
             {
                 payload["token"] = _token;
                 payload["content"] = Content.Version.GetDisplayName();
                 payload["format"] = format.GetDisplayName();
             }, cancellationToken, timeOutSeconds);
+
+            Version = version;
+            return version;
         }
     }
 }

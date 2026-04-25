@@ -39,9 +39,9 @@ namespace Redcap
         private bool _disposed;
 
         /// <summary>
-        /// The version of redcap that the api is currently interacting with.
+        /// Gets the last REDCap version value returned by <see cref="ExportRedcapVersionAsync(Redcap.Models.RedcapFormat, CancellationToken, long)"/>.
         /// </summary>
-        public string? Version = default!;
+        public string? Version { get; private set; }
 
         /// <summary>
         /// Creates a new <see cref="RedcapApi"/> with the given URL and project token.

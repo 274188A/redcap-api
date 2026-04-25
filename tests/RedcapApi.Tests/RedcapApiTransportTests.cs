@@ -1661,6 +1661,18 @@ public class RedcapApiTransportTests
     }
 
     [Fact]
+    public async Task ExportRedcapVersionAsync_CachesReturnedVersion()
+    {
+        var transport = new FakeTransport { ResponseBody = "14.2.1" };
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var result = await api.ExportRedcapVersionAsync();
+
+        Assert.Equal("14.2.1", result);
+        Assert.Equal("14.2.1", api.Version);
+    }
+
+    [Fact]
     public async Task ExportInstrumentsAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
@@ -2077,6 +2089,8 @@ public class RedcapApiTransportTests
 
     private sealed class FakeTransport : IRedcapTransport
     {
+        public string ResponseBody { get; set; } = "transport-response";
+
         public Dictionary<string, string>? LastDictionaryPayload { get; private set; }
 
         public MultipartFormDataContent? LastMultipartPayload { get; private set; }
@@ -2092,20 +2106,20 @@ public class RedcapApiTransportTests
         public Task<string> SendPostRequestAsync(MultipartFormDataContent payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             LastMultipartPayload = payload;
-            return Task.FromResult("transport-response");
+            return Task.FromResult(ResponseBody);
         }
 
         public Task<string> SendPostRequestAsync(Dictionary<string, string> payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             LastDictionaryPayload = new Dictionary<string, string>(payload);
-            return Task.FromResult("transport-response");
+            return Task.FromResult(ResponseBody);
         }
 
         public Task<string> DownloadFileAsync(Dictionary<string, string> payload, Uri uri, string destinationPath, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             LastDictionaryPayload = new Dictionary<string, string>(payload);
             LastDownloadDestinationPath = destinationPath;
-            return Task.FromResult("transport-response");
+            return Task.FromResult(ResponseBody);
         }
     }
 }

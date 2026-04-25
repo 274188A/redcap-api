@@ -26,9 +26,10 @@ Working list for turning `redcap-api` into a genuinely excellent library, not ju
 
 ## P1 Public API Design
 
-- [ ] Replace the mutable public `Version` field with a proper property or explicit cache strategy.
+- [x] Replace the mutable public `Version` field with a proper property or explicit cache strategy.
   - File: `src/RedcapApi/Api/RedcapApi.cs`
   - Goal: remove odd mutable-field semantics from the main client type.
+  - Done: `Version` is now a read-only cached property populated by `ExportRedcapVersionAsync`, and transport tests lock that behavior down.
 
 - [ ] Review method naming and async conventions for consistency.
   - Example: methods like `RandomizeRecord` should be evaluated for `Async` naming parity.
