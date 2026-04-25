@@ -41,6 +41,37 @@ namespace Redcap
         }
 
         /// <summary>
+        /// Exports data access groups and deserializes the JSON response into a list of <see cref="RedcapDag"/>.
+        /// </summary>
+        /// <remarks>
+        /// This typed overload always requests JSON from REDCap.
+        /// </remarks>
+        /// <param name="returnFormat">json [default], xml, csv - specifies the format of error messages.</param>
+        /// <param name="cancellationToken">Cancellation token for the request.</param>
+        /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
+        /// <returns>The deserialized data access groups.</returns>
+        public async Task<IReadOnlyList<RedcapDag>> ExportDagsTypedAsync(RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        {
+            var response = await ExportDagsAsync(RedcapFormat.json, returnFormat, cancellationToken, timeOutSeconds);
+
+            try
+            {
+                var dags = JsonConvert.DeserializeObject<List<RedcapDag>>(response);
+                if (dags == null)
+                {
+                    throw new RedcapApiException("REDCap returned an empty DAG payload.");
+                }
+
+                return dags;
+            }
+            catch (JsonException ex)
+            {
+                Log.Error(ex, "Failed to deserialize REDCap DAG response.");
+                throw new RedcapApiException("Failed to deserialize REDCap DAG response.", ex);
+            }
+        }
+
+        /// <summary>
         /// Import DAGs
         /// This method allows you to import new DAGs (Data Access Groups) into a project or update the group name of any existing DAGs.
         /// NOTE: DAGs can be renamed by simply changing the group name(data_access_group_name).

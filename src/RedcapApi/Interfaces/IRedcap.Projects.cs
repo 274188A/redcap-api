@@ -68,6 +68,18 @@ namespace Redcap.Interfaces
         Task<string> ExportProjectInfoAsync(RedcapFormat format = RedcapFormat.json, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
+        /// Exports project information and deserializes the JSON response into a <see cref="RedcapProjectInfo"/>.
+        /// </summary>
+        /// <remarks>
+        /// This typed overload always requests JSON from REDCap.
+        /// </remarks>
+        /// <param name="returnFormat">json [default], xml, csv - specifies the format of error messages.</param>
+        /// <param name="cancellationToken">Cancellation token for the request.</param>
+        /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
+        /// <returns>The deserialized project information.</returns>
+        Task<RedcapProjectInfo> ExportProjectInfoTypedAsync(RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+
+        /// <summary>
         /// From Redcap Version 6.12.0 <br/>
         ///
         /// Export Entire Project as REDCap XML File (containing metadata and data) <br/>

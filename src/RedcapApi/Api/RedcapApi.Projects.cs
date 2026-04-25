@@ -112,6 +112,37 @@ namespace Redcap
         }
 
         /// <summary>
+        /// Exports project information and deserializes the JSON response into a <see cref="RedcapProjectInfo"/>.
+        /// </summary>
+        /// <remarks>
+        /// This typed overload always requests JSON from REDCap.
+        /// </remarks>
+        /// <param name="returnFormat">json [default], xml, csv - specifies the format of error messages.</param>
+        /// <param name="cancellationToken">Cancellation token for the request.</param>
+        /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
+        /// <returns>The deserialized project information.</returns>
+        public async Task<RedcapProjectInfo> ExportProjectInfoTypedAsync(RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        {
+            var response = await ExportProjectInfoAsync(RedcapFormat.json, returnFormat, cancellationToken, timeOutSeconds);
+
+            try
+            {
+                var projectInfo = JsonConvert.DeserializeObject<RedcapProjectInfo>(response);
+                if (projectInfo == null)
+                {
+                    throw new RedcapApiException("REDCap returned an empty project info payload.");
+                }
+
+                return projectInfo;
+            }
+            catch (JsonException ex)
+            {
+                Log.Error(ex, "Failed to deserialize REDCap project info response.");
+                throw new RedcapApiException("Failed to deserialize REDCap project info response.", ex);
+            }
+        }
+
+        /// <summary>
         /// From Redcap Version 6.12.0 <br/>
         ///
         /// Export Entire Project as REDCap XML File (containing metadata and data) <br/>

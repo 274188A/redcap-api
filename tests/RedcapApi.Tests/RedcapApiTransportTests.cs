@@ -25,6 +25,41 @@ public class RedcapApiTransportTests
     }
 
     [Fact]
+    public async Task ExportDagsTypedAsync_UsesJsonPayloadAndDeserializesResponse()
+    {
+        var transport = new FakeTransport
+        {
+            ResponseBody = "[{\"data_access_group_name\":\"CA Site\",\"unique_group_name\":\"ca_site\"},{\"data_access_group_name\":\"FL Site\",\"unique_group_name\":\"fl_site\"}]"
+        };
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var result = await api.ExportDagsTypedAsync(RedcapReturnFormat.xml);
+
+        Assert.NotNull(transport.LastDictionaryPayload);
+        Assert.Equal("dag", transport.LastDictionaryPayload!["content"]);
+        Assert.Equal("json", transport.LastDictionaryPayload["format"]);
+        Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
+        Assert.Equal(2, result.Count);
+        Assert.Equal("CA Site", result[0].GroupName);
+        Assert.Equal("ca_site", result[0].UniqueGroupName);
+        Assert.Equal("FL Site", result[1].GroupName);
+    }
+
+    [Fact]
+    public async Task ExportDagsTypedAsync_WithInvalidJson_ThrowsRedcapApiException()
+    {
+        var transport = new FakeTransport
+        {
+            ResponseBody = "not-json"
+        };
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var ex = await Assert.ThrowsAsync<RedcapApiException>(() => api.ExportDagsTypedAsync());
+
+        Assert.Equal("Failed to deserialize REDCap DAG response.", ex.Message);
+    }
+
+    [Fact]
     public async Task ImportDagsAsync_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
@@ -1850,6 +1885,40 @@ public class RedcapApiTransportTests
         Assert.Equal("project", transport.LastDictionaryPayload!["content"]);
         Assert.Equal("json", transport.LastDictionaryPayload["format"]);
         Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
+    }
+
+    [Fact]
+    public async Task ExportProjectInfoTypedAsync_UsesJsonPayloadAndDeserializesResponse()
+    {
+        var transport = new FakeTransport
+        {
+            ResponseBody = "{\"project_id\":\"12\",\"project_title\":\"Demo Project\",\"project_notes\":\"Notes\"}"
+        };
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var result = await api.ExportProjectInfoTypedAsync(RedcapReturnFormat.xml);
+
+        Assert.NotNull(transport.LastDictionaryPayload);
+        Assert.Equal("project", transport.LastDictionaryPayload!["content"]);
+        Assert.Equal("json", transport.LastDictionaryPayload["format"]);
+        Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
+        Assert.Equal("12", result.ProjectId);
+        Assert.Equal("Demo Project", result.ProjectTitle);
+        Assert.Equal("Notes", result.ProjectNotes);
+    }
+
+    [Fact]
+    public async Task ExportProjectInfoTypedAsync_WithInvalidJson_ThrowsRedcapApiException()
+    {
+        var transport = new FakeTransport
+        {
+            ResponseBody = "not-json"
+        };
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var ex = await Assert.ThrowsAsync<RedcapApiException>(() => api.ExportProjectInfoTypedAsync());
+
+        Assert.Equal("Failed to deserialize REDCap project info response.", ex.Message);
     }
 
     [Fact]
