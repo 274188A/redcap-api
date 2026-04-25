@@ -700,6 +700,45 @@ public class RedcapApiTransportTests
     }
 
     [Fact]
+    public async Task ExportUsersTypedAsync_UsesJsonPayloadAndDeserializesResponse()
+    {
+        var transport = new FakeTransport
+        {
+            ResponseBody = "[{\"username\":\"alice\",\"email\":\"alice@example.com\",\"firstname\":\"Alice\",\"lastname\":\"Ng\",\"data_access_group\":\"ca_site\",\"forms\":{\"demographics\":\"1\"}}]"
+        };
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var result = await api.ExportUsersTypedAsync(RedcapReturnFormat.xml);
+
+        Assert.NotNull(transport.LastDictionaryPayload);
+        Assert.Equal("user", transport.LastDictionaryPayload!["content"]);
+        Assert.Equal("json", transport.LastDictionaryPayload["format"]);
+        Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
+        Assert.Single(result);
+        Assert.Equal("alice", result[0].Username);
+        Assert.Equal("alice@example.com", result[0].Email);
+        Assert.Equal("Alice", result[0].FirstName);
+        Assert.Equal("Ng", result[0].LastName);
+        Assert.Equal("ca_site", result[0].DataAccessGroup);
+        Assert.NotNull(result[0].Forms);
+        Assert.Equal("1", result[0].Forms!["demographics"]);
+    }
+
+    [Fact]
+    public async Task ExportUsersTypedAsync_WithInvalidJson_ThrowsRedcapApiException()
+    {
+        var transport = new FakeTransport
+        {
+            ResponseBody = "not-json"
+        };
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var ex = await Assert.ThrowsAsync<RedcapApiException>(() => api.ExportUsersTypedAsync());
+
+        Assert.Equal("Failed to deserialize REDCap user response.", ex.Message);
+    }
+
+    [Fact]
     public async Task ImportUsersAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();

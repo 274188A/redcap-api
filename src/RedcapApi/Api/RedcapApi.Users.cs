@@ -47,6 +47,37 @@ namespace Redcap
         }
 
         /// <summary>
+        /// Exports users and deserializes the JSON response into a list of <see cref="RedcapUser"/>.
+        /// </summary>
+        /// <remarks>
+        /// This typed overload always requests JSON from REDCap.
+        /// </remarks>
+        /// <param name="returnFormat">json [default], xml, csv - specifies the format of error messages.</param>
+        /// <param name="cancellationToken">Cancellation token for the request.</param>
+        /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
+        /// <returns>The deserialized users.</returns>
+        public async Task<IReadOnlyList<RedcapUser>> ExportUsersTypedAsync(RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        {
+            var response = await ExportUsersAsync(RedcapFormat.json, returnFormat, cancellationToken, timeOutSeconds);
+
+            try
+            {
+                var users = JsonConvert.DeserializeObject<List<RedcapUser>>(response);
+                if (users == null)
+                {
+                    throw new RedcapApiException("REDCap returned an empty user payload.");
+                }
+
+                return users;
+            }
+            catch (JsonException ex)
+            {
+                Log.Error(ex, "Failed to deserialize REDCap user response.");
+                throw new RedcapApiException("Failed to deserialize REDCap user response.", ex);
+            }
+        }
+
+        /// <summary>
         /// From Redcap Version 4.7.0<br/>
         ///
         /// Import Users<br/>

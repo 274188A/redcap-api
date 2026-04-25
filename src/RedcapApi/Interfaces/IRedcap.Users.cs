@@ -25,6 +25,18 @@ namespace Redcap.Interfaces
         Task<string> ExportUsersAsync(RedcapFormat format = RedcapFormat.json, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
+        /// Exports users and deserializes the JSON response into a list of <see cref="RedcapUser"/>.
+        /// </summary>
+        /// <remarks>
+        /// This typed overload always requests JSON from REDCap.
+        /// </remarks>
+        /// <param name="returnFormat">json [default], xml, csv - specifies the format of error messages.</param>
+        /// <param name="cancellationToken">Cancellation token for the request.</param>
+        /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
+        /// <returns>The deserialized users.</returns>
+        Task<IReadOnlyList<RedcapUser>> ExportUsersTypedAsync(RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+
+        /// <summary>
         /// From Redcap Version 11.3.0<br/><br/>
         ///
         /// Delete Users<br/><br/>
