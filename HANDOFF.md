@@ -2,15 +2,18 @@
 
 **Date:** 2026-04-25  
 **Branch:** `master`  
-**Latest pushed commit:** `ee16544` (`Move REDCap token into client construction`)
+**Latest pushed commit:** `8df3a15` (`Fail fast on invalid utility array inputs`)
 
 ## Summary
 
-The token-to-constructor refactor is complete and pushed. Since that push, the local follow-up work has also:
+The token-to-constructor refactor is complete and pushed. Since the original refactor commit, the library has also:
 
 - updated the README to the new constructor shape,
 - moved `CreateProjectAsync` onto the shared `ExecuteAsync(...)` path,
 - replaced the test-only `HttpListener` server with a `TcpListener` loopback server,
+- made per-call `timeOutSeconds` effective,
+- defined disposal ownership on `RedcapApi`,
+- made array conversion helpers fail fast instead of returning ambiguous defaults,
 - restored full test-suite reliability in this sandbox.
 
 ## What Was Completed
@@ -19,17 +22,20 @@ The token-to-constructor refactor is complete and pushed. Since that push, the l
 - Updated interface signatures to remove per-call `string token` parameters.
 - Updated transport/cancellation/e2e/http-error utility tests to use constructor-time tokens.
 - Removed `Utils.GetProperties` and the test coverage that still assumed it existed.
-- Pushed the refactor in commit `ee16544`.
+- Pushed the constructor-token refactor in commit `ee16544`.
 - Updated `README.md` examples to use `RedcapApi(url, token)`.
 - Refactored `CreateProjectAsync` to use `ExecuteAsync(...)`.
 - Replaced `tests/RedcapApi.Tests/LocalHttpServer.cs` with a `TcpListener`-based implementation.
+- Made per-call timeout behavior effective in `DefaultRedcapTransport`.
+- Added explicit disposal semantics to `RedcapApi`.
+- Made array conversion helpers throw on invalid input instead of returning `string.Empty`.
 
 ## Current State
 
 **Repository state now:**
 
-- Pushed code on `origin/master` is `ee16544`.
-- Local worktree is currently dirty because of post-push follow-up work (`README.md`, `HANDOFF.md`, `src/RedcapApi/Api/RedcapApi.Projects.cs`, `tests/RedcapApi.Tests/LocalHttpServer.cs`).
+- Pushed code on `origin/master` is `8df3a15`.
+- Local worktree may become dirty only from the next improvement pass; `AGENTS.md` remains intentionally untracked.
 - `AGENTS.md` is untracked and should stay out of commits unless explicitly requested.
 
 **Verification performed:**
@@ -40,17 +46,15 @@ dotnet test tests/RedcapApi.Tests/RedcapApi.Tests.csproj --no-restore --filter "
 dotnet test tests/RedcapApi.Tests/RedcapApi.Tests.csproj --no-restore --verbosity minimal
 ```
 
-Results:
+Results from the latest full verification before the current pass:
 
-- transport/cancellation slice: `122` passed, `0` failed, `0` skipped
-- utilities/http-error slice: `33` passed, `0` failed, `0` skipped
-- full suite: `155` passed, `0` failed, `1` skipped (`RecordsTest` E2E skip)
+- full suite: `158` passed, `0` failed, `1` skipped (`RecordsTest` E2E skip)
 
 ## High-Value Next Targets
 
-### 1. Decide whether constructor-only tokens are the final public API
+### 1. Audit and improve remaining public API design sharp edges
 
-The breaking change is implemented and tested, but only the refactor commit is pushed right now. The follow-up docs/test-server cleanup is still local. If this API shape is final, the next step is to commit and push the current local changes.
+The broad behavior/documentation mismatch pass is nearly complete. The next high-value design item is replacing the mutable `Version` field with a clearer property/cache story.
 
 ### 2. Revisit serialization consistency
 
@@ -63,8 +67,11 @@ The shared execution helpers are in better shape now, but there are still opport
 ## Relevant Files
 
 - `README.md`
+- `TODO.MD`
 - `src/RedcapApi/Api/RedcapApi.cs`
+- `src/RedcapApi/Api/DefaultRedcapTransport.cs`
 - `src/RedcapApi/Api/RedcapApi.Projects.cs`
+- `src/RedcapApi/Interfaces/IRedcapTransport.cs`
 - `tests/RedcapApi.Tests/LocalHttpServer.cs`
 - `tests/RedcapApi.Tests/UtilitiesTests.cs`
 - `tests/RedcapApi.Tests/HttpErrorTests.cs`

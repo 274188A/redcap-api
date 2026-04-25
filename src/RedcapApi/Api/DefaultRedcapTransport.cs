@@ -15,7 +15,9 @@ namespace Redcap.Api
         /// <param name="handler">
         /// Optional handler. Supply one when you need custom TLS settings (e.g. self-signed certs in dev).
         /// </param>
-        /// <param name="timeOutSeconds">Request timeout applied to every call made by this transport.</param>
+        /// <param name="timeOutSeconds">
+        /// Default request timeout applied when a call does not specify a positive <c>timeOutSeconds</c> override.
+        /// </param>
         public DefaultRedcapTransport(HttpMessageHandler? handler = null, long timeOutSeconds = 100)
         {
             _defaultTimeout = timeOutSeconds > 0

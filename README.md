@@ -21,8 +21,9 @@ A .NET 10 library for the [REDCap](https://www.project-redcap.org/) REST API.
 
 ```csharp
 using Redcap;
+using Redcap.Models;
 
-var api = new RedcapApi(
+using var api = new RedcapApi(
     "https://your-redcap-instance/api/",
     "YOUR_API_TOKEN"
 );
@@ -33,7 +34,9 @@ var result = await api.ExportRecordsAsync(
 );
 ```
 
-The constructor also accepts an `IRedcapTransport` for testing or custom HTTP behaviour:
+The token now belongs to the client instance rather than being passed to each API call.
+
+If you want to control HTTP behavior, inject an `IRedcapTransport`:
 
 ```csharp
 var api = new RedcapApi(
@@ -42,6 +45,28 @@ var api = new RedcapApi(
     transport
 );
 ```
+
+Per-call timeouts are still available on API methods:
+
+```csharp
+await api.ExportUsersAsync(timeOutSeconds: 30, cancellationToken: cancellationToken);
+```
+
+The default transport also has its own fallback timeout for calls that do not pass a positive `timeOutSeconds` value:
+
+```csharp
+using var transport = new DefaultRedcapTransport(timeOutSeconds: 100);
+using var api = new RedcapApi("https://your-redcap-instance/api/", "YOUR_API_TOKEN", transport);
+```
+
+## Migration note
+
+Version 2.x moved the REDCap token into `RedcapApi` construction:
+
+- Before: `api.ExportRecordsAsync(token, ...)`
+- Now: `new RedcapApi(url, token)` followed by `api.ExportRecordsAsync(...)`
+
+If you inject a custom transport, the caller still owns that transport's lifetime.
 
 ## Building and testing
 

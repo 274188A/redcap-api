@@ -15,10 +15,12 @@ using static System.String;
 namespace Redcap
 {
     /// <summary>
-    /// This api interacts with redcap instances. https://project-redcap.org
-    /// Go to your http://redcap_instance/api/help for Redcap Api documentations
-    /// Author: John Barrett 274188A@curtin.edu.au
+    /// Client for interacting with a REDCap API endpoint.
     /// </summary>
+    /// <remarks>
+    /// Construct the client with the API endpoint URL and a project token, then reuse the instance for multiple calls.
+    /// Dispose the client when you are done if it owns its transport.
+    /// </remarks>
     public partial class RedcapApi : IRedcap, IDisposable
     {
         /// <summary>
@@ -42,21 +44,27 @@ namespace Redcap
         public string? Version = default!;
 
         /// <summary>
-        /// Creates a new RedcapApi instance with the given URL and API token.
+        /// Creates a new <see cref="RedcapApi"/> with the given URL and project token.
         /// </summary>
-        /// <param name="redcapApiUrl">Redcap instance URI</param>
+        /// <param name="redcapApiUrl">REDCap API endpoint URI.</param>
         /// <param name="token">API token for the REDCap project.</param>
+        /// <remarks>
+        /// This overload creates and owns the default transport. Dispose the client when you are done with it.
+        /// </remarks>
         public RedcapApi(string redcapApiUrl, string token)
             : this(redcapApiUrl, token, new DefaultRedcapTransport(), ownsTransport: true)
         {
         }
 
         /// <summary>
-        /// Constructor that accepts a transport abstraction for testing and customization.
+        /// Creates a new <see cref="RedcapApi"/> with a caller-supplied transport.
         /// </summary>
-        /// <param name="redcapApiUrl">Redcap instance URI</param>
+        /// <param name="redcapApiUrl">REDCap API endpoint URI.</param>
         /// <param name="token">API token for the REDCap project.</param>
         /// <param name="transport">Transport abstraction used to execute requests.</param>
+        /// <remarks>
+        /// The caller retains ownership of <paramref name="transport"/>. Disposing this client will not dispose the injected transport.
+        /// </remarks>
         public RedcapApi(string redcapApiUrl, string token, IRedcapTransport transport)
             : this(redcapApiUrl, token, transport, ownsTransport: false)
         {

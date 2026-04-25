@@ -19,9 +19,10 @@ Working list for turning `redcap-api` into a genuinely excellent library, not ju
   - Files: `src/RedcapApi/Utilities/Utils.cs`
   - Done: array conversion helpers now throw on null/empty input, and tests assert the fail-fast behavior.
 
-- [ ] Audit the refactor for any remaining "public API says one thing, implementation does another" mismatches.
+- [x] Audit the refactor for any remaining "public API says one thing, implementation does another" mismatches.
   - Focus: constructor token model, timeout behavior, disposal, docs, XML comments, README examples.
   - Goal: zero misleading surface area.
+  - Done: aligned XML docs and README examples with constructor-owned tokens, disposal ownership, and actual timeout behavior, and added a short migration note for 2.x consumers.
 
 ## P1 Public API Design
 
