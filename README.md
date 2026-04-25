@@ -36,7 +36,9 @@ var result = await api.ExportRecordsAsync(
 
 The token now belongs to the client instance rather than being passed to each API call.
 
-If you want to control HTTP behavior, inject an `IRedcapTransport`:
+## Common workflows
+
+If you want to control HTTP behavior in tests or production, inject an `IRedcapTransport`:
 
 ```csharp
 var api = new RedcapApi(
@@ -46,17 +48,48 @@ var api = new RedcapApi(
 );
 ```
 
-Per-call timeouts are still available on API methods:
+Per-call timeouts and cancellation tokens are available on API methods:
 
 ```csharp
-await api.ExportUsersAsync(timeOutSeconds: 30, cancellationToken: cancellationToken);
+using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+
+var users = await api.ExportUsersTypedAsync(cancellationToken: cts.Token);
 ```
 
 The default transport also has its own fallback timeout for calls that do not pass a positive `timeOutSeconds` value:
 
 ```csharp
+using Redcap.Api;
+
 using var transport = new DefaultRedcapTransport(timeOutSeconds: 100);
 using var api = new RedcapApi("https://your-redcap-instance/api/", "YOUR_API_TOKEN", transport);
+```
+
+To download a file from a REDCap file-upload field, provide a destination directory:
+
+```csharp
+var savedFileName = await api.ExportFileAsync(
+    record: "1",
+    field: "consent_pdf",
+    eventName: "event_1_arm_1",
+    filePath: "downloads"
+);
+```
+
+For API failures, catch `RedcapApiException`; HTTP failures include the status code and raw response body when REDCap provides one:
+
+```csharp
+using Redcap.Exceptions;
+
+try
+{
+    var projectInfo = await api.ExportProjectInfoTypedAsync();
+}
+catch (RedcapApiException ex)
+{
+    Console.WriteLine(ex.StatusCode);
+    Console.WriteLine(ex.ResponseBody ?? ex.Message);
+}
 ```
 
 ## Migration note

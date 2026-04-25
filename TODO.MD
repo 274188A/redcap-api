@@ -106,9 +106,10 @@ Working list for turning `redcap-api` into a genuinely excellent library, not ju
 
 ## P2 Documentation And Developer Experience
 
-- [ ] Expand README usage examples beyond the happy path.
+- [x] Expand README usage examples beyond the happy path.
   - Examples: injected transport, file download, cancellation token usage, error handling, E2E environment variables.
   - File: `README.md`
+  - Done: README now includes common workflow examples for injected transport, cancellation, default transport timeout, typed exports, file download, error handling, and E2E environment variables.
 
 - [x] Add a migration note for the constructor-token breaking change.
   - Goal: help existing consumers move from per-call tokens to client-owned tokens cleanly.
