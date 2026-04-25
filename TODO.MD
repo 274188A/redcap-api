@@ -32,7 +32,7 @@ Working list for turning `redcap-api` into a genuinely excellent library, not ju
   - Done: `Version` is now a read-only cached property populated by `ExportRedcapVersionAsync`, and transport tests lock that behavior down.
 
 - [ ] Review method naming and async conventions for consistency.
-  - Example: methods like `RandomizeRecord` should be evaluated for `Async` naming parity.
+  - Current standouts: `RandomizeRecord`, `ExportRepeatingInstrumentsAndEvents`, and `ImportRepeatingInstrumentsAndEvents` all return `Task` but do not follow `Async` naming.
   - Files: `src/RedcapApi/Api/*.cs`, `src/RedcapApi/Interfaces/*.cs`
   - Goal: make the API feel native to modern .NET consumers.
 
@@ -101,8 +101,9 @@ Working list for turning `redcap-api` into a genuinely excellent library, not ju
   - Examples: injected transport, file download, cancellation token usage, error handling, E2E environment variables.
   - File: `README.md`
 
-- [ ] Add a migration note for the constructor-token breaking change.
+- [x] Add a migration note for the constructor-token breaking change.
   - Goal: help existing consumers move from per-call tokens to client-owned tokens cleanly.
+  - Done: `README.md` now includes a 2.x migration note showing the move from per-call tokens to constructor-owned tokens.
 
 - [ ] Add contributor guidance for adding new endpoints.
   - House style already exists informally in tests; codify it in docs.
