@@ -256,7 +256,7 @@ public class UtilitiesTests
         using var server = new LocalHttpServer(_ => new TestResponse(200, "group-a"));
         var api = new Redcap.RedcapApi(server.Url.ToString(), Token);
 
-        var response = await api.RandomizeRecord("1", "99", RedcapFormat.json, returnAlt: true);
+        var response = await api.RandomizeRecordAsync("1", "99", RedcapFormat.json, returnAlt: true);
 
         Assert.Equal("group-a", response);
         Assert.True(server.Requests.TryPeek(out var request));

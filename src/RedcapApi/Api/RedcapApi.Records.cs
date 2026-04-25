@@ -338,7 +338,7 @@ namespace Redcap
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>Performs the specified randomization for the record and returns the value for the target randomization field (plus optionally the alternative target value), or an error message on failure (such as if the record does not exist or if stratification information is missing).</returns>
-        public async Task<string> RandomizeRecord(string record, string randomizationId, RedcapFormat format, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, bool returnAlt = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public async Task<string> RandomizeRecordAsync(string record, string randomizationId, RedcapFormat format, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, bool returnAlt = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             return await ExecuteAsync(payload =>
             {
@@ -351,6 +351,15 @@ namespace Redcap
                 payload["returnFormat"] = returnFormat.GetDisplayName();
                 payload["returnAlt"] = returnAlt.ToString();
             }, cancellationToken, timeOutSeconds);
+        }
+
+        /// <summary>
+        /// Obsolete compatibility shim for <see cref="RandomizeRecordAsync(string, string, RedcapFormat, RedcapReturnFormat, bool, CancellationToken, long)"/>.
+        /// </summary>
+        [Obsolete("Use RandomizeRecordAsync instead.")]
+        public Task<string> RandomizeRecord(string record, string randomizationId, RedcapFormat format, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, bool returnAlt = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        {
+            return RandomizeRecordAsync(record, randomizationId, format, returnFormat, returnAlt, cancellationToken, timeOutSeconds);
         }
 
     }

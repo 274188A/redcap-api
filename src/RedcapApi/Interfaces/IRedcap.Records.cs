@@ -179,6 +179,12 @@ namespace Redcap.Interfaces
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>The method returns "1" on success, or an error message.</returns>
+        Task<string> RandomizeRecordAsync(string record, string randomizationId, RedcapFormat format, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, bool returnAlt = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+
+        /// <summary>
+        /// Obsolete compatibility shim for <see cref="RandomizeRecordAsync(string, string, RedcapFormat, RedcapReturnFormat, bool, CancellationToken, long)"/>.
+        /// </summary>
+        [Obsolete("Use RandomizeRecordAsync instead.")]
         Task<string> RandomizeRecord(string record, string randomizationId, RedcapFormat format, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, bool returnAlt = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>

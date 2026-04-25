@@ -28,7 +28,7 @@ namespace Redcap
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>Repeated instruments and events for the project in the format specified and will be ordered according to their order in the project.</returns>
-        public async Task<string> ExportRepeatingInstrumentsAndEvents(RedcapFormat format = RedcapFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public async Task<string> ExportRepeatingInstrumentsAndEventsAsync(RedcapFormat format = RedcapFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             return await ExecuteAsync(payload =>
             {
@@ -36,6 +36,15 @@ namespace Redcap
                 payload["content"] = Content.RepeatingFormsEvents.GetDisplayName();
                 payload["format"] = format.GetDisplayName();
             }, cancellationToken, timeOutSeconds);
+        }
+
+        /// <summary>
+        /// Obsolete compatibility shim for <see cref="ExportRepeatingInstrumentsAndEventsAsync(RedcapFormat, CancellationToken, long)"/>.
+        /// </summary>
+        [Obsolete("Use ExportRepeatingInstrumentsAndEventsAsync instead.")]
+        public Task<string> ExportRepeatingInstrumentsAndEvents(RedcapFormat format = RedcapFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        {
+            return ExportRepeatingInstrumentsAndEventsAsync(format, cancellationToken, timeOutSeconds);
         }
 
         /// <summary>
@@ -51,7 +60,7 @@ namespace Redcap
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>Repeated instruments and events for the project in the format specified and will be ordered according to their order in the project.</returns>
-        public async Task<string> ImportRepeatingInstrumentsAndEvents<T>(List<T> data, Content content = Content.RepeatingFormsEvents, RedcapFormat format = RedcapFormat.json, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public async Task<string> ImportRepeatingInstrumentsAndEventsAsync<T>(List<T> data, Content content = Content.RepeatingFormsEvents, RedcapFormat format = RedcapFormat.json, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             return await ExecuteAsync(payload =>
             {
@@ -61,6 +70,15 @@ namespace Redcap
                 payload["returnFormat"] = returnFormat.GetDisplayName();
                 payload["data"] = JsonConvert.SerializeObject(data);
             }, cancellationToken, timeOutSeconds);
+        }
+
+        /// <summary>
+        /// Obsolete compatibility shim for <see cref="ImportRepeatingInstrumentsAndEventsAsync{T}(List{T}, Content, RedcapFormat, RedcapReturnFormat, CancellationToken, long)"/>.
+        /// </summary>
+        [Obsolete("Use ImportRepeatingInstrumentsAndEventsAsync instead.")]
+        public Task<string> ImportRepeatingInstrumentsAndEvents<T>(List<T> data, Content content = Content.RepeatingFormsEvents, RedcapFormat format = RedcapFormat.json, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        {
+            return ImportRepeatingInstrumentsAndEventsAsync(data, content, format, returnFormat, cancellationToken, timeOutSeconds);
         }
 
     }

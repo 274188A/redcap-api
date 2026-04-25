@@ -31,10 +31,11 @@ Working list for turning `redcap-api` into a genuinely excellent library, not ju
   - Goal: remove odd mutable-field semantics from the main client type.
   - Done: `Version` is now a read-only cached property populated by `ExportRedcapVersionAsync`, and transport tests lock that behavior down.
 
-- [ ] Review method naming and async conventions for consistency.
+- [x] Review method naming and async conventions for consistency.
   - Current standouts: `RandomizeRecord`, `ExportRepeatingInstrumentsAndEvents`, and `ImportRepeatingInstrumentsAndEvents` all return `Task` but do not follow `Async` naming.
   - Files: `src/RedcapApi/Api/*.cs`, `src/RedcapApi/Interfaces/*.cs`
   - Goal: make the API feel native to modern .NET consumers.
+  - Done: added `Async`-suffixed method names for the inconsistent task-returning members, kept obsolete compatibility shims for existing callers, and covered both paths with transport tests.
 
 - [ ] Review whether string-returning methods should expose richer typed results in key places.
   - Many methods return raw `string` even when the response shape is well known.

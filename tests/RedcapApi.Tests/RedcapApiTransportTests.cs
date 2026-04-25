@@ -443,7 +443,25 @@ public class RedcapApiTransportTests
         var transport = new FakeTransport();
         var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
+#pragma warning disable CS0618
         await api.RandomizeRecord("55", "7", RedcapFormat.json, returnAlt: true);
+#pragma warning restore CS0618
+
+        Assert.NotNull(transport.LastDictionaryPayload);
+        Assert.Equal("randomize", transport.LastDictionaryPayload!["action"]);
+        Assert.Equal("record", transport.LastDictionaryPayload["content"]);
+        Assert.Equal("55", transport.LastDictionaryPayload["record"]);
+        Assert.Equal("7", transport.LastDictionaryPayload["randomization_id"]);
+        Assert.Equal("True", transport.LastDictionaryPayload["returnAlt"]);
+    }
+
+    [Fact]
+    public async Task RandomizeRecordAsync_UsesInjectedTransport()
+    {
+        var transport = new FakeTransport();
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        await api.RandomizeRecordAsync("55", "7", RedcapFormat.json, returnAlt: true);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("randomize", transport.LastDictionaryPayload!["action"]);
@@ -459,7 +477,22 @@ public class RedcapApiTransportTests
         var transport = new FakeTransport();
         var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
+#pragma warning disable CS0618
         await api.ExportRepeatingInstrumentsAndEvents(RedcapFormat.odm);
+#pragma warning restore CS0618
+
+        Assert.NotNull(transport.LastDictionaryPayload);
+        Assert.Equal("repeatingFormsEvents", transport.LastDictionaryPayload!["content"]);
+        Assert.Equal("odm", transport.LastDictionaryPayload["format"]);
+    }
+
+    [Fact]
+    public async Task ExportRepeatingInstrumentsAndEventsAsync_UsesExpectedPayload()
+    {
+        var transport = new FakeTransport();
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        await api.ExportRepeatingInstrumentsAndEventsAsync(RedcapFormat.odm);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("repeatingFormsEvents", transport.LastDictionaryPayload!["content"]);
@@ -472,7 +505,9 @@ public class RedcapApiTransportTests
         var transport = new FakeTransport();
         var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
+#pragma warning disable CS0618
         await api.ExportRepeatingInstrumentsAndEvents(RedcapFormat.json);
+#pragma warning restore CS0618
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("repeatingFormsEvents", transport.LastDictionaryPayload!["content"]);
@@ -486,7 +521,25 @@ public class RedcapApiTransportTests
         var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var data = new[] { new { instrument_name = "form_a", event_name = "event_1_arm_1" } }.ToList();
 
+#pragma warning disable CS0618
         await api.ImportRepeatingInstrumentsAndEvents(data, format: RedcapFormat.json, returnFormat: RedcapReturnFormat.xml);
+#pragma warning restore CS0618
+
+        Assert.NotNull(transport.LastDictionaryPayload);
+        Assert.Equal("repeatingFormsEvents", transport.LastDictionaryPayload!["content"]);
+        Assert.Equal("json", transport.LastDictionaryPayload["format"]);
+        Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
+        Assert.Contains("form_a", transport.LastDictionaryPayload["data"]);
+    }
+
+    [Fact]
+    public async Task ImportRepeatingInstrumentsAndEventsAsync_UsesExpectedPayload()
+    {
+        var transport = new FakeTransport();
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+        var data = new[] { new { instrument_name = "form_a", event_name = "event_1_arm_1" } }.ToList();
+
+        await api.ImportRepeatingInstrumentsAndEventsAsync(data, format: RedcapFormat.json, returnFormat: RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("repeatingFormsEvents", transport.LastDictionaryPayload!["content"]);
