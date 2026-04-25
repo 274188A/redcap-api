@@ -99,9 +99,10 @@ Working list for turning `redcap-api` into a genuinely excellent library, not ju
   - Files: `tests/RedcapApi.Tests`
   - Done: utility tests now cover array conversion failures, file-name safety, empty dictionary payloads, and local test server request header/path/charset parsing.
 
-- [ ] Keep the new `TcpListener` test server intentionally minimal and well-covered.
+- [x] Keep the new `TcpListener` test server intentionally minimal and well-covered.
   - File: `tests/RedcapApi.Tests/LocalHttpServer.cs`
   - Goal: avoid growing a hidden second HTTP stack without tests.
+  - Done: utility tests directly cover request capture, path/header/body parsing, charset decoding, configured response headers/content types, and multiple-request ordering.
 
 ## P2 Documentation And Developer Experience
 

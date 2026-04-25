@@ -233,6 +233,43 @@ public class UtilitiesTests
         Assert.Equal("caf\u00E9", request!.Body);
     }
 
+    [Fact]
+    public async Task LocalHttpServer_ReturnsConfiguredContentTypeHeadersAndBody()
+    {
+        using var server = new LocalHttpServer(_ => new TestResponse(
+            201,
+            "{\"ok\":true}",
+            "application/json",
+            new Dictionary<string, string> { ["X-Redcap-Response"] = "captured" }));
+        using var client = new HttpClient();
+
+        using var response = await client.PostAsync(server.Url, new StringContent("payload", Encoding.UTF8));
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        Assert.Equal("application/json", response.Content.Headers.ContentType!.MediaType);
+        Assert.True(response.Headers.TryGetValues("X-Redcap-Response", out var values));
+        Assert.Equal("captured", Assert.Single(values));
+        Assert.Equal("{\"ok\":true}", await response.Content.ReadAsStringAsync());
+    }
+
+    [Fact]
+    public async Task LocalHttpServer_CapturesMultipleRequestsInOrder()
+    {
+        using var server = new LocalHttpServer(request => new TestResponse(200, request.Path));
+        using var client = new HttpClient();
+
+        var first = await client.GetStringAsync(new Uri(server.Url, "first"));
+        var second = await client.GetStringAsync(new Uri(server.Url, "second"));
+
+        Assert.Equal("/first", first);
+        Assert.Equal("/second", second);
+        Assert.Equal(2, server.Requests.Count);
+        Assert.True(server.Requests.TryDequeue(out var firstRequest));
+        Assert.True(server.Requests.TryDequeue(out var secondRequest));
+        Assert.Equal("/first", firstRequest!.Path);
+        Assert.Equal("/second", secondRequest!.Path);
+    }
+
     [Theory]
     [InlineData(400)]
     [InlineData(500)]
