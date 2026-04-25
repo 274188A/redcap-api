@@ -1,0 +1,121 @@
+# TODO
+
+Working list for turning `redcap-api` into a genuinely excellent library, not just a functioning one.
+
+## P0 Correctness And Contract
+
+- [x] Make `timeOutSeconds` actually effective per request.
+  - Today every public API method still accepts `timeOutSeconds`, but `DefaultRedcapTransport` sets `HttpClient.Timeout` once in its constructor and ignores the per-call value.
+  - Files: `src/RedcapApi/Api/DefaultRedcapTransport.cs`, `src/RedcapApi/Api/RedcapApi.cs`, `src/RedcapApi/Utilities/Utils.cs`
+  - Done: `DefaultRedcapTransport` now uses linked cancellation tokens with `CancelAfter`, and timeout behavior is covered through the public API in `CancellationTests`.
+
+- [x] Define and implement a clear disposal model.
+  - `DefaultRedcapTransport` owns `HttpClient` and is disposable, but `RedcapApi` itself does not expose disposal semantics.
+  - Files: `src/RedcapApi/Api/RedcapApi.cs`, `src/RedcapApi/Api/DefaultRedcapTransport.cs`
+  - Done: `RedcapApi` now implements `IDisposable`, disposes only internally-created transports, leaves injected transports under caller ownership, and is covered by disposal tests.
+
+- [ ] Stop swallowing utility errors and returning ambiguous defaults.
+  - `ConvertArraytoString` catches exceptions, logs, and returns `string.Empty`, which can silently turn caller mistakes into malformed API payloads.
+  - Files: `src/RedcapApi/Utilities/Utils.cs`
+  - Goal: fail fast on invalid inputs and keep payload bugs observable.
+
+- [ ] Audit the refactor for any remaining "public API says one thing, implementation does another" mismatches.
+  - Focus: constructor token model, timeout behavior, disposal, docs, XML comments, README examples.
+  - Goal: zero misleading surface area.
+
+## P1 Public API Design
+
+- [ ] Replace the mutable public `Version` field with a proper property or explicit cache strategy.
+  - File: `src/RedcapApi/Api/RedcapApi.cs`
+  - Goal: remove odd mutable-field semantics from the main client type.
+
+- [ ] Review method naming and async conventions for consistency.
+  - Example: methods like `RandomizeRecord` should be evaluated for `Async` naming parity.
+  - Files: `src/RedcapApi/Api/*.cs`, `src/RedcapApi/Interfaces/*.cs`
+  - Goal: make the API feel native to modern .NET consumers.
+
+- [ ] Review whether string-returning methods should expose richer typed results in key places.
+  - Many methods return raw `string` even when the response shape is well known.
+  - Goal: identify high-value typed overloads without breaking existing consumers unnecessarily.
+
+- [ ] Decide the long-term shape of the giant `IRedcap` surface.
+  - Today the API is split across partial interfaces/files but still presents one very large client.
+  - Files: `src/RedcapApi/Interfaces`, `src/RedcapApi/Api`
+  - Goal: evaluate grouped clients or functional sub-interfaces for maintainability and discoverability.
+
+## P1 Internal Design And Maintainability
+
+- [ ] Reduce remaining payload-building duplication across partials.
+  - Many methods still hand-roll the same `"token"`, `"content"`, `"format"`, `"returnFormat"` patterns.
+  - Files: `src/RedcapApi/Api/*.cs`
+  - Goal: keep methods small, consistent, and hard to get wrong.
+
+- [ ] Introduce focused helper abstractions for common request shapes.
+  - Examples: export requests, import requests, delete requests, file download requests.
+  - Goal: fewer copy-paste variations and easier future endpoint additions.
+
+- [ ] Normalize argument validation strategy across the library.
+  - Some methods throw `RedcapApiException`, some rely on `ArgumentException`, some log and continue.
+  - Goal: predictable consumer experience and simpler tests.
+
+- [ ] Review serialization strategy intentionally.
+  - Current implementation relies on `JsonConvert.SerializeObject(...)` in many import methods.
+  - Goal: document or refactor toward one explicit serialization policy.
+
+## P1 Packaging And Release Quality
+
+- [ ] Add explicit package metadata to the library project.
+  - Missing or unclear in `RedcapApi.csproj`: package id/version/source link/repository URL/package tags/license/readme inclusion.
+  - File: `src/RedcapApi/RedcapApi.csproj`
+  - Goal: make the NuGet package polished and self-describing.
+
+- [ ] Add release-quality build settings.
+  - Candidates: deterministic builds, SourceLink, symbol packages, XML docs validation, nullable/warning tightening.
+  - Goal: more trustworthy packages and easier debugging for consumers.
+
+- [ ] Decide whether warnings should be elevated.
+  - File: project files / CI
+  - Goal: keep quality regressions from creeping in quietly.
+
+## P1 Test Quality
+
+- [ ] Expand tests around timeout behavior once fixed.
+  - Goal: prove the contract instead of assuming it.
+
+- [ ] Add tests around disposal/lifetime semantics once defined.
+  - Goal: lock down ownership behavior.
+
+- [ ] Add more targeted tests for helper edge cases.
+  - Examples: array conversion failures, malformed filenames, empty payload inputs, header parsing in the local test server.
+  - Files: `tests/RedcapApi.Tests`
+
+- [ ] Keep the new `TcpListener` test server intentionally minimal and well-covered.
+  - File: `tests/RedcapApi.Tests/LocalHttpServer.cs`
+  - Goal: avoid growing a hidden second HTTP stack without tests.
+
+## P2 Documentation And Developer Experience
+
+- [ ] Expand README usage examples beyond the happy path.
+  - Examples: injected transport, file download, cancellation token usage, error handling, E2E environment variables.
+  - File: `README.md`
+
+- [ ] Add a migration note for the constructor-token breaking change.
+  - Goal: help existing consumers move from per-call tokens to client-owned tokens cleanly.
+
+- [ ] Add contributor guidance for adding new endpoints.
+  - House style already exists informally in tests; codify it in docs.
+  - Goal: make future changes consistent without tribal knowledge.
+
+## P2 Modernization Candidates
+
+- [ ] Evaluate moving from `Serilog` direct usage to `Microsoft.Extensions.Logging.Abstractions` or a library-neutral logging story.
+- [ ] Evaluate `System.Text.Json` versus `Newtonsoft.Json` intentionally rather than by inertia.
+- [ ] Evaluate `IHttpClientFactory` support for ASP.NET / DI-heavy consumers.
+
+## Suggested Order
+
+1. Correct timeout behavior.
+2. Define disposal semantics.
+3. Remove swallowed utility failures.
+4. Add package metadata and stricter build quality settings.
+5. Tackle API shape / typed responses / client partitioning.

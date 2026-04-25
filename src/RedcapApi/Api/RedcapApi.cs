@@ -19,7 +19,7 @@ namespace Redcap
     /// Go to your http://redcap_instance/api/help for Redcap Api documentations
     /// Author: John Barrett 274188A@curtin.edu.au
     /// </summary>
-    public partial class RedcapApi : IRedcap
+    public partial class RedcapApi : IRedcap, IDisposable
     {
         /// <summary>
         /// Redcap API Uri
@@ -31,8 +31,10 @@ namespace Redcap
         private Uri _uri = default!;
 
         private readonly IRedcapTransport _transport;
+        private readonly bool _ownsTransport;
 
         private readonly string _token;
+        private bool _disposed;
 
         /// <summary>
         /// The version of redcap that the api is currently interacting with.
@@ -45,7 +47,7 @@ namespace Redcap
         /// <param name="redcapApiUrl">Redcap instance URI</param>
         /// <param name="token">API token for the REDCap project.</param>
         public RedcapApi(string redcapApiUrl, string token)
-            : this(redcapApiUrl, token, new DefaultRedcapTransport())
+            : this(redcapApiUrl, token, new DefaultRedcapTransport(), ownsTransport: true)
         {
         }
 
@@ -56,9 +58,15 @@ namespace Redcap
         /// <param name="token">API token for the REDCap project.</param>
         /// <param name="transport">Transport abstraction used to execute requests.</param>
         public RedcapApi(string redcapApiUrl, string token, IRedcapTransport transport)
+            : this(redcapApiUrl, token, transport, ownsTransport: false)
+        {
+        }
+
+        private RedcapApi(string redcapApiUrl, string token, IRedcapTransport transport, bool ownsTransport)
         {
             _uri = new Uri(redcapApiUrl);
             _transport = transport ?? throw new ArgumentNullException(nameof(transport));
+            _ownsTransport = ownsTransport;
             Utils.CheckToken(this, token);
             _token = token;
         }
@@ -72,6 +80,15 @@ namespace Redcap
         }
 
         /// <summary>
+        /// Disposes the client and, when owned by this instance, its underlying transport.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
         /// Sends a POST request with form-encoded payload to the specified URI.
         /// </summary>
         /// <param name="payload">Dictionary of form data to send.</param>
@@ -81,6 +98,7 @@ namespace Redcap
         /// <returns>The response content as a string.</returns>
         protected virtual Task<string> SendPostRequestAsync(Dictionary<string, string> payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
+            ThrowIfDisposed();
             return _transport.SendPostRequestAsync(payload, uri, cancellationToken, timeOutSeconds);
         }
 
@@ -94,6 +112,7 @@ namespace Redcap
         /// <returns>The response content as a string.</returns>
         protected virtual Task<string> SendPostRequestAsync(MultipartFormDataContent payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
+            ThrowIfDisposed();
             return _transport.SendPostRequestAsync(payload, uri, cancellationToken, timeOutSeconds);
         }
 
@@ -102,6 +121,8 @@ namespace Redcap
             CancellationToken cancellationToken = default,
             long timeOutSeconds = 100)
         {
+            ThrowIfDisposed();
+
             try
             {
                 var payload = new Dictionary<string, string>();
@@ -126,6 +147,8 @@ namespace Redcap
             CancellationToken cancellationToken = default,
             long timeOutSeconds = 100)
         {
+            ThrowIfDisposed();
+
             try
             {
                 var payload = new MultipartFormDataContent();
@@ -155,6 +178,7 @@ namespace Redcap
         /// <returns>The response content as a stream.</returns>
         protected virtual Task<Stream?> GetStreamContentAsync(Dictionary<string, string> payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
+            ThrowIfDisposed();
             return _transport.GetStreamContentAsync(payload, uri, cancellationToken, timeOutSeconds);
         }
 
@@ -163,6 +187,7 @@ namespace Redcap
         /// </summary>
         protected virtual Task<string> DownloadFileAsync(Dictionary<string, string> payload, Uri uri, string destinationPath, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
+            ThrowIfDisposed();
             return _transport.DownloadFileAsync(payload, uri, destinationPath, cancellationToken, timeOutSeconds);
         }
 
@@ -172,6 +197,8 @@ namespace Redcap
             CancellationToken cancellationToken = default,
             long timeOutSeconds = 100)
         {
+            ThrowIfDisposed();
+
             try
             {
                 var payload = new Dictionary<string, string>();
@@ -242,6 +269,26 @@ namespace Redcap
         protected virtual string ExtractBehavior(OverwriteBehavior overwriteBehavior)
         {
             return Utils.ExtractBehavior(this, overwriteBehavior);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing && _ownsTransport && _transport is IDisposable disposableTransport)
+            {
+                disposableTransport.Dispose();
+            }
+
+            _disposed = true;
+        }
+
+        private void ThrowIfDisposed()
+        {
+            ObjectDisposedException.ThrowIf(_disposed, this);
         }
     }
 }
