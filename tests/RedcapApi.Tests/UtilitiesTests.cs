@@ -37,11 +37,11 @@ public class UtilitiesTests
     {
         var single = _api.ConvertArraytoString(new[] { "one" });
         var multiple = _api.ConvertArraytoString(new[] { "one", "two", "three" });
-        var invalid = _api.ConvertArraytoString<string>(null!);
 
         Assert.Equal("one", single);
         Assert.Equal("one,two,three", multiple);
-        Assert.Equal(string.Empty, invalid);
+        Assert.Throws<ArgumentException>(() => _api.ConvertArraytoString<string>(null!));
+        Assert.Throws<ArgumentException>(() => _api.ConvertArraytoString(Array.Empty<string>()));
     }
 
     [Fact]
@@ -49,11 +49,11 @@ public class UtilitiesTests
     {
         var single = _api.ConvertIntArraytoString(new[] { 1 });
         var multiple = _api.ConvertIntArraytoString(new[] { 1, 2, 3 });
-        var invalid = _api.ConvertIntArraytoString(null!);
 
         Assert.Equal("1", single);
         Assert.Equal("1,2,3", multiple);
-        Assert.Equal(string.Empty, invalid);
+        Assert.Throws<ArgumentException>(() => _api.ConvertIntArraytoString(null!));
+        Assert.Throws<ArgumentException>(() => _api.ConvertIntArraytoString(Array.Empty<int>()));
     }
 
     [Fact]

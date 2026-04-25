@@ -104,29 +104,22 @@ namespace Redcap.Utilities
         /// <returns>string[]</returns>
         public static string ConvertArraytoString<T>(this RedcapApi redcapApi, T[] inputArray)
         {
-            try
+            if (inputArray.IsNullOrEmpty())
             {
-                if (inputArray.IsNullOrEmpty())
-                {
-                    throw new ArgumentNullException("Please provide a valid array.");
-                }
-                StringBuilder builder = new StringBuilder();
-                foreach (T v in inputArray)
-                {
-                    builder.Append(v);
-                    if (inputArray.Length <= 1)
-                    {
-                        return builder.ToString();
-                    }
-                    builder.Append(",");
-                }
-                return builder.ToString().TrimEnd(',');
+                throw new ArgumentException("A non-empty array is required.", nameof(inputArray));
             }
-            catch (Exception Ex)
+
+            StringBuilder builder = new StringBuilder();
+            foreach (T v in inputArray)
             {
-                Log.Error(Ex, "REDCap API call failed");
-                return String.Empty;
+                builder.Append(v);
+                if (inputArray.Length <= 1)
+                {
+                    return builder.ToString();
+                }
+                builder.Append(",");
             }
+            return builder.ToString().TrimEnd(',');
         }
 
         /// <summary>

@@ -14,10 +14,10 @@ Working list for turning `redcap-api` into a genuinely excellent library, not ju
   - Files: `src/RedcapApi/Api/RedcapApi.cs`, `src/RedcapApi/Api/DefaultRedcapTransport.cs`
   - Done: `RedcapApi` now implements `IDisposable`, disposes only internally-created transports, leaves injected transports under caller ownership, and is covered by disposal tests.
 
-- [ ] Stop swallowing utility errors and returning ambiguous defaults.
+- [x] Stop swallowing utility errors and returning ambiguous defaults.
   - `ConvertArraytoString` catches exceptions, logs, and returns `string.Empty`, which can silently turn caller mistakes into malformed API payloads.
   - Files: `src/RedcapApi/Utilities/Utils.cs`
-  - Goal: fail fast on invalid inputs and keep payload bugs observable.
+  - Done: array conversion helpers now throw on null/empty input, and tests assert the fail-fast behavior.
 
 - [ ] Audit the refactor for any remaining "public API says one thing, implementation does another" mismatches.
   - Focus: constructor token model, timeout behavior, disposal, docs, XML comments, README examples.
