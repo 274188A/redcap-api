@@ -184,6 +184,38 @@ namespace Redcap
         }
 
         /// <summary>
+        /// Exports user role assignments and deserializes the JSON response into a list of <see cref="RedcapUserRoleAssignment"/>.
+        /// </summary>
+        /// <remarks>
+        /// This typed overload always requests JSON from REDCap.
+        /// </remarks>
+        /// <param name="content">userRoleMapping</param>
+        /// <param name="onErrorFormat">json [default], xml, csv - specifies the format of error messages.</param>
+        /// <param name="cancellationToken">Cancellation token for the request.</param>
+        /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
+        /// <returns>The deserialized user role assignments.</returns>
+        public async Task<IReadOnlyList<RedcapUserRoleAssignment>> ExportUserRoleAssignmentTypedAsync(Content content = Content.UserRoleMapping, RedcapReturnFormat onErrorFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        {
+            var response = await ExportUserRoleAssignmentAsync(content, RedcapFormat.json, onErrorFormat, cancellationToken, timeOutSeconds);
+
+            try
+            {
+                var assignments = JsonConvert.DeserializeObject<List<RedcapUserRoleAssignment>>(response);
+                if (assignments == null)
+                {
+                    throw new RedcapApiException("REDCap returned an empty user role assignment payload.");
+                }
+
+                return assignments;
+            }
+            catch (JsonException ex)
+            {
+                Log.Error(ex, "Failed to deserialize REDCap user role assignment response.");
+                throw new RedcapApiException("Failed to deserialize REDCap user role assignment response.", ex);
+            }
+        }
+
+        /// <summary>
         /// From Redcap Version 11.3.0 <br/><br/>
         ///
         /// Import User-Role Assignments<br/><br/>

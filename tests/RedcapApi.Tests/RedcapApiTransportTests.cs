@@ -918,6 +918,42 @@ public class RedcapApiTransportTests
     }
 
     [Fact]
+    public async Task ExportUserRoleAssignmentTypedAsync_UsesJsonPayloadAndDeserializesResponse()
+    {
+        var transport = new FakeTransport
+        {
+            ResponseBody = "[{\"username\":\"alice\",\"unique_role_name\":\"U-123\"},{\"username\":\"bob\",\"unique_role_name\":\"U-456\"}]"
+        };
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var result = await api.ExportUserRoleAssignmentTypedAsync(Content.UserRoleMapping, RedcapReturnFormat.xml);
+
+        Assert.NotNull(transport.LastDictionaryPayload);
+        Assert.Equal("userRoleMapping", transport.LastDictionaryPayload!["content"]);
+        Assert.Equal("json", transport.LastDictionaryPayload["format"]);
+        Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
+        Assert.Equal(2, result.Count);
+        Assert.Equal("alice", result[0].Username);
+        Assert.Equal("U-123", result[0].UniqueRoleName);
+        Assert.Equal("bob", result[1].Username);
+        Assert.Equal("U-456", result[1].UniqueRoleName);
+    }
+
+    [Fact]
+    public async Task ExportUserRoleAssignmentTypedAsync_WithInvalidJson_ThrowsRedcapApiException()
+    {
+        var transport = new FakeTransport
+        {
+            ResponseBody = "not json"
+        };
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var ex = await Assert.ThrowsAsync<RedcapApiException>(() => api.ExportUserRoleAssignmentTypedAsync());
+
+        Assert.Equal("Failed to deserialize REDCap user role assignment response.", ex.Message);
+    }
+
+    [Fact]
     public async Task ImportUserRoleAssignmentAsync_UsesExpectedPayload()
     {
         var transport = new FakeTransport();

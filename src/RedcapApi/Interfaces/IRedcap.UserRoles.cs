@@ -114,6 +114,19 @@ namespace Redcap.Interfaces
         Task<string> ExportUserRoleAssignmentAsync(Content content = Content.UserRoleMapping, RedcapFormat format = RedcapFormat.json, RedcapReturnFormat onErrorFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
+        /// Exports user role assignments and deserializes the JSON response into a list of <see cref="RedcapUserRoleAssignment"/>.
+        /// </summary>
+        /// <remarks>
+        /// This typed overload always requests JSON from REDCap.
+        /// </remarks>
+        /// <param name="content">userRoleMapping</param>
+        /// <param name="onErrorFormat">json [default], xml, csv - specifies the format of error messages.</param>
+        /// <param name="cancellationToken">Cancellation token for the request.</param>
+        /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
+        /// <returns>The deserialized user role assignments.</returns>
+        Task<IReadOnlyList<RedcapUserRoleAssignment>> ExportUserRoleAssignmentTypedAsync(Content content = Content.UserRoleMapping, RedcapReturnFormat onErrorFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+
+        /// <summary>
         /// From Redcap Version 13.0.0<br/><br/>
         ///
         /// Import User Role Assignments<br/><br/>
