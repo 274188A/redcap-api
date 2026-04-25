@@ -39,6 +39,36 @@ namespace Redcap
         }
 
         /// <summary>
+        /// Exports repeating instruments and events and deserializes the JSON response into a list of <see cref="RedcapRepeatInstrument"/>.
+        /// </summary>
+        /// <remarks>
+        /// This typed overload always requests JSON from REDCap.
+        /// </remarks>
+        /// <param name="cancellationToken">Cancellation token for the request.</param>
+        /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
+        /// <returns>The deserialized repeating instruments and events.</returns>
+        public async Task<IReadOnlyList<RedcapRepeatInstrument>> ExportRepeatingInstrumentsAndEventsTypedAsync(CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        {
+            var response = await ExportRepeatingInstrumentsAndEventsAsync(RedcapFormat.json, cancellationToken, timeOutSeconds);
+
+            try
+            {
+                var repeatingInstruments = JsonConvert.DeserializeObject<List<RedcapRepeatInstrument>>(response);
+                if (repeatingInstruments == null)
+                {
+                    throw new RedcapApiException("REDCap returned an empty repeating instruments payload.");
+                }
+
+                return repeatingInstruments;
+            }
+            catch (JsonException ex)
+            {
+                Log.Error(ex, "Failed to deserialize REDCap repeating instruments response.");
+                throw new RedcapApiException("Failed to deserialize REDCap repeating instruments response.", ex);
+            }
+        }
+
+        /// <summary>
         /// Obsolete compatibility shim for <see cref="ExportRepeatingInstrumentsAndEventsAsync(RedcapFormat, CancellationToken, long)"/>.
         /// </summary>
         [Obsolete("Use ExportRepeatingInstrumentsAndEventsAsync instead.")]

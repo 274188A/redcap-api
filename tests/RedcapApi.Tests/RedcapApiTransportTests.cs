@@ -571,6 +571,43 @@ public class RedcapApiTransportTests
     }
 
     [Fact]
+    public async Task ExportRepeatingInstrumentsAndEventsTypedAsync_UsesJsonPayloadAndDeserializesResponse()
+    {
+        var transport = new FakeTransport
+        {
+            ResponseBody = "[{\"event_name\":\"Visit 1\",\"unique_event_name\":\"event_1_arm_1\",\"form_name\":\"demographics\",\"custom_form_label\":\"Visit Label\"},{\"event_name\":\"Visit 2\",\"unique_event_name\":\"event_2_arm_1\",\"form_name\":null,\"custom_form_label\":\"Repeat Event\"}]"
+        };
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var result = await api.ExportRepeatingInstrumentsAndEventsTypedAsync();
+
+        Assert.NotNull(transport.LastDictionaryPayload);
+        Assert.Equal("repeatingFormsEvents", transport.LastDictionaryPayload!["content"]);
+        Assert.Equal("json", transport.LastDictionaryPayload["format"]);
+        Assert.Equal(2, result.Count);
+        Assert.Equal("event_1_arm_1", result[0].UniqueEventName);
+        Assert.Equal("demographics", result[0].FormName);
+        Assert.Equal("Visit Label", result[0].CustomFormLabel);
+        Assert.Equal("event_2_arm_1", result[1].UniqueEventName);
+        Assert.Null(result[1].FormName);
+        Assert.Equal("Repeat Event", result[1].CustomFormLabel);
+    }
+
+    [Fact]
+    public async Task ExportRepeatingInstrumentsAndEventsTypedAsync_WithInvalidJson_ThrowsRedcapApiException()
+    {
+        var transport = new FakeTransport
+        {
+            ResponseBody = "not json"
+        };
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var ex = await Assert.ThrowsAsync<RedcapApiException>(() => api.ExportRepeatingInstrumentsAndEventsTypedAsync());
+
+        Assert.Equal("Failed to deserialize REDCap repeating instruments response.", ex.Message);
+    }
+
+    [Fact]
     public async Task ExportRepeatingInstrumentsAndEvents_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
