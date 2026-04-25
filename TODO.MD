@@ -86,11 +86,13 @@ Working list for turning `redcap-api` into a genuinely excellent library, not ju
 
 ## P1 Test Quality
 
-- [ ] Expand tests around timeout behavior once fixed.
+- [x] Expand tests around timeout behavior once fixed.
   - Goal: prove the contract instead of assuming it.
+  - Done: `CancellationTests` covers forwarding caller cancellation tokens and verifies that a per-call timeout cancels a slow request through the public API.
 
-- [ ] Add tests around disposal/lifetime semantics once defined.
+- [x] Add tests around disposal/lifetime semantics once defined.
   - Goal: lock down ownership behavior.
+  - Done: `CancellationTests` verifies injected transports remain caller-owned and internally-created transports reject calls after the client is disposed.
 
 - [ ] Add more targeted tests for helper edge cases.
   - Examples: array conversion failures, malformed filenames, empty payload inputs, header parsing in the local test server.
