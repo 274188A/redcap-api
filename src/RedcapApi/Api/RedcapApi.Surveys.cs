@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 
 using Redcap.Api;
 using Redcap.Exceptions;
@@ -23,10 +23,9 @@ namespace Redcap
         /// This method returns a unique survey link (i.e., a URL) in plain text format for a specified record and data collection instrument (and event, if longitudinal) in a project. If the user does not have 'Manage Survey Participants' privileges, they will not be able to use this method, and an error will be returned. If the specified data collection instrument has not been enabled as a survey in the project, an error will be returned.
         /// </summary>
         /// <remarks>
-        /// 
+        ///
         /// To use this method, you must have API Export privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="record">the record ID. The name of the record in the project.</param>
         /// <param name="instrument">the unique instrument name as seen in the second column of the Data Dictionary. This instrument must be enabled as a survey in the project.</param>
         /// <param name="eventName">the unique event name (for longitudinal projects only).</param>
@@ -35,11 +34,11 @@ namespace Redcap
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>Returns a unique survey link (i.e., a URL) in plain text format for the specified record and instrument (and event, if longitudinal).</returns>
-        public async Task<string> ExportSurveyLinkAsync(string token, string record, string instrument, string eventName, int repeatInstance, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public async Task<string> ExportSurveyLinkAsync(string record, string instrument, string eventName, int repeatInstance, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
-            return await ExecuteAsync(token, payload =>
+            return await ExecuteAsync(payload =>
             {
-                payload["token"] = token;
+                payload["token"] = _token;
                 payload["content"] = Content.SurveyLink.GetDisplayName();
                 payload["record"] = record;
                 payload["instrument"] = instrument;
@@ -57,7 +56,6 @@ namespace Redcap
         /// <remarks>
         /// To use this method, you must have API Export privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="record">the record ID. The name of the record in the project.</param>
         /// <param name="instrument">the unique instrument name as seen in the second column of the Data Dictionary. This instrument must be enabled as a survey in the project.</param>
         /// <param name="eventName">the unique event name (for longitudinal projects only).</param>
@@ -66,11 +64,11 @@ namespace Redcap
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>Returns a unique survey participant identifier in plain text format for the specified record and instrument (and event, if longitudinal).</returns>
-        public async Task<string> ExportSurveyAccessCodeAsync(string token, string record, string instrument, string eventName, int repeatInstance, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public async Task<string> ExportSurveyAccessCodeAsync(string record, string instrument, string eventName, int repeatInstance, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
-            return await ExecuteAsync(token, payload =>
+            return await ExecuteAsync(payload =>
             {
-                payload["token"] = token;
+                payload["token"] = _token;
                 payload["content"] = Content.SurveyAccessCode.GetDisplayName();
                 payload["record"] = record;
                 payload["instrument"] = instrument;
@@ -85,10 +83,9 @@ namespace Redcap
         /// This method returns the list of all participants for a specific survey instrument (and for a specific event, if a longitudinal project). If the user does not have 'Manage Survey Participants' privileges, they will not be able to use this method, and an error will be returned. If the specified data collection instrument has not been enabled as a survey in the project, an error will be returned.
         /// </summary>
         /// <remarks>
-        /// 
+        ///
         /// To use this method, you must have API Export privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="instrument">the unique instrument name as seen in the second column of the Data Dictionary. This instrument must be enabled as a survey in the project.</param>
         /// <param name="eventName">the unique event name (for longitudinal projects only).</param>
         /// <param name="format">csv, json [default], xml</param>
@@ -96,11 +93,11 @@ namespace Redcap
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>Returns the list of all participants for the specified survey instrument [and event] in the desired format. The following fields are returned: email, email_occurrence, identifier, invitation_sent_status, invitation_send_time, response_status, survey_access_code, survey_link. The attribute 'email_occurrence' represents the current count that the email address has appeared in the list (because emails can be used more than once), thus email + email_occurrence represent a unique value pair. 'invitation_sent_status' is '0' if an invitation has not yet been sent to the participant, and is '1' if it has. 'invitation_send_time' is the date/time in which the next invitation will be sent, and is blank if there is no invitation that is scheduled to be sent. 'response_status' represents whether the participant has responded to the survey, in which its value is 0, 1, or 2 for 'No response', 'Partial', or 'Completed', respectively. Note: If an incorrect event_id or instrument name is used or if the instrument has not been enabled as a survey, then an error will be returned.</returns>
-        public async Task<string> ExportSurveyParticipantsAsync(string token, string instrument, string eventName, RedcapFormat format = RedcapFormat.json, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public async Task<string> ExportSurveyParticipantsAsync(string instrument, string eventName, RedcapFormat format = RedcapFormat.json, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
-            return await ExecuteAsync(token, payload =>
+            return await ExecuteAsync(payload =>
             {
-                payload["token"] = token;
+                payload["token"] = _token;
                 payload["content"] = Content.ParticipantList.GetDisplayName();
                 payload["format"] = format.GetDisplayName();
                 payload["instrument"] = instrument;
@@ -111,24 +108,23 @@ namespace Redcap
 
         /// <summary>
         /// From Redcap Version 6.4.0<br/>
-        /// 
+        ///
         /// Export a Survey Queue Link for a Participant <br/>
         /// This method returns a unique Survey Queue link (i.e., a URL) in plain text format for the specified record in a project that is utilizing the Survey Queue feature. If the user does not have 'Manage Survey Participants' privileges, they will not be able to use this method, and an error will be returned. If the Survey Queue feature has not been enabled in the project, an error will be
         /// </summary>
         /// <remarks>
         /// To use this method, you must have API Export privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="record">the record ID. The name of the record in the project.</param>
         /// <param name="returnFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>Returns a unique Survey Queue link (i.e., a URL) in plain text format for the specified record in the project.</returns>
-        public async Task<string> ExportSurveyQueueLinkAsync(string token, string record, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public async Task<string> ExportSurveyQueueLinkAsync(string record, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
-            return await ExecuteAsync(token, payload =>
+            return await ExecuteAsync(payload =>
             {
-                payload["token"] = token;
+                payload["token"] = _token;
                 payload["content"] = Content.SurveyQueueLink.GetDisplayName();
                 payload["record"] = record;
                 payload["returnFormat"] = returnFormat.GetDisplayName();
@@ -143,7 +139,6 @@ namespace Redcap
         /// <remarks>
         /// To use this method, you must have API Export privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="record">the record ID. The name of the record in the project.</param>
         /// <param name="instrument">the unique instrument name as seen in the second column of the Data Dictionary. This instrument must be enabled as a survey in the project.</param>
         /// <param name="eventName">the unique event name (for longitudinal projects only).</param>
@@ -152,11 +147,11 @@ namespace Redcap
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>Returns a unique Return Code in plain text format for the specified record and instrument (and event, if longitudinal).</returns>
-        public async Task<string> ExportSurveyReturnCodeAsync(string token, string record, string instrument, string eventName, string? repeatInstance, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public async Task<string> ExportSurveyReturnCodeAsync(string record, string instrument, string eventName, string? repeatInstance, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
-            return await ExecuteAsync(token, payload =>
+            return await ExecuteAsync(payload =>
             {
-                payload["token"] = token;
+                payload["token"] = _token;
                 payload["content"] = Content.SurveyReturnCode.GetDisplayName();
                 payload["record"] = record;
                 payload["instrument"] = instrument;

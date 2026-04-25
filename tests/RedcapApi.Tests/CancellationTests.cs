@@ -14,9 +14,9 @@ public class CancellationTests
     {
         using var cts = new CancellationTokenSource();
         var transport = new TokenCapturingTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportRecordsAsync(Token, cancellationToken: cts.Token);
+        await api.ExportRecordsAsync(cancellationToken: cts.Token);
 
         Assert.Equal(cts.Token, transport.LastCancellationToken);
     }
@@ -26,10 +26,10 @@ public class CancellationTests
     {
         using var cts = new CancellationTokenSource();
         var transport = new TokenCapturingTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var data = new List<object> { new { record_id = "1" } };
 
-        await api.ImportRecordsAsync(Token, RedcapFormat.json, RedcapDataType.flat, OverwriteBehavior.normal, false, false, data, cancellationToken: cts.Token);
+        await api.ImportRecordsAsync(RedcapFormat.json, RedcapDataType.flat, OverwriteBehavior.normal, false, false, data, cancellationToken: cts.Token);
 
         Assert.Equal(cts.Token, transport.LastCancellationToken);
     }
@@ -39,12 +39,12 @@ public class CancellationTests
     {
         using var cts = new CancellationTokenSource();
         var transport = new TokenCapturingTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tempDir);
         try
         {
-            await api.ExportFileAsync(Token, "rec1", "file_field", "event_1_arm_1", filePath: tempDir, cancellationToken: cts.Token);
+            await api.ExportFileAsync("rec1", "file_field", "event_1_arm_1", filePath: tempDir, cancellationToken: cts.Token);
 
             Assert.Equal(cts.Token, transport.LastCancellationToken);
         }
@@ -62,10 +62,10 @@ public class CancellationTests
         using var cts = new CancellationTokenSource();
         await cts.CancelAsync();
         var transport = new CancellationRespectingTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
         await Assert.ThrowsAsync<RedcapApiException>(() =>
-            api.ExportRecordsAsync(Token, cancellationToken: cts.Token));
+            api.ExportRecordsAsync(cancellationToken: cts.Token));
     }
 
     private sealed class CancellationRespectingTransport : IRedcapTransport

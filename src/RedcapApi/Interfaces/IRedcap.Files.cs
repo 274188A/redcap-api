@@ -19,7 +19,6 @@ namespace Redcap.Interfaces
         /// <example>
         /// The MIME type of the file, along with the name of the file and its extension, can be found in the header of the returned response. Thus in order to determine these attributes of the file being exported, you will need to parse the response header. Example: content-type = application/vnd.openxmlformats-officedocument.wordprocessingml.document; name='FILE_NAME.docx'
         /// </example>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="record">the record ID</param>
         /// <param name="field">the name of the field that contains the file</param>
         /// <param name="eventName">the unique event name - only for longitudinal projects</param>
@@ -29,7 +28,7 @@ namespace Redcap.Interfaces
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>the contents of the file</returns>
-        Task<string> ExportFileAsync(string token, string? record, string field, string eventName, string? repeatInstance = "1", RedcapReturnFormat returnFormat = RedcapReturnFormat.json, string? filePath = null, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> ExportFileAsync(string? record, string field, string eventName, string? repeatInstance = "1", RedcapReturnFormat returnFormat = RedcapReturnFormat.json, string? filePath = null, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
         /// Import a File <br/><br/>
@@ -39,7 +38,6 @@ namespace Redcap.Interfaces
         /// To use this method, you must have API Import/Update privileges in the project.
         /// If you pass in a record parameter that does not exist, Redcap will create it for you.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="record">the record ID</param>
         /// <param name="field">the name of the field that contains the file</param>
         /// <param name="eventName">the unique event name - only for longitudinal projects</param>
@@ -50,7 +48,7 @@ namespace Redcap.Interfaces
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</returns>
-        Task<string> ImportFileAsync(string token, string record, string field, string eventName, string? repeatInstance, string fileName, string filePath, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> ImportFileAsync(string record, string field, string eventName, string? repeatInstance, string fileName, string filePath, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
         /// Delete a File <br/><br/>
@@ -59,7 +57,6 @@ namespace Redcap.Interfaces
         /// <remarks>
         /// To use this method, you must have API Import/Update privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="record">the record ID</param>
         /// <param name="field">the name of the field that contains the file</param>
         /// <param name="eventName">the unique event name - only for longitudinal projects</param>
@@ -68,6 +65,6 @@ namespace Redcap.Interfaces
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>String</returns>
-        Task<string> DeleteFileAsync(string token, string record, string field, string eventName, string? repeatInstance, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> DeleteFileAsync(string record, string field, string eventName, string? repeatInstance, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
     }
 }

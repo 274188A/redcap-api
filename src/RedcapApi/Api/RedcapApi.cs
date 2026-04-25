@@ -32,16 +32,20 @@ namespace Redcap
 
         private readonly IRedcapTransport _transport;
 
+        private readonly string _token;
+
         /// <summary>
         /// The version of redcap that the api is currently interacting with.
         /// </summary>
         public string? Version = default!;
+
         /// <summary>
-        /// default constructor
+        /// Creates a new RedcapApi instance with the given URL and API token.
         /// </summary>
-        /// <param name="redcapApiUrl"></param>
-        public RedcapApi(string redcapApiUrl)
-            : this(redcapApiUrl, new DefaultRedcapTransport())
+        /// <param name="redcapApiUrl">Redcap instance URI</param>
+        /// <param name="token">API token for the REDCap project.</param>
+        public RedcapApi(string redcapApiUrl, string token)
+            : this(redcapApiUrl, token, new DefaultRedcapTransport())
         {
         }
 
@@ -49,11 +53,14 @@ namespace Redcap
         /// Constructor that accepts a transport abstraction for testing and customization.
         /// </summary>
         /// <param name="redcapApiUrl">Redcap instance URI</param>
+        /// <param name="token">API token for the REDCap project.</param>
         /// <param name="transport">Transport abstraction used to execute requests.</param>
-        public RedcapApi(string redcapApiUrl, IRedcapTransport transport)
+        public RedcapApi(string redcapApiUrl, string token, IRedcapTransport transport)
         {
             _uri = new Uri(redcapApiUrl);
             _transport = transport ?? throw new ArgumentNullException(nameof(transport));
+            Utils.CheckToken(this, token);
+            _token = token;
         }
         /// <summary>
         /// Validates the provided API token is not null or empty.
@@ -91,14 +98,12 @@ namespace Redcap
         }
 
         private async Task<string> ExecuteAsync(
-            string token,
             Action<Dictionary<string, string>> buildPayload,
             CancellationToken cancellationToken = default,
             long timeOutSeconds = 100)
         {
             try
             {
-                this.CheckToken(token);
                 var payload = new Dictionary<string, string>();
                 buildPayload(payload);
                 return await this.SendPostRequestAsync(payload, _uri,
@@ -117,14 +122,12 @@ namespace Redcap
         }
 
         private async Task<string> ExecuteMultipartAsync(
-            string token,
             Action<MultipartFormDataContent> buildPayload,
             CancellationToken cancellationToken = default,
             long timeOutSeconds = 100)
         {
             try
             {
-                this.CheckToken(token);
                 var payload = new MultipartFormDataContent();
                 buildPayload(payload);
                 return await this.SendPostRequestAsync(payload, _uri,
@@ -164,7 +167,6 @@ namespace Redcap
         }
 
         private async Task<string> ExecuteDownloadAsync(
-            string token,
             string destinationPath,
             Action<Dictionary<string, string>> buildPayload,
             CancellationToken cancellationToken = default,
@@ -172,7 +174,6 @@ namespace Redcap
         {
             try
             {
-                this.CheckToken(token);
                 var payload = new Dictionary<string, string>();
                 buildPayload(payload);
                 return await this.DownloadFileAsync(payload, _uri, destinationPath,

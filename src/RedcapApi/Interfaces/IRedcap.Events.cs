@@ -15,16 +15,13 @@ namespace Redcap.Interfaces
         /// <remarks>
         /// To use this method, you must have API Export privileges in the project.
         /// </remarks>
-        /// <param name="token">
-        /// The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.
-        /// </param>
         /// <param name="format">csv, json [default], xml</param>
         /// <param name="arms"></param>
         /// <param name="returnFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>Events for the project in the format specified</returns>
-        Task<string> ExportEventsAsync(string token, RedcapFormat format, string[] arms, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> ExportEventsAsync(RedcapFormat format, string[] arms, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
         /// From Redcap Version 6.11.0<br/><br/>
@@ -36,7 +33,6 @@ namespace Redcap.Interfaces
         /// <remarks>
         /// To use this method, you must have API Import/Update privileges *and* Project Design/Setup privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="overrideBehavior">0 - false [default], 1 - true — You may use override=1 as a 'delete all + import' action in order to erase all existing Events in the project while importing new Events. If override=0, then you can only add new Events or modify existing ones. </param>
         /// <typeparam name="T"></typeparam>
         /// <param name="data">Contains the required attributes 'event_name' (referring to the name/label of the event) and 'arm_num' (referring to the arm number to which the event belongs - assumes '1' if project only contains one arm). In order to modify an existing event, you must provide the attribute 'unique_event_name' (referring to the auto-generated unique event name of the given event). If the project utilizes the Scheduling module, the you may optionally provide the following attributes, which must be numerical: day_offset, offset_min, offset_max. If the day_offset is not provided, then the events will be auto-numbered in the order in which they are provided in the API request.
@@ -52,7 +48,7 @@ namespace Redcap.Interfaces
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>Number of Events imported</returns>
-        Task<string> ImportEventsAsync<T>(string token, bool overrideBehavior, RedcapFormat format, List<T> data, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> ImportEventsAsync<T>(bool overrideBehavior, RedcapFormat format, List<T> data, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
         /// From Redcap Version 6.11.0<br/><br/>
@@ -67,11 +63,10 @@ namespace Redcap.Interfaces
         ///
         /// To use this method, you must have API Import/Update privileges *and* Project Design/Setup privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="events">Array of unique event names</param>
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>Number of Events deleted</returns>
-        Task<string> DeleteEventsAsync(string token, string[] events, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> DeleteEventsAsync(string[] events, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
     }
 }

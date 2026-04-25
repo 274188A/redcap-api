@@ -182,59 +182,6 @@ namespace Redcap.Utilities
             return Enum.IsDefined(overwriteBehavior) ? overwriteBehavior.ToString() : OverwriteBehavior.overwrite.ToString();
         }
 
-        /// <summary>
-        /// This method extracts and converts an object's properties and associated values to redcap type and values.
-        /// </summary>
-        /// <param name="redcapApi"></param>
-        /// <param name="input">Object</param>
-        /// <returns>Dictionary of key value pair.</returns>
-        public static Dictionary<string, string?> GetProperties(this RedcapApi redcapApi, object input)
-        {
-            try
-            {
-                if (input != null)
-                {
-                    var type = input.GetType();
-                    var obj = new Dictionary<string, string?>();
-                    PropertyInfo[] properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-                    foreach (var prop in properties)
-                    {
-                        Type columnType = prop.PropertyType;
-                        string propName = prop.Name.ToLower();
-                        var propValue = prop.GetValue(input, null)?.ToString();
-                        if (propValue != null)
-                        {
-                            var t = columnType.GetGenericArguments();
-                            if (t.Length > 0)
-                            {
-                                if (columnType.GenericTypeArguments[0].FullName == "System.DateTime")
-                                {
-                                    var dt = DateTime.Parse(propValue);
-                                    propValue = dt.ToString();
-                                }
-                                if (columnType.GenericTypeArguments[0].FullName == "System.Boolean")
-                                {
-                                    propValue = propValue == "True" ? "1" : "0";
-                                }
-                            }
-                            obj.Add(propName, propValue);
-                        }
-                        else
-                        {
-                            obj.Add(propName, null);
-                        }
-                    }
-                    return obj;
-                }
-                return new Dictionary<string, string?> { };
-            }
-            catch (Exception Ex)
-            {
-                Log.Error(Ex, "REDCap API call failed");
-                return new Dictionary<string, string?> { };
-            }
-        }
-
         private static List<string> SplitToList(string input, char[] delimiters) =>
             string.IsNullOrEmpty(input)
                 ? new List<string>()

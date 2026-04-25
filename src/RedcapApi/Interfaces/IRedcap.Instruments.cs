@@ -12,12 +12,11 @@ namespace Redcap.Interfaces
         /// <remarks>
         /// To use this method, you must have API Export privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="format">csv, json [default], xml</param>
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>Instruments for the project in the format specified and will be ordered according to their order in the project.</returns>
-        Task<string> ExportInstrumentsAsync(string token, RedcapFormat format = RedcapFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> ExportInstrumentsAsync(RedcapFormat format = RedcapFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
         /// From Redcap Version 6.4.0 <br/><br/>
@@ -29,7 +28,6 @@ namespace Redcap.Interfaces
         /// <remarks>
         /// To use this method, you must have API Export privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="recordId">the record ID. The value is blank by default. If record is blank, it will return the PDF as blank (i.e. with no data). If record is provided, it will return a single instrument or all instruments containing data from that record only.</param>
         /// <param name="eventName">the unique event name - only for longitudinal projects. For a longitudinal project, if record is not blank and event is blank, it will return data for all events from that record. If record is not blank and event is not blank, it will return data only for the specified event from that record.</param>
         /// <param name="instrument">the unique instrument name as seen in the second column of the Data Dictionary. The value is blank by default, which returns all instruments. If record is not blank and instrument is blank, it will return all instruments for that record.</param>
@@ -38,7 +36,7 @@ namespace Redcap.Interfaces
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>A PDF file containing one or all data collection instruments from the project, in which the instruments will be blank (no data), contain data from a single record, or contain data from all records in the project, depending on the parameters passed in the API request.</returns>
-        Task<string> ExportPDFInstrumentsAsync(string token, string? recordId = null, string? eventName = null, string? instrument = null, bool allRecord = false, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> ExportPDFInstrumentsAsync(string? recordId = null, string? eventName = null, string? instrument = null, bool allRecord = false, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
         /// From Redcap Version 4.7.0 <br/><br/>
@@ -50,14 +48,13 @@ namespace Redcap.Interfaces
         /// <remarks>
         /// To use this method, you must have API Export privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="format">csv, json [default], xml</param>
         /// <param name="arms">an array of arm numbers that you wish to pull events for (by default, all events are pulled)</param>
         /// <param name="returnFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>Instrument-event mappings for the project in the format specified</returns>
-        Task<string> ExportInstrumentMappingAsync(string token, RedcapFormat format = RedcapFormat.json, string[]? arms = null, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> ExportInstrumentMappingAsync(RedcapFormat format = RedcapFormat.json, string[]? arms = null, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
         /// FFrom Redcap Version 4.7.0 <br/><br/>
@@ -70,7 +67,6 @@ namespace Redcap.Interfaces
         /// To use this method, you must have API Import/Update privileges *and* Project Design/Setup privileges in the project.
         /// </remarks>
         /// <typeparam name="T"></typeparam>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="format">csv, json [default], xml</param>
         /// <param name="data">Contains the attributes 'arm_num' (referring to the arm number), 'unique_event_name' (referring to the auto-generated unique event name of the given event), and 'form' (referring to the unique form name of the given data collection instrument), in which they are provided in the specified format.
         /// JSON Example:[{"arm_num":"1","unique_event_name":"baseline_arm_1","form":"demographics"},
@@ -82,6 +78,6 @@ namespace Redcap.Interfaces
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>Number of Instrument-Event Mappings imported</returns>
-        Task<string> ImportInstrumentMappingAsync<T>(string token, RedcapFormat format, List<T> data, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> ImportInstrumentMappingAsync<T>(RedcapFormat format, List<T> data, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
     }
 }

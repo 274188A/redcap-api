@@ -17,7 +17,6 @@ namespace Redcap.Interfaces
         /// To use this method, you must have a Super API Token.
         /// </remarks>
         /// <typeparam name="T"></typeparam>
-        /// <param name="token">The Super API Token specific to a user</param>
         /// <param name="format">csv, json [default], xml</param>
         /// <param name="data">
         ///     Contains the attributes of the project to be created, in which they are provided in the specified format. While the only required attributes are 'project_title' and 'purpose', the fields listed below are all the possible attributes that can be provided in the 'data' parameter. The 'purpose' attribute must have a numerical value (0=Practice/Just for fun, 1=Other, 2=Research, 3=Quality Improvement, 4=Operational Support), in which 'purpose_other' is only required to have a value (as a text string) if purpose=1. The attributes is_longitudinal (0=False, 1=True; Default=0), surveys_enabled (0=False, 1=True; Default=0), and record_autonumbering_enabled (0=False, 1=True; Default=1) are all boolean. Please note that either is_longitudinal=1 or surveys_enabled=1 does not add arms/events or surveys to the project, respectively, but it merely enables those settings which are seen at the top of the project's Project Setup page.
@@ -31,7 +30,7 @@ namespace Redcap.Interfaces
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>When a project is created, a 32-character project-level API Token is returned (associated with both the project and user creating the project). This token could then ostensibly be used to make subsequent API calls to this project, such as for adding new events, fields, records, etc.</returns>
-        Task<string> CreateProjectAsync<T>(string token, RedcapFormat format, List<T> data, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, string? odm = null, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> CreateProjectAsync<T>(RedcapFormat format, List<T> data, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, string? odm = null, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
         /// Import Project Information<br/><br/>
@@ -40,7 +39,6 @@ namespace Redcap.Interfaces
         /// <remarks>
         /// To use this method, you must have API Import/Update privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="format">csv, json [default], xml</param>
         /// <param name="projectInfo">Contains some or all of the attributes from Export Project Information in the same data format as in the export. These attributes will change the project information.
         /// Attributes for the project in the format specified. For any values that are boolean, they should be represented as either a '0' (no/false) or '1' (yes/true). The following project attributes can be udpated:
@@ -49,7 +47,7 @@ namespace Redcap.Interfaces
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>Returns the number of values accepted to be updated in the project settings (including values which remained the same before and after the import).</returns>
-        Task<string> ImportProjectInfoAsync(string token, RedcapFormat format, RedcapProjectInfo projectInfo, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> ImportProjectInfoAsync(RedcapFormat format, RedcapProjectInfo projectInfo, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
         /// Export Project Information <br/><br/>
@@ -59,7 +57,6 @@ namespace Redcap.Interfaces
         ///
         /// To use this method, you must have API Export privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="format">csv, json [default], xml</param>
         /// <param name="returnFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <param name="cancellationToken"></param>
@@ -68,7 +65,7 @@ namespace Redcap.Interfaces
         /// Attributes for the project in the format specified. For any values that are boolean, they will be represented as either a '0' (no/false) or '1' (yes/true). Also, all date/time values will be returned in Y-M-D H:M:S format. The following attributes will be returned:
         /// project_id, project_title, creation_time, production_time, in_production, project_language, purpose, purpose_other, project_notes, custom_record_label, secondary_unique_field, is_longitudinal, surveys_enabled, scheduling_enabled, record_autonumbering_enabled, randomization_enabled, ddp_enabled, project_irb_number, project_grant_number, project_pi_firstname, project_pi_lastname, display_today_now_button
         /// </returns>
-        Task<string> ExportProjectInfoAsync(string token, RedcapFormat format = RedcapFormat.json, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> ExportProjectInfoAsync(RedcapFormat format = RedcapFormat.json, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
         /// From Redcap Version 6.12.0 <br/>
@@ -81,7 +78,6 @@ namespace Redcap.Interfaces
         ///
         /// To use this method, you must have API Export privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="returnMetadataOnly">true, false [default] - TRUE returns only metadata (all fields, forms, events, and arms), whereas FALSE returns all metadata and also data (and optionally filters the data according to any of the optional parameters provided in the request) </param>
         /// <param name="records">an array of record names specifying specific records you wish to pull (by default, all records are pulled)</param>
         /// <param name="fields">an array of field names specifying specific fields you wish to pull (by default, all fields are pulled)</param>
@@ -94,6 +90,6 @@ namespace Redcap.Interfaces
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>The entire REDCap project's metadata (and data, if specified) will be returned in CDISC ODM format as a single XML string.</returns>
-        Task<string> ExportProjectXmlAsync(string token, bool returnMetadataOnly = false, string[]? records = null, string[]? fields = null, string[]? events = null, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, bool exportSurveyFields = false, bool exportDataAccessGroups = false, string? filterLogic = null, bool exportFiles = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> ExportProjectXmlAsync(bool returnMetadataOnly = false, string[]? records = null, string[]? fields = null, string[]? events = null, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, bool exportSurveyFields = false, bool exportDataAccessGroups = false, string? filterLogic = null, bool exportFiles = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
     }
 }

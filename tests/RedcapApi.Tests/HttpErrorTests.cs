@@ -18,9 +18,9 @@ public class HttpErrorTests
     public async Task ExportRecordsAsync_WhenServerReturnsError_ThrowsRedcapApiException(int statusCode)
     {
         using var server = new LocalHttpServer(_ => new TestResponse(statusCode, "server-error-body"));
-        var api = new Redcap.RedcapApi(server.Url.ToString());
+        var api = new Redcap.RedcapApi(server.Url.ToString(), Token);
 
-        var ex = await Assert.ThrowsAsync<RedcapApiException>(() => api.ExportRecordsAsync(Token));
+        var ex = await Assert.ThrowsAsync<RedcapApiException>(() => api.ExportRecordsAsync());
 
         Assert.Equal((HttpStatusCode)statusCode, ex.StatusCode);
         Assert.Equal("server-error-body", ex.ResponseBody);
@@ -32,11 +32,11 @@ public class HttpErrorTests
     public async Task ImportRecordsAsync_WhenServerReturnsError_ThrowsRedcapApiException(int statusCode)
     {
         using var server = new LocalHttpServer(_ => new TestResponse(statusCode, "import-error-body"));
-        var api = new Redcap.RedcapApi(server.Url.ToString());
+        var api = new Redcap.RedcapApi(server.Url.ToString(), Token);
         var data = new List<object> { new { record_id = "1" } };
 
         var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
-            api.ImportRecordsAsync(Token, RedcapFormat.json, RedcapDataType.flat, OverwriteBehavior.normal, false, false, data));
+            api.ImportRecordsAsync(RedcapFormat.json, RedcapDataType.flat, OverwriteBehavior.normal, false, false, data));
 
         Assert.Equal((HttpStatusCode)statusCode, ex.StatusCode);
         Assert.Equal("import-error-body", ex.ResponseBody);
@@ -48,9 +48,9 @@ public class HttpErrorTests
     public async Task ExportUsersAsync_WhenServerReturnsError_ThrowsRedcapApiException(int statusCode)
     {
         using var server = new LocalHttpServer(_ => new TestResponse(statusCode, "users-error-body"));
-        var api = new Redcap.RedcapApi(server.Url.ToString());
+        var api = new Redcap.RedcapApi(server.Url.ToString(), Token);
 
-        var ex = await Assert.ThrowsAsync<RedcapApiException>(() => api.ExportUsersAsync(Token));
+        var ex = await Assert.ThrowsAsync<RedcapApiException>(() => api.ExportUsersAsync());
 
         Assert.Equal((HttpStatusCode)statusCode, ex.StatusCode);
         Assert.Equal("users-error-body", ex.ResponseBody);

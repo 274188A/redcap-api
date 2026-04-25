@@ -11,13 +11,12 @@ namespace Redcap.Interfaces
         /// To use this method, you must have API Export privileges in the project.
         /// </remarks>
         /// </summary>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="format">csv, json [default], xml</param>
         /// <param name="returnFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>DAGs for the project in the format specified</returns>
-        Task<string> ExportDagsAsync(string token, RedcapFormat format = RedcapFormat.json, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> ExportDagsAsync(RedcapFormat format = RedcapFormat.json, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
         /// Import DAGs
@@ -28,7 +27,6 @@ namespace Redcap.Interfaces
         /// <remarks>
         /// To use this method, you must have API Import/Update privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="format">csv, json [default], xml</param>
         /// <param name="data">Contains the attributes 'data_access_group_name' (referring to the group name) and 'unique_group_name' (referring to the auto-generated unique group name) of each DAG to be created/modified, in which they are provided in the specified format.
         /// Refer to the API documenations for additional examples.
@@ -46,7 +44,7 @@ namespace Redcap.Interfaces
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>Number of DAGs added or updated</returns>
-        Task<string> ImportDagsAsync<T>(string token, RedcapFormat format, List<T> data, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> ImportDagsAsync<T>(RedcapFormat format, List<T> data, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
         /// Delete DAGs <br/><br/>
@@ -55,12 +53,11 @@ namespace Redcap.Interfaces
         /// To use this method, you must have API Import/Update privileges in the project.
         /// </remarks>
         /// </summary>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="dags">an array of unique group names that you wish to delete</param>
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>Number of DAGs deleted</returns>
-        Task<string> DeleteDagsAsync(string token, string[] dags, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> DeleteDagsAsync(string[] dags, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
         /// From Redcap Version 11.3.1<br/><br/>
@@ -71,12 +68,11 @@ namespace Redcap.Interfaces
         /// To use this method, you must have API Import/Update privileges in the project.
         /// </remarks>
         /// </summary>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="dag">The unique group name of the Data Access Group to which you wish to switch.</param>
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>Returns "1" when the current API user is switched to the specified Data Access Group, otherwise it returns an error message.</returns>
-        Task<string> SwitchDagAsync(string token, RedcapDag dag, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> SwitchDagAsync(RedcapDag dag, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
         /// Export User-DAG Assignments<br/>
@@ -86,13 +82,12 @@ namespace Redcap.Interfaces
         /// <remarks>
         /// To use this method, you must have API Export privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="format">csv, json [default], xml</param>
         /// <param name="returnFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>User-DAG assignments for the project in the format specified</returns>
-        Task<string> ExportUserDagAssignmentAsync(string token, RedcapFormat format = RedcapFormat.json, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> ExportUserDagAssignmentAsync(RedcapFormat format = RedcapFormat.json, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
         /// Import User-DAG Assignments<br/><br/>
@@ -103,7 +98,6 @@ namespace Redcap.Interfaces
         /// </remarks>
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="format">csv, json [default], xml</param>
         /// <param name="data">
         /// Contains the attributes 'username' (referring to the existing unique username) and 'redcap_data_access_group' (referring to existing unique group name) of each User-DAG assignments to be modified, in which they are provided in the specified format.
@@ -121,6 +115,6 @@ namespace Redcap.Interfaces
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>Number of User-DAG assignments added or updated</returns>
-        Task<string> ImportUserDagAssignmentAsync<T>(string token, RedcapFormat format, List<T> data, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> ImportUserDagAssignmentAsync<T>(RedcapFormat format, List<T> data, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
     }
 }

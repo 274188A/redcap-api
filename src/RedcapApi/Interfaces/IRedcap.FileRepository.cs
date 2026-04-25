@@ -18,7 +18,6 @@ namespace Redcap.Interfaces
         /// <remarks>
         /// To use this method, you must have API Import/Update privileges and File Repository privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="content">fileRepository</param>
         /// <param name="action">createFolder</param>
         /// <param name="name">The desired name of the folder to be created (max length = 150 characters)</param>
@@ -30,7 +29,7 @@ namespace Redcap.Interfaces
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>The folder_id of the new folder created in the specified format. <br/>For example, if using format=json, the output would look similar to this: [{folder_id:45}].</returns>
-        Task<string> CreateFolderFileRepositoryAsync(string token, Content content = Content.FileRepository, RedcapAction action = RedcapAction.CreateFolder, string? name = null, RedcapFormat format = RedcapFormat.json, string? folderId = null, string? dagId = null, string? roleId = null, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> CreateFolderFileRepositoryAsync(Content content = Content.FileRepository, RedcapAction action = RedcapAction.CreateFolder, string? name = null, RedcapFormat format = RedcapFormat.json, string? folderId = null, string? dagId = null, string? roleId = null, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
         /// From Redcap Version 13.1<br/>
@@ -41,7 +40,6 @@ namespace Redcap.Interfaces
         /// <remarks>
         /// To use this method, you must have API Export privileges and File Repository privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="content">fileRepository</param>
         /// <param name="action">list</param>
         /// <param name="format">csv, json [default], xml</param>
@@ -50,7 +48,7 @@ namespace Redcap.Interfaces
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>The list of all files and folders within a given sub-folder in the File Repository in the format specified.</returns>
-        Task<string> ExportFilesFoldersFileRepositoryAsync(string token, Content content = Content.FileRepository, RedcapAction action = RedcapAction.List, RedcapFormat format = RedcapFormat.json, string? folderId = default, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> ExportFilesFoldersFileRepositoryAsync(Content content = Content.FileRepository, RedcapAction action = RedcapAction.List, RedcapFormat format = RedcapFormat.json, string? folderId = default, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
         /// From Redcap Version 13.1<br/>
@@ -59,7 +57,6 @@ namespace Redcap.Interfaces
         /// <remarks>
         /// To use this method, you must have API Export privileges and File Repository privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="content">fileRepository</param>
         /// <param name="action">export</param>
         /// <param name="docId">the doc_id of the file in the File Repository</param>
@@ -67,7 +64,7 @@ namespace Redcap.Interfaces
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>the contents of the file</returns>
-        Task<string> ExportFileFileRepositoryAsync(string token, Content content = Content.FileRepository, RedcapAction action = RedcapAction.Export, string? docId = null, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> ExportFileFileRepositoryAsync(Content content = Content.FileRepository, RedcapAction action = RedcapAction.Export, string? docId = null, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
         /// From Redcap Version 13.1<br/>
@@ -77,7 +74,6 @@ namespace Redcap.Interfaces
         /// <remarks>
         /// To use this method, you must have API Import/Update privileges and File Repository privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="content">fileRepository</param>
         /// <param name="action">import</param>
         /// <param name="file">the contents of the file</param>
@@ -86,7 +82,7 @@ namespace Redcap.Interfaces
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>string</returns>
-        Task<string> ImportFileRepositoryAsync(string token, Content content = Content.FileRepository, RedcapAction action = RedcapAction.Import, string? file = null, string? folderId = default, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> ImportFileRepositoryAsync(Content content = Content.FileRepository, RedcapAction action = RedcapAction.Import, string? file = null, string? folderId = default, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
         /// From Redcap Version 13.1<br/>
@@ -96,7 +92,6 @@ namespace Redcap.Interfaces
         /// <remarks>
         /// To use this method, you must have API Import/Update privileges and File Repository privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="content">fileRepository</param>
         /// <param name="action">delete</param>
         /// <param name="docId">the doc_id of the file in the File Repository</param>
@@ -104,6 +99,6 @@ namespace Redcap.Interfaces
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>string</returns>
-        Task<string> DeleteFileRepositoryAsync(string token, Content content = Content.FileRepository, RedcapAction action = RedcapAction.Delete, string? docId = null, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> DeleteFileRepositoryAsync(Content content = Content.FileRepository, RedcapAction action = RedcapAction.Delete, string? docId = null, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
     }
 }

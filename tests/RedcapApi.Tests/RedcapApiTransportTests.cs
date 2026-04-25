@@ -12,9 +12,9 @@ public class RedcapApiTransportTests
     public async Task ExportDagsAsync_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportDagsAsync(Token, RedcapFormat.csv, RedcapReturnFormat.xml);
+        await api.ExportDagsAsync(RedcapFormat.csv, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         {
@@ -28,10 +28,10 @@ public class RedcapApiTransportTests
     public async Task ImportDagsAsync_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var data = new List<RedcapDag> { new() { GroupName = "CA Site", UniqueGroupName = "ca_site" } };
 
-        await api.ImportDagsAsync(Token, RedcapFormat.json, data, RedcapReturnFormat.xml);
+        await api.ImportDagsAsync(RedcapFormat.json, data, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         {
@@ -47,9 +47,9 @@ public class RedcapApiTransportTests
     public async Task DeleteDagsAsync_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.DeleteDagsAsync(Token, new[] { "ca_site", "fl_site" });
+        await api.DeleteDagsAsync(new[] { "ca_site", "fl_site" });
 
         Assert.NotNull(transport.LastDictionaryPayload);
         {
@@ -64,10 +64,10 @@ public class RedcapApiTransportTests
     public async Task DeleteDagsAsync_WithNoItems_ThrowsRedcapApiException()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
         var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
-            api.DeleteDagsAsync(Token, Array.Empty<string>()));
+            api.DeleteDagsAsync(Array.Empty<string>()));
 
         Assert.Contains("No dags to delete", ex.Message);
         Assert.Null(transport.LastDictionaryPayload);
@@ -77,9 +77,9 @@ public class RedcapApiTransportTests
     public async Task SwitchDagAsync_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.SwitchDagAsync(Token, new RedcapDag { UniqueGroupName = "ca_site" });
+        await api.SwitchDagAsync(new RedcapDag { UniqueGroupName = "ca_site" });
 
         Assert.NotNull(transport.LastDictionaryPayload);
         {
@@ -93,9 +93,9 @@ public class RedcapApiTransportTests
     public async Task ExportUserDagAssignmentAsync_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportUserDagAssignmentAsync(Token, RedcapFormat.csv, RedcapReturnFormat.xml);
+        await api.ExportUserDagAssignmentAsync(RedcapFormat.csv, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         {
@@ -109,10 +109,10 @@ public class RedcapApiTransportTests
     public async Task ImportUserDagAssignmentAsync_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var data = new List<TestUserDagAssignment> { new() { Username = "alice", RedcapDataAccessGroup = "ca_site" } };
 
-        await api.ImportUserDagAssignmentAsync(Token, RedcapFormat.json, data, RedcapReturnFormat.xml);
+        await api.ImportUserDagAssignmentAsync(RedcapFormat.json, data, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         {
@@ -128,10 +128,10 @@ public class RedcapApiTransportTests
     public async Task ImportUserDagAssignmentAsync_WithNoData_ThrowsRedcapApiException()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
         var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
-            api.ImportUserDagAssignmentAsync(Token, RedcapFormat.json, new List<TestUserDagAssignment>()));
+            api.ImportUserDagAssignmentAsync(RedcapFormat.json, new List<TestUserDagAssignment>()));
 
         Assert.Contains("No data to import", ex.Message);
         Assert.Null(transport.LastDictionaryPayload);
@@ -141,9 +141,9 @@ public class RedcapApiTransportTests
     public async Task GenerateNextRecordNameAsync_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.GenerateNextRecordNameAsync(Token);
+        await api.GenerateNextRecordNameAsync();
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal(Token, transport.LastDictionaryPayload!["token"]);
@@ -154,10 +154,9 @@ public class RedcapApiTransportTests
     public async Task ExportRecordsAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
         await api.ExportRecordsAsync(
-            token: Token,
             format: RedcapFormat.csv,
             redcapDataType: RedcapDataType.flat,
             records: new[] { "1", "2" },
@@ -203,9 +202,9 @@ public class RedcapApiTransportTests
     public async Task ExportRecordsAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportRecordsAsync(Token, records: new[] { "5" }, rawOrLabelHeaders: RawOrLabelHeaders.label);
+        await api.ExportRecordsAsync(records: new[] { "5" }, rawOrLabelHeaders: RawOrLabelHeaders.label);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("record", transport.LastDictionaryPayload!["content"]);
@@ -217,10 +216,9 @@ public class RedcapApiTransportTests
     public async Task ExportRecordsAsync_DefaultOverload_JsonFormat_OmitsCsvSpecificOptionalKeys()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
         await api.ExportRecordsAsync(
-            token: Token,
             format: RedcapFormat.json,
             redcapDataType: RedcapDataType.flat,
             records: null,
@@ -245,10 +243,9 @@ public class RedcapApiTransportTests
     public async Task ExportRecordAsync_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
         await api.ExportRecordAsync(
-            token: Token,
             record: "7",
             format: RedcapFormat.csv,
             redcapDataType: RedcapDataType.flat,
@@ -296,10 +293,10 @@ public class RedcapApiTransportTests
     public async Task ImportRecordsAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var data = new List<TestRecordPayload> { new() { RecordId = "1", FirstName = "Alice" } };
 
-        await api.ImportRecordsAsync(Token, RedcapFormat.json, RedcapDataType.flat, OverwriteBehavior.overwrite, true, true, data, dateFormat: "YMD", csvDelimiter: CsvDelimiter.comma, returnContent: ReturnContent.ids);
+        await api.ImportRecordsAsync(RedcapFormat.json, RedcapDataType.flat, OverwriteBehavior.overwrite, true, true, data, dateFormat: "YMD", csvDelimiter: CsvDelimiter.comma, returnContent: ReturnContent.ids);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         {
@@ -317,10 +314,10 @@ public class RedcapApiTransportTests
     public async Task ImportRecordsAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var data = new List<TestRecordPayload> { new() { RecordId = "2", FirstName = "Bob" } };
 
-        await api.ImportRecordsAsync(Token, RedcapFormat.json, RedcapDataType.flat, OverwriteBehavior.normal, false, false, data);
+        await api.ImportRecordsAsync(RedcapFormat.json, RedcapDataType.flat, OverwriteBehavior.normal, false, false, data);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("record", transport.LastDictionaryPayload!["content"]);
@@ -336,9 +333,9 @@ public class RedcapApiTransportTests
     public async Task ExportSurveyAccessCodeAsync_UsesInjectedTransport()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        var result = await api.ExportSurveyAccessCodeAsync(Token, "1", "survey_form", "event_1", 2);
+        var result = await api.ExportSurveyAccessCodeAsync("1", "survey_form", "event_1", 2);
 
         Assert.Equal("transport-response", result);
         Assert.NotNull(transport.LastDictionaryPayload);
@@ -353,9 +350,9 @@ public class RedcapApiTransportTests
     public async Task DeleteRecordsAsync_UsesInjectedTransportAndIncludesDeleteLogging()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.DeleteRecordsAsync(Token, new[] { "10", "11" }, 1, deleteLogging: true);
+        await api.DeleteRecordsAsync(new[] { "10", "11" }, 1, deleteLogging: true);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("record", transport.LastDictionaryPayload!["content"]);
@@ -369,10 +366,9 @@ public class RedcapApiTransportTests
     public async Task DeleteRecordsAsync_DetailedOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
         await api.DeleteRecordsAsync(
-            Token,
             Content.Record,
             RedcapAction.Delete,
             new[] { "1" },
@@ -399,9 +395,9 @@ public class RedcapApiTransportTests
     public async Task DeleteRecordsAsync_ContentArmOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.DeleteRecordsAsync(Token, new[] { "1", "2" }, 2, deleteLogging: true);
+        await api.DeleteRecordsAsync(new[] { "1", "2" }, 2, deleteLogging: true);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("record", transport.LastDictionaryPayload!["content"]);
@@ -414,10 +410,10 @@ public class RedcapApiTransportTests
     public async Task DeleteRecordsAsync_WithNoRecords_ThrowsRedcapApiException()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
         var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
-            api.DeleteRecordsAsync(Token, Array.Empty<string>(), 1));
+            api.DeleteRecordsAsync(Array.Empty<string>(), 1));
 
         Assert.Contains("Please provide the records", ex.Message);
         Assert.Null(transport.LastDictionaryPayload);
@@ -427,9 +423,9 @@ public class RedcapApiTransportTests
     public async Task RenameRecordAsync_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.RenameRecordAsync(Token, "old-id", "new-id", 1);
+        await api.RenameRecordAsync("old-id", "new-id", 1);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         {
@@ -445,9 +441,9 @@ public class RedcapApiTransportTests
     public async Task RandomizeRecord_UsesInjectedTransport()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.RandomizeRecord(Token, "55", "7", RedcapFormat.json, returnAlt: true);
+        await api.RandomizeRecord("55", "7", RedcapFormat.json, returnAlt: true);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("randomize", transport.LastDictionaryPayload!["action"]);
@@ -461,9 +457,9 @@ public class RedcapApiTransportTests
     public async Task ExportRepeatingInstrumentsAndEvents_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportRepeatingInstrumentsAndEvents(Token, RedcapFormat.odm);
+        await api.ExportRepeatingInstrumentsAndEvents(RedcapFormat.odm);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("repeatingFormsEvents", transport.LastDictionaryPayload!["content"]);
@@ -474,9 +470,9 @@ public class RedcapApiTransportTests
     public async Task ExportRepeatingInstrumentsAndEvents_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportRepeatingInstrumentsAndEvents(Token, RedcapFormat.json);
+        await api.ExportRepeatingInstrumentsAndEvents(RedcapFormat.json);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("repeatingFormsEvents", transport.LastDictionaryPayload!["content"]);
@@ -487,10 +483,10 @@ public class RedcapApiTransportTests
     public async Task ImportRepeatingInstrumentsAndEvents_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var data = new[] { new { instrument_name = "form_a", event_name = "event_1_arm_1" } }.ToList();
 
-        await api.ImportRepeatingInstrumentsAndEvents(Token, data, format: RedcapFormat.json, returnFormat: RedcapReturnFormat.xml);
+        await api.ImportRepeatingInstrumentsAndEvents(data, format: RedcapFormat.json, returnFormat: RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("repeatingFormsEvents", transport.LastDictionaryPayload!["content"]);
@@ -503,9 +499,9 @@ public class RedcapApiTransportTests
     public async Task ExportReports_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportReportsAsync(Token, 4, RedcapFormat.csv, RedcapReturnFormat.xml, RawOrLabel.label, RawOrLabelHeaders.label, exportCheckboxLabel: true, csvDelimiter: ",", decimalCharacter: ".");
+        await api.ExportReportsAsync(4, RedcapFormat.csv, RedcapReturnFormat.xml, RawOrLabel.label, RawOrLabelHeaders.label, exportCheckboxLabel: true, csvDelimiter: ",", decimalCharacter: ".");
 
         Assert.NotNull(transport.LastDictionaryPayload);
         {
@@ -525,9 +521,9 @@ public class RedcapApiTransportTests
     public async Task ExportReports_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportReportsAsync(Token, 5);
+        await api.ExportReportsAsync(5);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("report", transport.LastDictionaryPayload!["content"]);
@@ -538,9 +534,9 @@ public class RedcapApiTransportTests
     public async Task ExportReports_ContentOverload_WithDefaults_OmitsOptionalKeys()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportReportsAsync(Token, 7, RedcapFormat.json, RedcapReturnFormat.json, RawOrLabel.raw, RawOrLabelHeaders.raw, exportCheckboxLabel: false, csvDelimiter: null, decimalCharacter: null);
+        await api.ExportReportsAsync(7, RedcapFormat.json, RedcapReturnFormat.json, RawOrLabel.raw, RawOrLabelHeaders.raw, exportCheckboxLabel: false, csvDelimiter: null, decimalCharacter: null);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("report", transport.LastDictionaryPayload!["content"]);
@@ -554,9 +550,9 @@ public class RedcapApiTransportTests
     public async Task ExportUsersAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportUsersAsync(Token, RedcapFormat.csv, RedcapReturnFormat.xml);
+        await api.ExportUsersAsync(RedcapFormat.csv, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         {
@@ -570,9 +566,9 @@ public class RedcapApiTransportTests
     public async Task ExportUsersAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportUsersAsync(Token, RedcapFormat.json, RedcapReturnFormat.json);
+        await api.ExportUsersAsync(RedcapFormat.json, RedcapReturnFormat.json);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("user", transport.LastDictionaryPayload!["content"]);
@@ -583,7 +579,7 @@ public class RedcapApiTransportTests
     public async Task ImportUsersAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var data = new List<RedcapUser>
         {
             new()
@@ -594,7 +590,7 @@ public class RedcapApiTransportTests
             }
         };
 
-        await api.ImportUsersAsync(Token, data, RedcapFormat.csv, RedcapReturnFormat.xml);
+        await api.ImportUsersAsync(data, RedcapFormat.csv, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         {
@@ -609,7 +605,7 @@ public class RedcapApiTransportTests
     public async Task ImportUsersAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var data = new List<RedcapUser>
         {
             new()
@@ -619,7 +615,7 @@ public class RedcapApiTransportTests
             }
         };
 
-        await api.ImportUsersAsync<RedcapUser>(Token, data);
+        await api.ImportUsersAsync<RedcapUser>(data);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("user", transport.LastDictionaryPayload!["content"]);
@@ -631,9 +627,9 @@ public class RedcapApiTransportTests
     public async Task DeleteUsersAsync_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.DeleteUsersAsync(Token, new List<string> { "alice", "bob" });
+        await api.DeleteUsersAsync(new List<string> { "alice", "bob" });
 
         Assert.NotNull(transport.LastDictionaryPayload);
         {
@@ -648,9 +644,9 @@ public class RedcapApiTransportTests
     public async Task ExportUserRolesAsync_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportUserRolesAsync(Token, Content.UserRole, RedcapFormat.csv, RedcapReturnFormat.xml);
+        await api.ExportUserRolesAsync(Content.UserRole, RedcapFormat.csv, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         {
@@ -664,7 +660,7 @@ public class RedcapApiTransportTests
     public async Task ImportUserRolesAsync_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var data = new List<TestUserRole>
         {
             new()
@@ -675,7 +671,7 @@ public class RedcapApiTransportTests
             }
         };
 
-        await api.ImportUserRolesAsync(Token, data, Content.UserRole, RedcapFormat.csv, RedcapReturnFormat.xml);
+        await api.ImportUserRolesAsync(data, Content.UserRole, RedcapFormat.csv, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         {
@@ -691,9 +687,9 @@ public class RedcapApiTransportTests
     public async Task DeleteUserRolesAsync_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.DeleteUserRolesAsync(Token, new List<string> { "U-123", "U-456" });
+        await api.DeleteUserRolesAsync(new List<string> { "U-123", "U-456" });
 
         Assert.NotNull(transport.LastDictionaryPayload);
         {
@@ -708,9 +704,9 @@ public class RedcapApiTransportTests
     public async Task ExportUserRoleAssignmentAsync_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportUserRoleAssignmentAsync(Token, Content.UserRoleMapping, RedcapFormat.csv, RedcapReturnFormat.xml);
+        await api.ExportUserRoleAssignmentAsync(Content.UserRoleMapping, RedcapFormat.csv, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         {
@@ -724,7 +720,7 @@ public class RedcapApiTransportTests
     public async Task ImportUserRoleAssignmentAsync_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var data = new List<TestUserRoleAssignment>
         {
             new()
@@ -734,7 +730,7 @@ public class RedcapApiTransportTests
             }
         };
 
-        await api.ImportUserRoleAssignmentAsync(Token, data, Content.UserRoleMapping, RedcapAction.Import, RedcapFormat.csv, RedcapReturnFormat.xml);
+        await api.ImportUserRoleAssignmentAsync(data, Content.UserRoleMapping, RedcapAction.Import, RedcapFormat.csv, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         {
@@ -751,9 +747,9 @@ public class RedcapApiTransportTests
     public async Task ExportEventsAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportEventsAsync(Token, RedcapFormat.csv, new[] { "1" }, RedcapReturnFormat.xml);
+        await api.ExportEventsAsync(RedcapFormat.csv, new[] { "1" }, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("event", transport.LastDictionaryPayload!["content"]);
@@ -766,9 +762,9 @@ public class RedcapApiTransportTests
     public async Task ExportEventsAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportEventsAsync(Token, RedcapFormat.csv, new[] { "1" }, RedcapReturnFormat.xml);
+        await api.ExportEventsAsync(RedcapFormat.csv, new[] { "1" }, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("event", transport.LastDictionaryPayload!["content"]);
@@ -781,10 +777,10 @@ public class RedcapApiTransportTests
     public async Task ImportEventsAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var data = new List<RedcapEvent> { new() { EventName = "baseline", ArmNumber = "1" } };
 
-        await api.ImportEventsAsync(Token, false, RedcapFormat.json, data, RedcapReturnFormat.xml);
+        await api.ImportEventsAsync(false, RedcapFormat.json, data, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("event", transport.LastDictionaryPayload!["content"]);
@@ -797,10 +793,10 @@ public class RedcapApiTransportTests
     public async Task ImportEventsAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var data = new List<RedcapEvent> { new() { EventName = "baseline", ArmNumber = "1" } };
 
-        await api.ImportEventsAsync(Token, false, RedcapFormat.json, data, RedcapReturnFormat.xml);
+        await api.ImportEventsAsync(false, RedcapFormat.json, data, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("event", transport.LastDictionaryPayload!["content"]);
@@ -815,9 +811,9 @@ public class RedcapApiTransportTests
     public async Task DeleteEventsAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.DeleteEventsAsync(Token, new[] { "event_1_arm_1" });
+        await api.DeleteEventsAsync(new[] { "event_1_arm_1" });
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("event", transport.LastDictionaryPayload!["content"]);
@@ -829,9 +825,9 @@ public class RedcapApiTransportTests
     public async Task DeleteEventsAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.DeleteEventsAsync(Token, new[] { "event_1_arm_1" });
+        await api.DeleteEventsAsync(new[] { "event_1_arm_1" });
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("event", transport.LastDictionaryPayload!["content"]);
@@ -843,10 +839,10 @@ public class RedcapApiTransportTests
     public async Task DeleteEventsAsync_WithNoEvents_ThrowsRedcapApiException()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
         var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
-            api.DeleteEventsAsync(Token, Array.Empty<string>()));
+            api.DeleteEventsAsync(Array.Empty<string>()));
 
         Assert.Contains("No events to delete", ex.Message);
         Assert.Null(transport.LastDictionaryPayload);
@@ -856,9 +852,9 @@ public class RedcapApiTransportTests
     public async Task ExportInstrumentsAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportInstrumentsAsync(Token, RedcapFormat.csv);
+        await api.ExportInstrumentsAsync(RedcapFormat.csv);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("instrument", transport.LastDictionaryPayload!["content"]);
@@ -869,9 +865,9 @@ public class RedcapApiTransportTests
     public async Task ExportInstrumentMappingAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportInstrumentMappingAsync(Token, RedcapFormat.csv, new[] { "1" }, RedcapReturnFormat.xml);
+        await api.ExportInstrumentMappingAsync(RedcapFormat.csv, new[] { "1" }, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("formEventMapping", transport.LastDictionaryPayload!["content"]);
@@ -884,13 +880,13 @@ public class RedcapApiTransportTests
     public async Task ImportInstrumentMappingAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var data = new List<FormEventMapping>
         {
             new() { arm_num = "1", unique_event_name = "event_1_arm_1", form = "demographics" }
         };
 
-        await api.ImportInstrumentMappingAsync(Token, RedcapFormat.json, data, RedcapReturnFormat.xml);
+        await api.ImportInstrumentMappingAsync(RedcapFormat.json, data, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("formEventMapping", transport.LastDictionaryPayload!["content"]);
@@ -903,9 +899,9 @@ public class RedcapApiTransportTests
     public async Task ExportMetaDataAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportMetaDataAsync(Token, RedcapFormat.csv, new[] { "record_id" }, new[] { "demographics" }, RedcapReturnFormat.xml);
+        await api.ExportMetaDataAsync(RedcapFormat.csv, new[] { "record_id" }, new[] { "demographics" }, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("metadata", transport.LastDictionaryPayload!["content"]);
@@ -919,10 +915,10 @@ public class RedcapApiTransportTests
     public async Task ImportMetaDataAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var data = new List<RedcapMetaData> { new() { field_name = "record_id", form_name = "demographics", field_type = "text" } };
 
-        await api.ImportMetaDataAsync(Token, RedcapFormat.json, data, RedcapReturnFormat.xml);
+        await api.ImportMetaDataAsync(RedcapFormat.json, data, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("metadata", transport.LastDictionaryPayload!["content"]);
@@ -935,10 +931,10 @@ public class RedcapApiTransportTests
     public async Task ImportMetaDataAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var data = new List<RedcapMetaData> { new() { field_name = "sex", form_name = "demographics", field_type = "radio" } };
 
-        await api.ImportMetaDataAsync(Token, RedcapFormat.json, data, RedcapReturnFormat.xml);
+        await api.ImportMetaDataAsync(RedcapFormat.json, data, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("metadata", transport.LastDictionaryPayload!["content"]);
@@ -951,10 +947,10 @@ public class RedcapApiTransportTests
     public async Task CreateProjectAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var data = new List<RedcapProject> { new() { project_title = "My Project", purpose = ProjectPurpose.Other } };
 
-        await api.CreateProjectAsync(Token, RedcapFormat.json, data, RedcapReturnFormat.xml, "<odm />");
+        await api.CreateProjectAsync(RedcapFormat.json, data, RedcapReturnFormat.xml, "<odm />");
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("project", transport.LastDictionaryPayload!["content"]);
@@ -968,10 +964,10 @@ public class RedcapApiTransportTests
     public async Task CreateProjectAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var data = new List<RedcapProject> { new() { project_title = "My Project 2", purpose = ProjectPurpose.Other } };
 
-        await api.CreateProjectAsync(Token, RedcapFormat.json, data, RedcapReturnFormat.xml, "<odm2 />");
+        await api.CreateProjectAsync(RedcapFormat.json, data, RedcapReturnFormat.xml, "<odm2 />");
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("project", transport.LastDictionaryPayload!["content"]);
@@ -983,10 +979,10 @@ public class RedcapApiTransportTests
     public async Task ImportProjectInfoAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var info = new RedcapProjectInfo { ProjectTitle = "Updated Project", SurveysEnabled = 1 };
 
-        await api.ImportProjectInfoAsync(Token, RedcapFormat.json, info);
+        await api.ImportProjectInfoAsync(RedcapFormat.json, info);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("project_settings", transport.LastDictionaryPayload!["content"]);
@@ -998,9 +994,9 @@ public class RedcapApiTransportTests
     public async Task ExportProjectInfoAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportProjectInfoAsync(Token, RedcapFormat.csv, RedcapReturnFormat.xml);
+        await api.ExportProjectInfoAsync(RedcapFormat.csv, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("project", transport.LastDictionaryPayload!["content"]);
@@ -1012,10 +1008,9 @@ public class RedcapApiTransportTests
     public async Task ExportProjectXmlAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
         await api.ExportProjectXmlAsync(
-            token: Token,
             returnMetadataOnly: true,
             records: new[] { "1", "2" },
             events: new[] { "event_1_arm_1" },
@@ -1041,9 +1036,9 @@ public class RedcapApiTransportTests
     public async Task ExportArmsAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportArmsAsync(Token, RedcapFormat.csv, new[] { "1" }, RedcapReturnFormat.xml);
+        await api.ExportArmsAsync(RedcapFormat.csv, new[] { "1" }, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("arm", transport.LastDictionaryPayload!["content"]);
@@ -1056,9 +1051,9 @@ public class RedcapApiTransportTests
     public async Task ExportArmsAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportArmsAsync(Token, RedcapFormat.csv, new[] { "1" }, RedcapReturnFormat.xml);
+        await api.ExportArmsAsync(RedcapFormat.csv, new[] { "1" }, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("arm", transport.LastDictionaryPayload!["content"]);
@@ -1071,10 +1066,10 @@ public class RedcapApiTransportTests
     public async Task ImportArmsAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var data = new List<TestArmPayload> { new() { arm_num = "1", name = "Arm A" } };
 
-        await api.ImportArmsAsync(Token, false, RedcapAction.Import, RedcapFormat.json, data, RedcapReturnFormat.xml);
+        await api.ImportArmsAsync(false, RedcapAction.Import, RedcapFormat.json, data, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("arm", transport.LastDictionaryPayload!["content"]);
@@ -1087,10 +1082,10 @@ public class RedcapApiTransportTests
     public async Task ImportArmsAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var data = new List<RedcapArm> { new() { ArmNumber = "1", Name = "Arm B" } };
 
-        await api.ImportArmsAsync(Token, false, RedcapAction.Import, RedcapFormat.json, data, RedcapReturnFormat.xml);
+        await api.ImportArmsAsync(false, RedcapAction.Import, RedcapFormat.json, data, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("arm", transport.LastDictionaryPayload!["content"]);
@@ -1102,10 +1097,10 @@ public class RedcapApiTransportTests
     public async Task ImportArmsAsync_ContentOverload_ListRedcapArmVariant_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var data = new List<RedcapArm> { new() { ArmNumber = "2", Name = "Arm C" } };
 
-        await api.ImportArmsAsync<RedcapArm>(Token, false, RedcapAction.Import, RedcapFormat.json, data, RedcapReturnFormat.xml);
+        await api.ImportArmsAsync<RedcapArm>(false, RedcapAction.Import, RedcapFormat.json, data, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("arm", transport.LastDictionaryPayload!["content"]);
@@ -1117,9 +1112,9 @@ public class RedcapApiTransportTests
     public async Task ExportFieldNamesAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportFieldNamesAsync(Token, RedcapFormat.csv, "record_id", RedcapReturnFormat.xml);
+        await api.ExportFieldNamesAsync(RedcapFormat.csv, "record_id", RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("exportFieldNames", transport.LastDictionaryPayload!["content"]);
@@ -1131,9 +1126,9 @@ public class RedcapApiTransportTests
     public async Task ExportFieldNamesAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportFieldNamesAsync(Token, RedcapFormat.csv, "record_id", RedcapReturnFormat.xml);
+        await api.ExportFieldNamesAsync(RedcapFormat.csv, "record_id", RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("exportFieldNames", transport.LastDictionaryPayload!["content"]);
@@ -1145,9 +1140,9 @@ public class RedcapApiTransportTests
     public async Task DeleteArmsAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.DeleteArmsAsync(Token, new[] { "1", "2" });
+        await api.DeleteArmsAsync(new[] { "1", "2" });
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("arm", transport.LastDictionaryPayload!["content"]);
@@ -1160,9 +1155,9 @@ public class RedcapApiTransportTests
     public async Task DeleteArmsAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.DeleteArmsAsync(Token, new[] { "1", "2" });
+        await api.DeleteArmsAsync(new[] { "1", "2" });
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("arm", transport.LastDictionaryPayload!["content"]);
@@ -1175,10 +1170,10 @@ public class RedcapApiTransportTests
     public async Task DeleteArmsAsync_WithNoArms_ThrowsRedcapApiException()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
         var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
-            api.DeleteArmsAsync(Token, Array.Empty<string>()));
+            api.DeleteArmsAsync(Array.Empty<string>()));
 
         Assert.Contains("No arm to delete", ex.Message);
         Assert.Null(transport.LastDictionaryPayload);
@@ -1188,12 +1183,12 @@ public class RedcapApiTransportTests
     public async Task ExportFileAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var tempFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
 
         try
         {
-            var result = await api.ExportFileAsync(Token, "1", "upload", "event_1_arm_1", "2", RedcapReturnFormat.xml, tempFolder);
+            var result = await api.ExportFileAsync("1", "upload", "event_1_arm_1", "2", RedcapReturnFormat.xml, tempFolder);
 
             Assert.Equal("transport-response", result);
             Assert.NotNull(transport.LastDictionaryPayload);
@@ -1215,12 +1210,12 @@ public class RedcapApiTransportTests
     public async Task ExportFileAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var tempFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
 
         try
         {
-            await api.ExportFileAsync(Token, "1", "upload", "event_1_arm_1", "2", RedcapReturnFormat.xml, tempFolder);
+            await api.ExportFileAsync("1", "upload", "event_1_arm_1", "2", RedcapReturnFormat.xml, tempFolder);
 
             Assert.NotNull(transport.LastDictionaryPayload);
             Assert.Equal("file", transport.LastDictionaryPayload!["content"]);
@@ -1241,10 +1236,10 @@ public class RedcapApiTransportTests
     public async Task ExportFileAsync_DefaultOverload_WithMissingFilePath_ThrowsRedcapApiException()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
         var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
-            api.ExportFileAsync(Token, "1", "upload", "event_1_arm_1", "1", RedcapReturnFormat.xml, filePath: null));
+            api.ExportFileAsync("1", "upload", "event_1_arm_1", "1", RedcapReturnFormat.xml, filePath: null));
 
         Assert.Contains("file path", ex.Message, StringComparison.OrdinalIgnoreCase);
         Assert.Null(transport.LastDictionaryPayload);
@@ -1254,13 +1249,13 @@ public class RedcapApiTransportTests
     public async Task ExportFileAsync_DefaultOverload_WithMissingRecord_ThrowsRedcapApiException()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var tempFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
 
         try
         {
             var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
-                api.ExportFileAsync(Token, record: null, field: "upload", eventName: "event_1_arm_1", repeatInstance: "1", returnFormat: RedcapReturnFormat.xml, filePath: tempFolder));
+                api.ExportFileAsync(record: null, field: "upload", eventName: "event_1_arm_1", repeatInstance: "1", returnFormat: RedcapReturnFormat.xml, filePath: tempFolder));
 
             Assert.Contains("No record provided", ex.Message, StringComparison.OrdinalIgnoreCase);
             Assert.Null(transport.LastDictionaryPayload);
@@ -1278,12 +1273,12 @@ public class RedcapApiTransportTests
     public async Task ExportFileAsync_ContentOverload_WithNullRepeatInstance_OmitsRepeatInstanceKey()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var tempFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
 
         try
         {
-            await api.ExportFileAsync(Token, "1", "upload", "event_1_arm_1", null, RedcapReturnFormat.xml, tempFolder);
+            await api.ExportFileAsync("1", "upload", "event_1_arm_1", null, RedcapReturnFormat.xml, tempFolder);
 
             Assert.NotNull(transport.LastDictionaryPayload);
             Assert.False(transport.LastDictionaryPayload!.ContainsKey("repeat_instance"));
@@ -1302,7 +1297,7 @@ public class RedcapApiTransportTests
     public async Task ImportFileAsync_DefaultOverload_UsesMultipartPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var tempFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tempFolder);
         var fileName = "sample.txt";
@@ -1310,7 +1305,7 @@ public class RedcapApiTransportTests
 
         try
         {
-            await api.ImportFileAsync(Token, "1", "upload", "event_1_arm_1", "1", fileName, tempFolder, RedcapReturnFormat.xml);
+            await api.ImportFileAsync("1", "upload", "event_1_arm_1", "1", fileName, tempFolder, RedcapReturnFormat.xml);
 
             Assert.NotNull(transport.LastMultipartPayload);
             var fields = await ReadMultipartFieldsAsync(transport.LastMultipartPayload!);
@@ -1333,7 +1328,7 @@ public class RedcapApiTransportTests
     public async Task ImportFileAsync_ContentOverload_UsesMultipartPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var tempFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tempFolder);
         var fileName = "sample2.txt";
@@ -1341,7 +1336,7 @@ public class RedcapApiTransportTests
 
         try
         {
-            await api.ImportFileAsync(Token, "1", "upload", "event_1_arm_1", "2", fileName, tempFolder, RedcapReturnFormat.xml);
+            await api.ImportFileAsync("1", "upload", "event_1_arm_1", "2", fileName, tempFolder, RedcapReturnFormat.xml);
 
             Assert.NotNull(transport.LastMultipartPayload);
             var fields = await ReadMultipartFieldsAsync(transport.LastMultipartPayload!);
@@ -1359,9 +1354,9 @@ public class RedcapApiTransportTests
     public async Task DeleteFileAsync_ContentOverload_UsesMultipartPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.DeleteFileAsync(Token, "1", "upload", "event_1_arm_1", "3", RedcapReturnFormat.xml);
+        await api.DeleteFileAsync("1", "upload", "event_1_arm_1", "3", RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastMultipartPayload);
         var fields = await ReadMultipartFieldsAsync(transport.LastMultipartPayload!);
@@ -1375,9 +1370,9 @@ public class RedcapApiTransportTests
     public async Task DeleteFileAsync_DefaultOverload_UsesMultipartPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.DeleteFileAsync(Token, "1", "upload", "event_1_arm_1", "4", RedcapReturnFormat.xml);
+        await api.DeleteFileAsync("1", "upload", "event_1_arm_1", "4", RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastMultipartPayload);
         var fields = await ReadMultipartFieldsAsync(transport.LastMultipartPayload!);
@@ -1390,9 +1385,9 @@ public class RedcapApiTransportTests
     public async Task DeleteFileAsync_DefaultOverload_WithNullRepeatInstance_DefaultsToOne()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.DeleteFileAsync(Token, "1", "upload", "event_1_arm_1", null, RedcapReturnFormat.xml);
+        await api.DeleteFileAsync("1", "upload", "event_1_arm_1", null, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastMultipartPayload);
         var fields = await ReadMultipartFieldsAsync(transport.LastMultipartPayload!);
@@ -1403,9 +1398,9 @@ public class RedcapApiTransportTests
     public async Task DeleteFileAsync_ContentOverload_WithNullRepeatInstance_DefaultsToOne()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.DeleteFileAsync(Token, "1", "upload", "event_1_arm_1", null, RedcapReturnFormat.xml);
+        await api.DeleteFileAsync("1", "upload", "event_1_arm_1", null, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastMultipartPayload);
         var fields = await ReadMultipartFieldsAsync(transport.LastMultipartPayload!);
@@ -1416,9 +1411,9 @@ public class RedcapApiTransportTests
     public async Task CreateFolderFileRepositoryAsync_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.CreateFolderFileRepositoryAsync(Token, Content.FileRepository, RedcapAction.CreateFolder, "new-folder", RedcapFormat.json, "10", "20", "30", RedcapReturnFormat.xml);
+        await api.CreateFolderFileRepositoryAsync(Content.FileRepository, RedcapAction.CreateFolder, "new-folder", RedcapFormat.json, "10", "20", "30", RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("fileRepository", transport.LastDictionaryPayload!["content"]);
@@ -1434,10 +1429,10 @@ public class RedcapApiTransportTests
     public async Task CreateFolderFileRepositoryAsync_WithNoName_ThrowsRedcapApiException()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
         var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
-            api.CreateFolderFileRepositoryAsync(Token, Content.FileRepository, RedcapAction.CreateFolder, null!, RedcapFormat.json));
+            api.CreateFolderFileRepositoryAsync(Content.FileRepository, RedcapAction.CreateFolder, null!, RedcapFormat.json));
 
         Assert.Contains("Please provide a valid name", ex.Message);
         Assert.Null(transport.LastDictionaryPayload);
@@ -1447,9 +1442,9 @@ public class RedcapApiTransportTests
     public async Task ExportFilesFoldersFileRepositoryAsync_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportFilesFoldersFileRepositoryAsync(Token, folderId: "12", format: RedcapFormat.csv, returnFormat: RedcapReturnFormat.xml);
+        await api.ExportFilesFoldersFileRepositoryAsync(folderId: "12", format: RedcapFormat.csv, returnFormat: RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("fileRepository", transport.LastDictionaryPayload!["content"]);
@@ -1462,9 +1457,9 @@ public class RedcapApiTransportTests
     public async Task ExportFileFileRepositoryAsync_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportFileFileRepositoryAsync(Token, Content.FileRepository, RedcapAction.Export, "55", RedcapReturnFormat.xml);
+        await api.ExportFileFileRepositoryAsync(Content.FileRepository, RedcapAction.Export, "55", RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("fileRepository", transport.LastDictionaryPayload!["content"]);
@@ -1477,9 +1472,9 @@ public class RedcapApiTransportTests
     public async Task ImportFileRepositoryAsync_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ImportFileRepositoryAsync(Token, Content.FileRepository, RedcapAction.Import, "file-content", "9", RedcapReturnFormat.xml);
+        await api.ImportFileRepositoryAsync(Content.FileRepository, RedcapAction.Import, "file-content", "9", RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("fileRepository", transport.LastDictionaryPayload!["content"]);
@@ -1492,9 +1487,9 @@ public class RedcapApiTransportTests
     public async Task DeleteFileRepositoryAsync_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.DeleteFileRepositoryAsync(Token, Content.FileRepository, RedcapAction.Delete, "55", RedcapReturnFormat.xml);
+        await api.DeleteFileRepositoryAsync(Content.FileRepository, RedcapAction.Delete, "55", RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("fileRepository", transport.LastDictionaryPayload!["content"]);
@@ -1507,10 +1502,10 @@ public class RedcapApiTransportTests
     public async Task DeleteFileRepositoryAsync_WithNoDocId_ThrowsRedcapApiException()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
         var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
-            api.DeleteFileRepositoryAsync(Token));
+            api.DeleteFileRepositoryAsync());
 
         Assert.Contains("Please provide a document id", ex.Message);
         Assert.Null(transport.LastDictionaryPayload);
@@ -1520,9 +1515,9 @@ public class RedcapApiTransportTests
     public async Task ExportSurveyLinkAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportSurveyLinkAsync(Token, "1", "survey_a", "event_1_arm_1", 2, RedcapReturnFormat.xml);
+        await api.ExportSurveyLinkAsync("1", "survey_a", "event_1_arm_1", 2, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("surveyLink", transport.LastDictionaryPayload!["content"]);
@@ -1536,9 +1531,9 @@ public class RedcapApiTransportTests
     public async Task ExportSurveyLinkAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportSurveyLinkAsync(Token, "1", "survey_a", "event_1_arm_1", 2, RedcapReturnFormat.xml);
+        await api.ExportSurveyLinkAsync("1", "survey_a", "event_1_arm_1", 2, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("surveyLink", transport.LastDictionaryPayload!["content"]);
@@ -1549,9 +1544,9 @@ public class RedcapApiTransportTests
     public async Task ExportSurveyParticipantsAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportSurveyParticipantsAsync(Token, "survey_a", "event_1_arm_1", RedcapFormat.csv, RedcapReturnFormat.xml);
+        await api.ExportSurveyParticipantsAsync("survey_a", "event_1_arm_1", RedcapFormat.csv, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("participantList", transport.LastDictionaryPayload!["content"]);
@@ -1564,9 +1559,9 @@ public class RedcapApiTransportTests
     public async Task ExportSurveyParticipantsAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportSurveyParticipantsAsync(Token, "survey_a", "event_1_arm_1", RedcapFormat.csv, RedcapReturnFormat.xml);
+        await api.ExportSurveyParticipantsAsync("survey_a", "event_1_arm_1", RedcapFormat.csv, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("participantList", transport.LastDictionaryPayload!["content"]);
@@ -1577,9 +1572,9 @@ public class RedcapApiTransportTests
     public async Task ExportSurveyQueueLinkAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportSurveyQueueLinkAsync(Token, "1", RedcapReturnFormat.xml);
+        await api.ExportSurveyQueueLinkAsync("1", RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("surveyQueueLink", transport.LastDictionaryPayload!["content"]);
@@ -1591,9 +1586,9 @@ public class RedcapApiTransportTests
     public async Task ExportSurveyQueueLinkAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportSurveyQueueLinkAsync(Token, "1", RedcapReturnFormat.xml);
+        await api.ExportSurveyQueueLinkAsync("1", RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("surveyQueueLink", transport.LastDictionaryPayload!["content"]);
@@ -1604,9 +1599,9 @@ public class RedcapApiTransportTests
     public async Task ExportSurveyReturnCodeAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportSurveyReturnCodeAsync(Token, "1", "survey_a", "event_1_arm_1", "3", RedcapReturnFormat.xml);
+        await api.ExportSurveyReturnCodeAsync("1", "survey_a", "event_1_arm_1", "3", RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("surveyReturnCode", transport.LastDictionaryPayload!["content"]);
@@ -1617,9 +1612,9 @@ public class RedcapApiTransportTests
     public async Task ExportSurveyReturnCodeAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportSurveyReturnCodeAsync(Token, "1", "survey_a", "event_1_arm_1", "3", RedcapReturnFormat.xml);
+        await api.ExportSurveyReturnCodeAsync("1", "survey_a", "event_1_arm_1", "3", RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("surveyReturnCode", transport.LastDictionaryPayload!["content"]);
@@ -1630,9 +1625,9 @@ public class RedcapApiTransportTests
     public async Task ExportSurveyAccessCodeAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportSurveyAccessCodeAsync(Token, "1", "survey_a", "event_1_arm_1", 2, RedcapReturnFormat.xml);
+        await api.ExportSurveyAccessCodeAsync("1", "survey_a", "event_1_arm_1", 2, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("surveyAccessCode", transport.LastDictionaryPayload!["content"]);
@@ -1643,9 +1638,9 @@ public class RedcapApiTransportTests
     public async Task ExportRedcapVersionAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportRedcapVersionAsync(Token, RedcapFormat.xml);
+        await api.ExportRedcapVersionAsync(RedcapFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("version", transport.LastDictionaryPayload!["content"]);
@@ -1656,9 +1651,9 @@ public class RedcapApiTransportTests
     public async Task ExportRedcapVersionAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportRedcapVersionAsync(Token, RedcapFormat.xml);
+        await api.ExportRedcapVersionAsync(RedcapFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("version", transport.LastDictionaryPayload!["content"]);
@@ -1669,9 +1664,9 @@ public class RedcapApiTransportTests
     public async Task ExportInstrumentsAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportInstrumentsAsync(Token, RedcapFormat.json);
+        await api.ExportInstrumentsAsync(RedcapFormat.json);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("instrument", transport.LastDictionaryPayload!["content"]);
@@ -1682,9 +1677,9 @@ public class RedcapApiTransportTests
     public async Task ExportPDFInstrumentsAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportPDFInstrumentsAsync(Token, "1", "event_1_arm_1", "survey_a", true, (string?)null, RedcapReturnFormat.xml);
+        await api.ExportPDFInstrumentsAsync("1", "event_1_arm_1", "survey_a", true, (string?)null, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("pdf", transport.LastDictionaryPayload!["content"]);
@@ -1696,10 +1691,10 @@ public class RedcapApiTransportTests
     public async Task ExportPDFInstrumentsAsync_WithFilePath_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var tempFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
 
-        await api.ExportPDFInstrumentsAsync(Token, "1", "event_1_arm_1", "survey_a", true, tempFolder, RedcapReturnFormat.xml);
+        await api.ExportPDFInstrumentsAsync("1", "event_1_arm_1", "survey_a", true, tempFolder, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("pdf", transport.LastDictionaryPayload!["content"]);
@@ -1712,9 +1707,9 @@ public class RedcapApiTransportTests
     public async Task ExportPDFInstrumentsAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportPDFInstrumentsAsync(Token, "1", "event_1_arm_1", "survey_a", true, RedcapReturnFormat.xml);
+        await api.ExportPDFInstrumentsAsync("1", "event_1_arm_1", "survey_a", true, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("pdf", transport.LastDictionaryPayload!["content"]);
@@ -1726,9 +1721,9 @@ public class RedcapApiTransportTests
     public async Task ExportLoggingAsync_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportLoggingAsync(Token, RedcapFormat.csv, LogType.RecordEdit, "alice", "1", "2", "2024-01-01 10:00", "2024-01-02 10:00", RedcapReturnFormat.xml);
+        await api.ExportLoggingAsync(RedcapFormat.csv, LogType.RecordEdit, "alice", "1", "2", "2024-01-01 10:00", "2024-01-02 10:00", RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("log", transport.LastDictionaryPayload!["content"]);
@@ -1741,9 +1736,9 @@ public class RedcapApiTransportTests
     public async Task ExportInstrumentMappingAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportInstrumentMappingAsync(Token, RedcapFormat.json, new[] { "1" }, RedcapReturnFormat.xml);
+        await api.ExportInstrumentMappingAsync(RedcapFormat.json, new[] { "1" }, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("formEventMapping", transport.LastDictionaryPayload!["content"]);
@@ -1754,10 +1749,10 @@ public class RedcapApiTransportTests
     public async Task ImportInstrumentMappingAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var data = new List<FormEventMapping> { new() { arm_num = "1", unique_event_name = "event_1_arm_1", form = "survey_a" } };
 
-        await api.ImportInstrumentMappingAsync(Token, RedcapFormat.json, data, RedcapReturnFormat.xml);
+        await api.ImportInstrumentMappingAsync(RedcapFormat.json, data, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("formEventMapping", transport.LastDictionaryPayload!["content"]);
@@ -1768,9 +1763,9 @@ public class RedcapApiTransportTests
     public async Task ExportMetaDataAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportMetaDataAsync(Token, RedcapFormat.json, new[] { "record_id" }, new[] { "survey_a" }, RedcapReturnFormat.xml);
+        await api.ExportMetaDataAsync(RedcapFormat.json, new[] { "record_id" }, new[] { "survey_a" }, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("metadata", transport.LastDictionaryPayload!["content"]);
@@ -1782,9 +1777,9 @@ public class RedcapApiTransportTests
     public async Task ExportProjectInfoAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportProjectInfoAsync(Token, RedcapFormat.json, RedcapReturnFormat.xml);
+        await api.ExportProjectInfoAsync(RedcapFormat.json, RedcapReturnFormat.xml);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("project", transport.LastDictionaryPayload!["content"]);
@@ -1796,10 +1791,10 @@ public class RedcapApiTransportTests
     public async Task ImportProjectInfoAsync_DefaultOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var info = new RedcapProjectInfo { ProjectTitle = "Title", ProjectNotes = "Notes" };
 
-        await api.ImportProjectInfoAsync(Token, RedcapFormat.json, info);
+        await api.ImportProjectInfoAsync(RedcapFormat.json, info);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("project_settings", transport.LastDictionaryPayload!["content"]);
@@ -1811,9 +1806,9 @@ public class RedcapApiTransportTests
     public async Task ExportProjectXmlAsync_ContentlessOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportProjectXmlAsync(Token, true, new[] { "1" }, null, new[] { "event_1_arm_1" }, RedcapReturnFormat.xml, true, true, "[record_id] = '1'", true);
+        await api.ExportProjectXmlAsync(true, new[] { "1" }, null, new[] { "event_1_arm_1" }, RedcapReturnFormat.xml, true, true, "[record_id] = '1'", true);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("project_xml", transport.LastDictionaryPayload!["content"]);
@@ -1826,9 +1821,9 @@ public class RedcapApiTransportTests
     public async Task ExportRecordsAsync_FormatsDateRangeAs24HourTime()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportRecordsAsync(Token, dateRangeBegin: new DateTime(2024, 6, 15, 15, 4, 5), dateRangeEnd: new DateTime(2024, 6, 16, 23, 59, 0));
+        await api.ExportRecordsAsync(dateRangeBegin: new DateTime(2024, 6, 15, 15, 4, 5), dateRangeEnd: new DateTime(2024, 6, 16, 23, 59, 0));
 
         Assert.Equal("2024-06-15 15:04:05", transport.LastDictionaryPayload!["dateRangeBegin"]);
         Assert.Equal("2024-06-16 23:59:00", transport.LastDictionaryPayload["dateRangeEnd"]);
@@ -1838,9 +1833,9 @@ public class RedcapApiTransportTests
     public async Task ExportRecordAsync_FormatsDateRangeAs24HourTime()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportRecordAsync(Token, "1", dateRangeBegin: new DateTime(2024, 6, 15, 15, 4, 5), dateRangeEnd: new DateTime(2024, 6, 16, 23, 59, 0));
+        await api.ExportRecordAsync("1", dateRangeBegin: new DateTime(2024, 6, 15, 15, 4, 5), dateRangeEnd: new DateTime(2024, 6, 16, 23, 59, 0));
 
         Assert.Equal("2024-06-15 15:04:05", transport.LastDictionaryPayload!["dateRangeBegin"]);
         Assert.Equal("2024-06-16 23:59:00", transport.LastDictionaryPayload["dateRangeEnd"]);
@@ -1850,9 +1845,9 @@ public class RedcapApiTransportTests
     public async Task ExportRecordsAsync_OmitsDateRangeKeysWhenNull()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportRecordsAsync(Token, dateRangeBegin: null, dateRangeEnd: null);
+        await api.ExportRecordsAsync(dateRangeBegin: null, dateRangeEnd: null);
 
         Assert.False(transport.LastDictionaryPayload!.ContainsKey("dateRangeBegin"));
         Assert.False(transport.LastDictionaryPayload.ContainsKey("dateRangeEnd"));
@@ -1864,10 +1859,10 @@ public class RedcapApiTransportTests
     public async Task ImportEventsAsync_WithEmptyData_ThrowsRedcapApiException()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
         var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
-            api.ImportEventsAsync(Token, false, RedcapFormat.json, new List<object>()));
+            api.ImportEventsAsync(false, RedcapFormat.json, new List<object>()));
 
         Assert.NotNull(ex);
         Assert.Null(transport.LastDictionaryPayload);
@@ -1877,10 +1872,10 @@ public class RedcapApiTransportTests
     public async Task ImportFileRepositoryAsync_WithNoFile_ThrowsRedcapApiException()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
         var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
-            api.ImportFileRepositoryAsync(Token, file: null));
+            api.ImportFileRepositoryAsync(file: null));
 
         Assert.NotNull(ex);
     }
@@ -1889,13 +1884,13 @@ public class RedcapApiTransportTests
     public async Task ExportFileAsync_WithMissingField_ThrowsRedcapApiException()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tempDir);
         try
         {
             var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
-                api.ExportFileAsync(Token, "rec1", field: "", eventName: "", filePath: tempDir));
+                api.ExportFileAsync("rec1", field: "", eventName: "", filePath: tempDir));
 
             Assert.NotNull(ex);
         }
@@ -1906,16 +1901,11 @@ public class RedcapApiTransportTests
     }
 
     [Fact]
-    public async Task ExportRecordsAsync_WithEmptyToken_ThrowsRedcapApiException()
+    public void Constructor_WithEmptyToken_ThrowsArgumentException()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
 
-        var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
-            api.ExportRecordsAsync(string.Empty));
-
-        Assert.NotNull(ex);
-        Assert.Null(transport.LastDictionaryPayload);
+        Assert.Throws<ArgumentException>(() => new Redcap.RedcapApi("http://localhost/", string.Empty, transport));
     }
 
     // ── Phase 3: Optional parameter omission ────────────────────────────────
@@ -1924,9 +1914,9 @@ public class RedcapApiTransportTests
     public async Task ExportLoggingAsync_WhenNoOptionalFilters_OmitsOptionalKeys()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportLoggingAsync(Token);
+        await api.ExportLoggingAsync();
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.False(transport.LastDictionaryPayload!.ContainsKey("user"));
@@ -1941,9 +1931,9 @@ public class RedcapApiTransportTests
     public async Task ExportLoggingAsync_WhenFiltersProvided_IncludesOptionalKeys()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await api.ExportLoggingAsync(Token, user: "alice", record: "42", dag: "ca_site", beginTime: "2024-01-01 00:00", endTime: "2024-12-31 23:59");
+        await api.ExportLoggingAsync(user: "alice", record: "42", dag: "ca_site", beginTime: "2024-01-01 00:00", endTime: "2024-12-31 23:59");
 
         Assert.Equal("alice", transport.LastDictionaryPayload!["user"]);
         Assert.Equal("42", transport.LastDictionaryPayload["record"]);
@@ -1956,10 +1946,10 @@ public class RedcapApiTransportTests
     public async Task ImportRecordsAsync_AlwaysIncludesRequiredFields()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var data = new List<TestRecordPayload> { new() { RecordId = "1", FirstName = "Alice" } };
 
-        await api.ImportRecordsAsync(Token, RedcapFormat.json, RedcapDataType.flat, OverwriteBehavior.normal, false, false, data);
+        await api.ImportRecordsAsync(RedcapFormat.json, RedcapDataType.flat, OverwriteBehavior.normal, false, false, data);
 
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("record", transport.LastDictionaryPayload!["content"]);
@@ -1974,10 +1964,10 @@ public class RedcapApiTransportTests
     public async Task ImportRecordsAsync_WhenDateFormatProvided_IncludesDateFormatKey()
     {
         var transport = new FakeTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", transport);
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
         var data = new List<TestRecordPayload> { new() { RecordId = "1" } };
 
-        await api.ImportRecordsAsync(Token, RedcapFormat.json, RedcapDataType.flat, OverwriteBehavior.normal, false, false, data, dateFormat: "MDY");
+        await api.ImportRecordsAsync(RedcapFormat.json, RedcapDataType.flat, OverwriteBehavior.normal, false, false, data, dateFormat: "MDY");
 
         Assert.Equal("MDY", transport.LastDictionaryPayload!["dateFormat"]);
     }
@@ -1986,7 +1976,7 @@ public class RedcapApiTransportTests
     public async Task ProtectedWrapperMethods_AreReachableViaSubclass()
     {
         var transport = new FakeTransport();
-        var api = new TestableRedcapApi("http://localhost/", transport);
+        var api = new TestableRedcapApi("http://localhost/", Token, transport);
 
         await api.CallMultipartWrapper(new MultipartFormDataContent());
         await api.CallDictionaryStreamWrapper(new Dictionary<string, string> { { "token", Token } });
@@ -2061,8 +2051,8 @@ public class RedcapApiTransportTests
 
     private sealed class TestableRedcapApi : Redcap.RedcapApi
     {
-        public TestableRedcapApi(string redcapApiUrl, IRedcapTransport transport)
-            : base(redcapApiUrl, transport)
+        public TestableRedcapApi(string redcapApiUrl, string token, IRedcapTransport transport)
+            : base(redcapApiUrl, token, transport)
         {
         }
 
@@ -2119,5 +2109,3 @@ public class RedcapApiTransportTests
         }
     }
 }
-
-

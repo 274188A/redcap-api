@@ -24,13 +24,11 @@ namespace RedcapApi.Tests
                 string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(token),
                 "REDCAP_E2E_URL and REDCAP_E2E_TOKEN environment variables must be set to run this end-to-end test.");
 
-            var redcapApi = new Redcap.RedcapApi(url);
+            var redcapApi = new Redcap.RedcapApi(url, token);
 
             string[] fields = ["record_id", "first_name", "last_name"];
             string[] forms = [form];
             var apiResult = await redcapApi.ExportRecordAsync(
-                token: token,
-
                 record: recordId,
                 format: RedcapFormat.json,
                 redcapDataType: RedcapDataType.flat,

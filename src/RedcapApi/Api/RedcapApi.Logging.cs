@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 
 using Redcap.Api;
 using Redcap.Exceptions;
@@ -26,7 +26,6 @@ namespace Redcap
         /// <remarks>
         /// To use this method, you must have API Export privileges *and* Logging privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="format">csv, json [default], xml</param>
         /// <param name="logType">You may choose event type to fetch result for specific event type</param>
         /// <param name="user">To return only the events belong to specific user (referring to existing username), provide a user. If not specified, it will assume all users</param>
@@ -38,11 +37,11 @@ namespace Redcap
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>List of all changes made to this project, including data exports, data changes, and the creation or deletion of users.</returns>
-        public async Task<string> ExportLoggingAsync(string token, RedcapFormat format = RedcapFormat.json, LogType logType = LogType.All, string? user = default, string? record = default, string? dag = default, string? beginTime = default, string? endTime = default, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public async Task<string> ExportLoggingAsync(RedcapFormat format = RedcapFormat.json, LogType logType = LogType.All, string? user = default, string? record = default, string? dag = default, string? beginTime = default, string? endTime = default, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
-            return await ExecuteAsync(token, payload =>
+            return await ExecuteAsync(payload =>
             {
-                payload["token"] = token;
+                payload["token"] = _token;
                 payload["content"] = Content.Log.GetDisplayName();
                 payload["format"] = format.GetDisplayName();
                 payload["returnFormat"] = returnFormat.GetDisplayName();

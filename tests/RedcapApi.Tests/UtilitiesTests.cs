@@ -11,7 +11,7 @@ namespace RedcapApi.Tests;
 public class UtilitiesTests
 {
     private const string Token = "token123";
-    private readonly Redcap.RedcapApi _api = new("http://localhost/");
+    private readonly Redcap.RedcapApi _api = new("http://localhost/", Token);
 
     [Fact]
     public void GetDisplayName_ReturnsDisplayAttributeName()
@@ -85,26 +85,6 @@ public class UtilitiesTests
         Assert.Equal("normal", _api.ExtractBehavior(OverwriteBehavior.normal));
         Assert.Equal("overwrite", _api.ExtractBehavior(OverwriteBehavior.overwrite));
         Assert.Equal("overwrite", _api.ExtractBehavior((OverwriteBehavior)999));
-    }
-
-    [Fact]
-    public void GetProperties_UsesLowerCaseKeysAndConvertsNullableTypes()
-    {
-        var sample = new SampleProperties
-        {
-            Name = "Alice",
-            IsActive = true,
-            VisitDate = new DateTime(2024, 1, 2, 3, 4, 5),
-            OptionalValue = null
-        };
-
-        var properties = _api.GetProperties(sample);
-
-        Assert.Equal("Alice", properties["name"]);
-        Assert.Equal("1", properties["isactive"]);
-        Assert.Equal(sample.VisitDate.Value.ToString(), properties["visitdate"]);
-        Assert.True(properties.ContainsKey("optionalvalue"));
-        Assert.Null(properties["optionalvalue"]);
     }
 
     [Fact]
@@ -240,9 +220,9 @@ public class UtilitiesTests
     public async Task ExportSurveyAccessCodeAsync_SendsExpectedPayload()
     {
         using var server = new LocalHttpServer(_ => new TestResponse(200, "access-code"));
-        var api = new Redcap.RedcapApi(server.Url.ToString());
+        var api = new Redcap.RedcapApi(server.Url.ToString(), Token);
 
-        var response = await api.ExportSurveyAccessCodeAsync(Token, "1", "survey_form", "event_1", 2);
+        var response = await api.ExportSurveyAccessCodeAsync("1", "survey_form", "event_1", 2);
 
         Assert.Equal("access-code", response);
         Assert.True(server.Requests.TryPeek(out var request));
@@ -257,9 +237,9 @@ public class UtilitiesTests
     public async Task DeleteRecordsAsync_IncludesDeleteLoggingFlagWhenEnabled()
     {
         using var server = new LocalHttpServer(_ => new TestResponse(200, "1"));
-        var api = new Redcap.RedcapApi(server.Url.ToString());
+        var api = new Redcap.RedcapApi(server.Url.ToString(), Token);
 
-        var response = await api.DeleteRecordsAsync(Token, new[] { "1", "2" }, 1, deleteLogging: true);
+        var response = await api.DeleteRecordsAsync(new[] { "1", "2" }, 1, deleteLogging: true);
 
         Assert.Equal("1", response);
         Assert.True(server.Requests.TryPeek(out var request));
@@ -274,9 +254,9 @@ public class UtilitiesTests
     public async Task RandomizeRecord_SendsExpectedPayload()
     {
         using var server = new LocalHttpServer(_ => new TestResponse(200, "group-a"));
-        var api = new Redcap.RedcapApi(server.Url.ToString());
+        var api = new Redcap.RedcapApi(server.Url.ToString(), Token);
 
-        var response = await api.RandomizeRecord(Token, "1", "99", RedcapFormat.json, returnAlt: true);
+        var response = await api.RandomizeRecord("1", "99", RedcapFormat.json, returnAlt: true);
 
         Assert.Equal("group-a", response);
         Assert.True(server.Requests.TryPeek(out var request));
@@ -365,14 +345,4 @@ public class UtilitiesTests
         }
     }
 
-    private sealed class SampleProperties
-    {
-        public string Name { get; set; } = string.Empty;
-
-        public bool? IsActive { get; set; }
-
-        public DateTime? VisitDate { get; set; }
-
-        public string? OptionalValue { get; set; }
-    }
 }

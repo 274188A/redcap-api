@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 
 using Redcap.Api;
 using Redcap.Exceptions;
@@ -25,19 +25,18 @@ namespace Redcap
         /// If using Data Access Groups (DAGs) in the project, this method accounts for the special formatting of the record name for users in DAGs (e.g., DAG-ID); in this case, it only assigns the next value for ID for all numbers inside a DAG. For example, if a DAG has a corresponding DAG number of 223 wherein records 223-1 and 223-2 already exist, then the next record will be 223-3 if the API user belongs to the DAG that has DAG number 223. (The DAG number is auto-assigned by REDCap for each DAG when the DAG is first created.) When generating a new record name in a DAG, the method considers all records in the entire project when determining the maximum record ID, including those that might have been originally created in that DAG but then later reassigned to another DAG.
         /// Note: This method functions the same even for projects that do not have record auto-numbering enabled.
         /// </summary>
-        /// 
+        ///
         /// <remarks>
         /// To use this method, you must have API Export privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>The maximum integer record ID + 1.</returns>
-        public async Task<string> GenerateNextRecordNameAsync(string token, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public async Task<string> GenerateNextRecordNameAsync(CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
-            return await ExecuteAsync(token, payload =>
+            return await ExecuteAsync(payload =>
             {
-                payload["token"] = token;
+                payload["token"] = _token;
                 payload["content"] = Content.GenerateNextRecordName.GetDisplayName();
             }, cancellationToken, timeOutSeconds);
         }
@@ -51,7 +50,6 @@ namespace Redcap
         /// <remarks>
         /// To use this method, you must have API Export privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="format">csv, json [default], xml, odm ('odm' refers to CDISC ODM XML format, specifically ODM version 1.3.1)</param>
         /// <param name="redcapDataType">flat - output as one record per row [default], eav - output as one data point per row. Non-longitudinal: Will have the fields - record*, field_name, value. Longitudinal: Will have the fields - record*, field_name, value, redcap_event_name</param>
         /// <param name="records">an array of record names specifying specific records you wish to pull (by default, all records are pulled)</param>
@@ -74,15 +72,15 @@ namespace Redcap
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>Data from the project in the format and type specified ordered by the record (primary key of project) and then by event id</returns>
-        public async Task<string> ExportRecordsAsync(string token, RedcapFormat format = RedcapFormat.json, RedcapDataType redcapDataType = RedcapDataType.flat, string[]? records = default, string[]? fields = default, string[]? forms = default, string[]? events = default, RawOrLabel rawOrLabel = RawOrLabel.raw, RawOrLabelHeaders rawOrLabelHeaders = RawOrLabelHeaders.raw, bool exportCheckboxLabel = false, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, bool exportSurveyFields = false, bool exportDataAccessGroups = false, string? filterLogic = null, DateTime? dateRangeBegin = default, DateTime? dateRangeEnd = default, CsvDelimiter csvDelimiter = CsvDelimiter.comma, DecimalCharacter decimalCharacter = DecimalCharacter.none, bool exportBlankForGrayFormStatus = false, bool combineCheckboxOptions = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public async Task<string> ExportRecordsAsync(RedcapFormat format = RedcapFormat.json, RedcapDataType redcapDataType = RedcapDataType.flat, string[]? records = default, string[]? fields = default, string[]? forms = default, string[]? events = default, RawOrLabel rawOrLabel = RawOrLabel.raw, RawOrLabelHeaders rawOrLabelHeaders = RawOrLabelHeaders.raw, bool exportCheckboxLabel = false, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, bool exportSurveyFields = false, bool exportDataAccessGroups = false, string? filterLogic = null, DateTime? dateRangeBegin = default, DateTime? dateRangeEnd = default, CsvDelimiter csvDelimiter = CsvDelimiter.comma, DecimalCharacter decimalCharacter = DecimalCharacter.none, bool exportBlankForGrayFormStatus = false, bool combineCheckboxOptions = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             var recordsStr = records?.Length > 0 ? this.ConvertArraytoString(records) : null;
             var fieldsStr = fields?.Length > 0 ? this.ConvertArraytoString(fields) : null;
             var formsStr = forms?.Length > 0 ? this.ConvertArraytoString(forms) : null;
             var eventsStr = events?.Length > 0 ? this.ConvertArraytoString(events) : null;
-            return await ExecuteAsync(token, payload =>
+            return await ExecuteAsync(payload =>
             {
-                payload["token"] = token;
+                payload["token"] = _token;
                 payload["content"] = Content.Record.GetDisplayName();
                 payload["format"] = format.GetDisplayName();
                 payload["returnFormat"] = returnFormat.GetDisplayName();
@@ -117,7 +115,6 @@ namespace Redcap
         /// <remarks>
         /// To use this method, you must have API Export privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="format">csv, json [default], xml, odm ('odm' refers to CDISC ODM XML format, specifically ODM version 1.3.1)</param>
         /// <param name="redcapDataType">flat - output as one record per row [default], eav - output as one data point per row. Non-longitudinal: Will have the fields - record*, field_name, value. Longitudinal: Will have the fields - record*, field_name, value, redcap_event_name</param>
         /// <param name="record">a single record specifying specific records you wish to pull (by default, all records are pulled)</param>
@@ -140,14 +137,14 @@ namespace Redcap
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>Data from the project in the format and type specified ordered by the record (primary key of project) and then by event id</returns>
-        public async Task<string> ExportRecordAsync(string token, string record, RedcapFormat format = RedcapFormat.json, RedcapDataType redcapDataType = RedcapDataType.flat, string[]? fields = null, string[]? forms = null, string[]? events = null, RawOrLabel rawOrLabel = RawOrLabel.raw, RawOrLabelHeaders rawOrLabelHeaders = RawOrLabelHeaders.raw, bool exportCheckboxLabel = false, RedcapReturnFormat onErrorFormat = RedcapReturnFormat.json, bool exportSurveyFields = false, bool exportDataAccessGroups = false, string? filterLogic = null, DateTime? dateRangeBegin = default, DateTime? dateRangeEnd = default, CsvDelimiter csvDelimiter = CsvDelimiter.comma, DecimalCharacter decimalCharacter = DecimalCharacter.none, bool exportBlankForGrayFormStatus = false, bool combineCheckboxOptions = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public async Task<string> ExportRecordAsync(string record, RedcapFormat format = RedcapFormat.json, RedcapDataType redcapDataType = RedcapDataType.flat, string[]? fields = null, string[]? forms = null, string[]? events = null, RawOrLabel rawOrLabel = RawOrLabel.raw, RawOrLabelHeaders rawOrLabelHeaders = RawOrLabelHeaders.raw, bool exportCheckboxLabel = false, RedcapReturnFormat onErrorFormat = RedcapReturnFormat.json, bool exportSurveyFields = false, bool exportDataAccessGroups = false, string? filterLogic = null, DateTime? dateRangeBegin = default, DateTime? dateRangeEnd = default, CsvDelimiter csvDelimiter = CsvDelimiter.comma, DecimalCharacter decimalCharacter = DecimalCharacter.none, bool exportBlankForGrayFormStatus = false, bool combineCheckboxOptions = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             var fieldsStr = fields?.Length > 0 ? this.ConvertArraytoString(fields) : null;
             var formsStr = forms?.Length > 0 ? this.ConvertArraytoString(forms) : null;
             var eventsStr = events?.Length > 0 ? this.ConvertArraytoString(events) : null;
-            return await ExecuteAsync(token, payload =>
+            return await ExecuteAsync(payload =>
             {
-                payload["token"] = token;
+                payload["token"] = _token;
                 payload["records"] = record;
                 payload["content"] = Content.Record.GetDisplayName();
                 payload["format"] = format.GetDisplayName();
@@ -182,7 +179,6 @@ namespace Redcap
         /// To use this method, you must have API Import/Update privileges in the project.
         /// </remarks>
         /// <typeparam name="T"></typeparam>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="format">csv, json [default], xml, odm ('odm' refers to CDISC ODM XML format, specifically ODM version 1.3.1)</param>
         /// <param name="redcapDataType">flat - output as one record per row [default]
         /// eav - input as one data point per row
@@ -192,9 +188,9 @@ namespace Redcap
         /// <param name="overwriteBehavior">
         /// normal - blank/empty values will be ignored [default]
         /// overwrite - blank/empty values are valid and will overwrite data</param>
-        /// <param name="forceAutoNumber">If record auto-numbering has been enabled in the project, it may be desirable to import records where each record's record name is automatically determined by REDCap (just as it does in the user interface). 
-        /// If this parameter is set to 'true', the record names provided in the request will not be used (although they are still required in order to associate multiple rows of data to an individual record in the request), but instead those records in the request will receive new record names during the import process. 
-        /// NOTE: To see how the provided record names get translated into new auto record names, the returnContent parameter should be set to 'auto_ids', which will return a record list similar to 'ids' value, but it will have the new record name followed by the provided record name in the request, in which the two are comma-delimited. For example, if 
+        /// <param name="forceAutoNumber">If record auto-numbering has been enabled in the project, it may be desirable to import records where each record's record name is automatically determined by REDCap (just as it does in the user interface).
+        /// If this parameter is set to 'true', the record names provided in the request will not be used (although they are still required in order to associate multiple rows of data to an individual record in the request), but instead those records in the request will receive new record names during the import process.
+        /// NOTE: To see how the provided record names get translated into new auto record names, the returnContent parameter should be set to 'auto_ids', which will return a record list similar to 'ids' value, but it will have the new record name followed by the provided record name in the request, in which the two are comma-delimited. For example, if
         /// false (or 'false') - The record names provided in the request will be used. [default]
         /// true (or 'true') - New record names will be automatically determined.</param>
         /// <param name="backgroundProcess">Specifies whether to do the import as background process.0 or 'false' for no. [default] 1 or 'true' for yes.</param>
@@ -207,12 +203,11 @@ namespace Redcap
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>the content specified by returnContent</returns>
-        public async Task<string> ImportRecordsAsync<T>(string token, RedcapFormat format, RedcapDataType redcapDataType, OverwriteBehavior overwriteBehavior, bool forceAutoNumber, bool backgroundProcess, List<T> data, string? dateFormat = default, CsvDelimiter csvDelimiter = CsvDelimiter.tab, ReturnContent returnContent = ReturnContent.count, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public async Task<string> ImportRecordsAsync<T>(RedcapFormat format, RedcapDataType redcapDataType, OverwriteBehavior overwriteBehavior, bool forceAutoNumber, bool backgroundProcess, List<T> data, string? dateFormat = default, CsvDelimiter csvDelimiter = CsvDelimiter.tab, ReturnContent returnContent = ReturnContent.count, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
-            var _serializedData = JsonConvert.SerializeObject(data);
-            return await ExecuteAsync(token, payload =>
+            return await ExecuteAsync(payload =>
             {
-                payload["token"] = token;
+                payload["token"] = _token;
                 payload["content"] = Content.Record.GetDisplayName();
                 payload["format"] = format.GetDisplayName();
                 payload["type"] = redcapDataType.GetDisplayName();
@@ -220,7 +215,7 @@ namespace Redcap
                 payload["forceAutoNumber"] = forceAutoNumber.ToString();
                 payload["backgroundProcess"] = backgroundProcess.ToString();
                 payload["csvDelimiter"] = csvDelimiter.ToString();
-                payload["data"] = _serializedData;
+                payload["data"] = JsonConvert.SerializeObject(data);
                 payload["returnFormat"] = returnFormat.GetDisplayName();
                 if (!IsNullOrEmpty(dateFormat)) payload["dateFormat"] = dateFormat!;
                 if (!IsNullOrEmpty(returnContent.ToString())) payload["returnContent"] = returnContent.ToString();
@@ -232,24 +227,23 @@ namespace Redcap
         /// This method allows you to delete one or more records from a project in a single API request.
         /// </summary>
         /// <remarks>
-        /// 
+        ///
         /// To use this method, you must have 'Delete Record' user privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="records">an array of record names specifying specific records you wish to delete</param>
-        /// <param name="arm">the arm number of the arm in which the record(s) should be deleted. 
+        /// <param name="arm">the arm number of the arm in which the record(s) should be deleted.
         /// (This can only be used if the project is longitudinal with more than one arm.) NOTE: If the arm parameter is not provided, the specified records will be deleted from all arms in which they exist. Whereas, if arm is provided, they will only be deleted from the specified arm. </param>
         /// <param name="deleteLogging">true, false [default] - if true, deletes logging entries associated with the record deletion action.</param>
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>the number of records deleted or (if instrument, event, and/or instance are provided) the number of items deleted over the total records specified.</returns>
-        public async Task<string> DeleteRecordsAsync(string token, string[] records, int? arm, bool deleteLogging = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public async Task<string> DeleteRecordsAsync(string[] records, int? arm, bool deleteLogging = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             if (records?.Length < 1)
                 throw new RedcapApiException("Please provide the records you would like to remove.");
-            return await ExecuteAsync(token, payload =>
+            return await ExecuteAsync(payload =>
             {
-                payload["token"] = token;
+                payload["token"] = _token;
                 payload["content"] = Content.Record.GetDisplayName();
                 payload["action"] = RedcapAction.Delete.GetDisplayName();
                 for (var i = 0; i < records!.Length; i++)
@@ -261,18 +255,17 @@ namespace Redcap
 
         /// <summary>
         /// From Redcap Version 11.3.0<br/>
-        /// 
+        ///
         /// Delete Records<br/>
         /// This method allows you to delete one or more records from a project in a single API request, and also optionally allows you to delete parts of a record, such as a single instrument's data for one or more records or a single event's data for one or more records.
         /// </summary>
         /// <remarks>
         /// To use this method, you must have 'Delete Record' user privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="content">record</param>
         /// <param name="action">delete</param>
         /// <param name="records">an array of record names specifying specific records you wish to delete</param>
-        /// <param name="arm">the arm number of the arm in which the record(s) should be deleted. 
+        /// <param name="arm">the arm number of the arm in which the record(s) should be deleted.
         /// (This can only be used if the project is longitudinal with more than one arm.) NOTE: If the arm parameter is not provided, the specified records will be deleted from all arms in which they exist. Whereas, if arm is provided, they will only be deleted from the specified arm. </param>
         /// <param name="instrument">the unique instrument name (column B in the Data Dictionary) of an instrument (as a string) if you wish to delete the data for all fields on the specified instrument for the records specified.</param>
         /// <param name="redcapEvent">the unique event name - only for longitudinal projects. NOTE: If instrument is provided for a longitudinal project, the event parameter is mandatory.</param>
@@ -281,13 +274,13 @@ namespace Redcap
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>the number of records deleted or (if instrument, event, and/or instance are provided) the number of items deleted over the total records specified.</returns>
-        public async Task<string> DeleteRecordsAsync(string token, Content content, RedcapAction action, string[] records, int? arm, RedcapInstrument instrument, RedcapEvent redcapEvent, RedcapRepeatInstance repeatInstance, bool deleteLogging = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public async Task<string> DeleteRecordsAsync(Content content, RedcapAction action, string[] records, int? arm, RedcapInstrument instrument, RedcapEvent redcapEvent, RedcapRepeatInstance repeatInstance, bool deleteLogging = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             if (records?.Length < 1)
                 throw new RedcapApiException("Please provide the records you would like to remove.");
-            return await ExecuteAsync(token, payload =>
+            return await ExecuteAsync(payload =>
             {
-                payload["token"] = token;
+                payload["token"] = _token;
                 payload["content"] = content.GetDisplayName();
                 payload["action"] = action.GetDisplayName();
                 for (var i = 0; i < records!.Length; i++)
@@ -302,26 +295,25 @@ namespace Redcap
 
         /// <summary>
         /// From Redcap Version 11.3.3<br/>
-        /// 
+        ///
         /// Rename Record<br/>
         /// This method allows you to rename a record from a project in a single API request.
-        /// 
+        ///
         /// </summary>
         /// <remarks>
         /// To use this method, you must have 'Rename Record' user privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
-        /// <param name="record">record name of the current record which you want to rename to new name.</param> 
+        /// <param name="record">record name of the current record which you want to rename to new name.</param>
         /// <param name="newRecordName">new record name to which you want to rename current record.</param>
         /// <param name="arm">specific arm number in which current record exists. If null, then all records with same name across all arms on which it exists (if longitudinal with multiple arms) will be renamed to new record name, otherwise it will rename the record only in the specified arm.</param>
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>Returns "1" if record is renamed or error message if any.</returns>
-        public async Task<string> RenameRecordAsync(string token, string record, string newRecordName, int? arm, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public async Task<string> RenameRecordAsync(string record, string newRecordName, int? arm, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
-            return await ExecuteAsync(token, payload =>
+            return await ExecuteAsync(payload =>
             {
-                payload["token"] = token;
+                payload["token"] = _token;
                 payload["content"] = Content.Record.GetDisplayName();
                 payload["action"] = RedcapAction.Rename.GetDisplayName();
                 payload["record"] = record!;
@@ -338,7 +330,6 @@ namespace Redcap
         /// <remarks>
         /// To use this method you must have the Randomize privilege in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="record">The record name (id) of the record to randomize. The record must already exist and contain all necessary stratification information.</param>
         /// <param name="randomizationId">The unique id of the randomization (viewable on the Randomization page for users with Design permissions, or on the API Playground page). Corresponds to a specific target field and event.</param>
         /// <param name="format">csv, json [default], xml, odm ('odm' refers to CDISC ODM XML format, specifically ODM version 1.3.1)</param>
@@ -347,11 +338,11 @@ namespace Redcap
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>Performs the specified randomization for the record and returns the value for the target randomization field (plus optionally the alternative target value), or an error message on failure (such as if the record does not exist or if stratification information is missing).</returns>
-        public async Task<string> RandomizeRecord(string token, string record, string randomizationId, RedcapFormat format, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, bool returnAlt = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        public async Task<string> RandomizeRecord(string record, string randomizationId, RedcapFormat format, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, bool returnAlt = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
-            return await ExecuteAsync(token, payload =>
+            return await ExecuteAsync(payload =>
             {
-                payload["token"] = token;
+                payload["token"] = _token;
                 payload["action"] = RedcapAction.Randomize.GetDisplayName();
                 payload["content"] = Content.Record.GetDisplayName();
                 payload["record"] = record!;

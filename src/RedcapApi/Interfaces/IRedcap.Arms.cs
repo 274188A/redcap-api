@@ -13,14 +13,13 @@ namespace Redcap.Interfaces
         /// <remarks>
         /// To use this method, you must have API Export privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="format">csv, json [default], xml</param>
         /// <param name="arms">an array of arm numbers that you wish to pull events for (by default, all events are pulled)</param>
         /// <param name="returnFormat">csv, json, xml - specifies the format of error messages. If you do not pass in this flag, it will select the default format for you passed based on the 'format' flag you passed in or if no format flag was passed in, it will default to 'json'.</param>
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>Arms for the project in the format specified(only ones with Events available)</returns>
-        Task<string> ExportArmsAsync(string token, RedcapFormat format, string[] arms, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> ExportArmsAsync(RedcapFormat format, string[] arms, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
         /// From Redcap Version 4.7.0<br/><br/>
@@ -36,7 +35,6 @@ namespace Redcap.Interfaces
         /// To use this method, you must have API Import/Update privileges *and* Project Design/Setup privileges in the project.
         /// </remarks>
         /// <typeparam name="T"></typeparam>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="overrideBehavior">false [default] — add/rename only; true — delete all existing Arms then import.</param>
         /// <param name="action">import</param>
         /// <param name="format">csv, json [default], xml</param>
@@ -49,7 +47,7 @@ namespace Redcap.Interfaces
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>Number of Arms imported</returns>
-        Task<string> ImportArmsAsync<T>(string token, bool overrideBehavior, RedcapAction action, RedcapFormat format, List<T> data, RedcapReturnFormat returnFormat, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> ImportArmsAsync<T>(bool overrideBehavior, RedcapAction action, RedcapFormat format, List<T> data, RedcapReturnFormat returnFormat, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
         /// From Redcap Version 4.7.0<br/><br/>
@@ -63,11 +61,10 @@ namespace Redcap.Interfaces
         /// <remarks>
         /// To use this method, you must have API Import/Update privileges *and* Project Design/Setup privileges in the project.
         /// </remarks>
-        /// <param name="token">The API token specific to your REDCap project and username (each token is unique to each user for each project). See the section on the left-hand menu for obtaining a token for a given project.</param>
         /// <param name="arms">an array of arm numbers that you wish to delete</param>
         /// <param name="cancellationToken"></param>
         /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
         /// <returns>Number of Events deleted</returns>
-        Task<string> DeleteArmsAsync(string token, string[] arms, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+        Task<string> DeleteArmsAsync(string[] arms, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
     }
 }
