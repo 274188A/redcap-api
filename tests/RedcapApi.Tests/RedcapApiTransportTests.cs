@@ -141,6 +141,42 @@ public class RedcapApiTransportTests
     }
 
     [Fact]
+    public async Task ExportUserDagAssignmentTypedAsync_UsesJsonPayloadAndDeserializesResponse()
+    {
+        var transport = new FakeTransport
+        {
+            ResponseBody = "[{\"username\":\"alice\",\"redcap_data_access_group\":\"ca_site\"},{\"username\":\"bob\",\"redcap_data_access_group\":\"fl_site\"}]"
+        };
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var result = await api.ExportUserDagAssignmentTypedAsync(RedcapReturnFormat.xml);
+
+        Assert.NotNull(transport.LastDictionaryPayload);
+        Assert.Equal("userDagMapping", transport.LastDictionaryPayload!["content"]);
+        Assert.Equal("json", transport.LastDictionaryPayload["format"]);
+        Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
+        Assert.Equal(2, result.Count);
+        Assert.Equal("alice", result[0].Username);
+        Assert.Equal("ca_site", result[0].RedcapDataAccessGroup);
+        Assert.Equal("bob", result[1].Username);
+        Assert.Equal("fl_site", result[1].RedcapDataAccessGroup);
+    }
+
+    [Fact]
+    public async Task ExportUserDagAssignmentTypedAsync_WithInvalidJson_ThrowsRedcapApiException()
+    {
+        var transport = new FakeTransport
+        {
+            ResponseBody = "not-json"
+        };
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var ex = await Assert.ThrowsAsync<RedcapApiException>(() => api.ExportUserDagAssignmentTypedAsync());
+
+        Assert.Equal("Failed to deserialize REDCap user-DAG assignment response.", ex.Message);
+    }
+
+    [Fact]
     public async Task ImportUserDagAssignmentAsync_UsesExpectedPayload()
     {
         var transport = new FakeTransport();

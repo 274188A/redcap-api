@@ -102,6 +102,18 @@ namespace Redcap.Interfaces
         Task<string> ExportUserDagAssignmentAsync(RedcapFormat format = RedcapFormat.json, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
+        /// Exports user-DAG assignments and deserializes the JSON response into a list of <see cref="RedcapUserDagAssignment"/>.
+        /// </summary>
+        /// <remarks>
+        /// This typed overload always requests JSON from REDCap.
+        /// </remarks>
+        /// <param name="returnFormat">json [default], xml, csv - specifies the format of error messages.</param>
+        /// <param name="cancellationToken">Cancellation token for the request.</param>
+        /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
+        /// <returns>The deserialized user-DAG assignments.</returns>
+        Task<IReadOnlyList<RedcapUserDagAssignment>> ExportUserDagAssignmentTypedAsync(RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+
+        /// <summary>
         /// Import User-DAG Assignments<br/><br/>
         /// This method allows you to assign users to any data access group.
         /// NOTE: If you wish to modify an existing mapping, you *must* provide its unique username and group name.If the 'redcap_data_access_group' column is not provided, user will not assigned to any group.There should be only one record per username.
