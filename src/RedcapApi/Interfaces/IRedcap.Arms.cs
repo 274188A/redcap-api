@@ -22,6 +22,19 @@ namespace Redcap.Interfaces
         Task<string> ExportArmsAsync(RedcapFormat format, string[] arms, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
+        /// Exports arms and deserializes the JSON response into a list of <see cref="RedcapArm"/>.
+        /// </summary>
+        /// <remarks>
+        /// This typed overload always requests JSON from REDCap.
+        /// </remarks>
+        /// <param name="arms">Optional subset of arm numbers to export.</param>
+        /// <param name="returnFormat">json [default], xml, csv - specifies the format of error messages.</param>
+        /// <param name="cancellationToken">Cancellation token for the request.</param>
+        /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
+        /// <returns>The deserialized arms.</returns>
+        Task<IReadOnlyList<RedcapArm>> ExportArmsTypedAsync(string[]? arms = null, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+
+        /// <summary>
         /// From Redcap Version 4.7.0<br/><br/>
         ///
         /// Import Arms<br/><br/>

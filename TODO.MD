@@ -40,7 +40,7 @@ Working list for turning `redcap-api` into a genuinely excellent library, not ju
 - [ ] Review whether string-returning methods should expose richer typed results in key places.
   - Many methods return raw `string` even when the response shape is well known.
   - Goal: identify high-value typed overloads without breaking existing consumers unnecessarily.
-  - Started: added `ExportProjectInfoTypedAsync`, `ExportDagsTypedAsync`, `ExportUserDagAssignmentTypedAsync`, and `ExportUsersTypedAsync` as the first typed export overloads, using existing or newly-introduced models while preserving the original string-returning APIs.
+  - Started: added `ExportProjectInfoTypedAsync`, `ExportDagsTypedAsync`, `ExportUserDagAssignmentTypedAsync`, `ExportUsersTypedAsync`, `ExportArmsTypedAsync`, and `ExportEventsTypedAsync` as the first typed export overloads, using existing or newly-introduced models while preserving the original string-returning APIs.
 
 - [ ] Decide the long-term shape of the giant `IRedcap` surface.
   - Today the API is split across partial interfaces/files but still presents one very large client.

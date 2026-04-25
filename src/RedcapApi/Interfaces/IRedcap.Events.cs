@@ -24,6 +24,19 @@ namespace Redcap.Interfaces
         Task<string> ExportEventsAsync(RedcapFormat format, string[] arms, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
         /// <summary>
+        /// Exports events and deserializes the JSON response into a list of <see cref="RedcapEvent"/>.
+        /// </summary>
+        /// <remarks>
+        /// This typed overload always requests JSON from REDCap.
+        /// </remarks>
+        /// <param name="arms">Arm numbers to export events for.</param>
+        /// <param name="returnFormat">json [default], xml, csv - specifies the format of error messages.</param>
+        /// <param name="cancellationToken">Cancellation token for the request.</param>
+        /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
+        /// <returns>The deserialized events.</returns>
+        Task<IReadOnlyList<RedcapEvent>> ExportEventsTypedAsync(string[] arms, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+
+        /// <summary>
         /// From Redcap Version 6.11.0<br/><br/>
         ///
         /// Import Events <br/>
