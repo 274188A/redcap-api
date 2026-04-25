@@ -42,10 +42,11 @@ Working list for turning `redcap-api` into a genuinely excellent library, not ju
   - Goal: identify high-value typed overloads without breaking existing consumers unnecessarily.
   - Done: added `ExportProjectInfoTypedAsync`, `ExportDagsTypedAsync`, `ExportUserDagAssignmentTypedAsync`, `ExportUsersTypedAsync`, `ExportArmsTypedAsync`, `ExportEventsTypedAsync`, `ExportMetaDataTypedAsync`, `ExportInstrumentsTypedAsync`, `ExportInstrumentMappingTypedAsync`, `ExportUserRolesTypedAsync`, `ExportUserRoleAssignmentTypedAsync`, `ExportRepeatingInstrumentsAndEventsTypedAsync`, `ExportFieldNamesTypedAsync`, and `ExportLoggingTypedAsync`, using existing or newly-introduced models while preserving the original string-returning APIs. Left inherently raw/dynamic endpoints like reports, records, files, links, and XML/version/count responses as strings because they do not have a stable JSON object shape worth modeling here.
 
-- [ ] Decide the long-term shape of the giant `IRedcap` surface.
+- [x] Decide the long-term shape of the giant `IRedcap` surface.
   - Today the API is split across partial interfaces/files but still presents one very large client.
   - Files: `src/RedcapApi/Interfaces`, `src/RedcapApi/Api`
   - Goal: evaluate grouped clients or functional sub-interfaces for maintainability and discoverability.
+  - Done: kept `IRedcap` as the compatibility aggregate, introduced focused domain interfaces such as `IRedcapRecords`, `IRedcapProjects`, `IRedcapUsers`, and `IRedcapFiles`, and had `IRedcap` inherit those contracts so `RedcapApi` remains source-compatible while consumers can depend on smaller surfaces.
 
 ## P1 Internal Design And Maintainability
 

@@ -2,7 +2,10 @@ using Redcap.Models;
 
 namespace Redcap.Interfaces
 {
-    public partial interface IRedcap
+    /// <summary>
+    /// REDCap export field names API contract.
+    /// </summary>
+    public interface IRedcapFieldNames
     {
         /// <summary>
         /// Export List of Export Field Names (i.e. variables used during exports and imports)<br/><br/>

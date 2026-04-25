@@ -2,7 +2,10 @@ using Redcap.Models;
 
 namespace Redcap.Interfaces
 {
-    public partial interface IRedcap
+    /// <summary>
+    /// REDCap data access groups API contract.
+    /// </summary>
+    public interface IRedcapDataAccessGroups
     {
         /// <summary>
         /// Export DAGs<br/><br/>

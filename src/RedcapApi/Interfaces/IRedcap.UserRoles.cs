@@ -2,7 +2,10 @@ using Redcap.Models;
 
 namespace Redcap.Interfaces
 {
-    public partial interface IRedcap
+    /// <summary>
+    /// REDCap user roles API contract.
+    /// </summary>
+    public interface IRedcapUserRoles
     {
         /// <summary>
         /// From Redcap Version 11.3.0<br/><br/>

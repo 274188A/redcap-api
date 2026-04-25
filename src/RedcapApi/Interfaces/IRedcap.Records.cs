@@ -2,7 +2,10 @@ using Redcap.Models;
 
 namespace Redcap.Interfaces
 {
-    public partial interface IRedcap
+    /// <summary>
+    /// REDCap records API contract.
+    /// </summary>
+    public interface IRedcapRecords
     {
         /// <summary>
         /// From Redcap Version 11.4.0<br/>

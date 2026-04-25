@@ -2,7 +2,10 @@ using Redcap.Models;
 
 namespace Redcap.Interfaces
 {
-    public partial interface IRedcap
+    /// <summary>
+    /// REDCap logging API contract.
+    /// </summary>
+    public interface IRedcapLogging
     {
         /// <summary>
         /// From Redcap Version 10.8 <br/>
