@@ -22,16 +22,26 @@ A .NET 10 library for the [REDCap](https://www.project-redcap.org/) REST API.
 ```csharp
 using Redcap;
 
-var api = new RedcapApi("https://your-redcap-instance/api/");
+var api = new RedcapApi(
+    "https://your-redcap-instance/api/",
+    "YOUR_API_TOKEN"
+);
 
 // Export records as JSON
 var result = await api.ExportRecordsAsync(
-    token: "YOUR_API_TOKEN",
     format: RedcapFormat.json
 );
 ```
 
-The constructor also accepts an `IRedcapTransport` for testing or custom HTTP behaviour.
+The constructor also accepts an `IRedcapTransport` for testing or custom HTTP behaviour:
+
+```csharp
+var api = new RedcapApi(
+    "https://your-redcap-instance/api/",
+    "YOUR_API_TOKEN",
+    transport
+);
+```
 
 ## Building and testing
 

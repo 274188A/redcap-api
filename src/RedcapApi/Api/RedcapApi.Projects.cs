@@ -47,27 +47,15 @@ namespace Redcap
             RedcapReturnFormat returnFormat = RedcapReturnFormat.json, string? odm = null,
             CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
-            try
+            return await ExecuteAsync(payload =>
             {
-                var payload = new Dictionary<string, string>
-                {
-                    { "token", _token },
-                    { "content", Content.Project.GetDisplayName() },
-                    { "format", format.GetDisplayName() },
-                    { "returnFormat", returnFormat.GetDisplayName() },
-                    { "data", JsonConvert.SerializeObject(data) }
-                };
-                if (!IsNullOrEmpty(odm))
-                {
-                    payload.Add("odm", odm);
-                }
-                return await this.SendPostRequestAsync(payload, _uri, cancellationToken: cancellationToken, timeOutSeconds);
-            }
-            catch (Exception Ex)
-            {
-                Log.Error(Ex, "REDCap API call failed");
-                throw new RedcapApiException(Ex.Message, Ex);
-            }
+                payload["token"] = _token;
+                payload["content"] = Content.Project.GetDisplayName();
+                payload["format"] = format.GetDisplayName();
+                payload["returnFormat"] = returnFormat.GetDisplayName();
+                payload["data"] = JsonConvert.SerializeObject(data);
+                if (!IsNullOrEmpty(odm)) payload["odm"] = odm;
+            }, cancellationToken, timeOutSeconds);
         }
 
         /// <summary>

@@ -1,70 +1,78 @@
 # Session Handoff
 
-**Date:** 2026-04-24
-**Branch:** master (clean)
+**Date:** 2026-04-25  
+**Branch:** `master`  
+**Latest pushed commit:** `ee16544` (`Move REDCap token into client construction`)
 
 ## Summary
 
-Ongoing architectural cleanup of the `redcap-api` library. This session completed todos #6, #7, and #3 from the architectural review — all committed in `d3e0683`. See CLAUDE.md for build commands and architecture overview.
+The token-to-constructor refactor is complete and pushed. Since that push, the local follow-up work has also:
 
-## What Was Accomplished
+- updated the README to the new constructor shape,
+- moved `CreateProjectAsync` onto the shared `ExecuteAsync(...)` path,
+- replaced the test-only `HttpListener` server with a `TcpListener` loopback server,
+- restored full test-suite reliability in this sandbox.
 
-- **Todo #6** — Dropped unused `RedcapApi redcapApi` first param from all `IRedcapTransport` methods, `DefaultRedcapTransport`, `Utils` static helpers, protected virtual wrappers in `RedcapApi.cs`, and all test transport doubles (`FakeTransport`, `CancellationRespectingTransport`, `TokenCapturingTransport`). Dead `Utils.SendPostRequest` (sync, used `EnsureSuccessStatusCode`) deleted; utilities tests updated to call `Utils.*` directly.
-- **Todo #7** — `Override` enum deleted (`src/RedcapApi/Models/Override.cs`). `ImportArmsAsync` and `ImportEventsAsync` now take `bool overrideBehavior`; wire value is `"true"`/`"false"`. Interface, implementation, XML docs, and test call sites updated.
-- **Todo #3** — `IRedcapTransport` gains `DownloadFileAsync(payload, uri, destinationPath, ...)`. File-saving logic moved out of `Utils.SendPostRequestAsync` into `Utils.DownloadFileAsync`. `ExportPDFInstrumentsAsync` (filePath overload) now routes through a new `ExecuteDownloadAsync` helper — `"filePath"` is never placed in the wire payload. `SendPostRequestAsync(Dictionary)` simplified to a plain POST + return body.
-- **Todo #8** — Fixed parameter ordering on both `DeleteRecordsAsync` overloads: `bool deleteLogging` moved before `CancellationToken cancellationToken` / `long timeOutSeconds` in interface and implementation. Test updated to use `ArgumentException` for empty string (now correctly reflecting `ThrowIfNullOrEmpty` behavior).
-- **Todo #9** — `Utils.CheckToken` now uses `ArgumentException.ThrowIfNullOrEmpty` instead of manual `string.IsNullOrEmpty` + `throw new ArgumentNullException`. Test extended to assert both null (`ArgumentNullException`) and empty (`ArgumentException`) cases.
-- **157 tests pass**, 0 failures.
+## What Was Completed
+
+- Moved project token ownership into `RedcapApi` construction across the library surface.
+- Updated interface signatures to remove per-call `string token` parameters.
+- Updated transport/cancellation/e2e/http-error utility tests to use constructor-time tokens.
+- Removed `Utils.GetProperties` and the test coverage that still assumed it existed.
+- Pushed the refactor in commit `ee16544`.
+- Updated `README.md` examples to use `RedcapApi(url, token)`.
+- Refactored `CreateProjectAsync` to use `ExecuteAsync(...)`.
+- Replaced `tests/RedcapApi.Tests/LocalHttpServer.cs` with a `TcpListener`-based implementation.
 
 ## Current State
 
-Working tree is clean. All changes committed.
+**Repository state now:**
 
-**Modified files:** None (clean)
+- Pushed code on `origin/master` is `ee16544`.
+- Local worktree is currently dirty because of post-push follow-up work (`README.md`, `HANDOFF.md`, `src/RedcapApi/Api/RedcapApi.Projects.cs`, `tests/RedcapApi.Tests/LocalHttpServer.cs`).
+- `AGENTS.md` is untracked and should stay out of commits unless explicitly requested.
 
-**Staged changes:** None
+**Verification performed:**
 
-**Stash entries:** None
+```bash
+dotnet test tests/RedcapApi.Tests/RedcapApi.Tests.csproj --no-restore --filter "FullyQualifiedName~RedcapApiTransportTests|FullyQualifiedName~CancellationTests" --verbosity minimal
+dotnet test tests/RedcapApi.Tests/RedcapApi.Tests.csproj --no-restore --filter "FullyQualifiedName~UtilitiesTests|FullyQualifiedName~HttpErrorTests" --verbosity minimal
+dotnet test tests/RedcapApi.Tests/RedcapApi.Tests.csproj --no-restore --verbosity minimal
+```
 
-## Next Steps
+Results:
 
-Remaining todos from the architectural review (both are breaking changes — bundle for 2.1/3.0):
+- transport/cancellation slice: `122` passed, `0` failed, `0` skipped
+- utilities/http-error slice: `33` passed, `0` failed, `0` skipped
+- full suite: `155` passed, `0` failed, `1` skipped (`RecordsTest` E2E skip)
 
-1. **#4** — Pick one serialization strategy: `GetProperties` lowercases via reflection; `ImportRecordsAsync` / `ImportEventsAsync` call `JsonConvert.SerializeObject` directly. Breaking change — bundle for 2.1/3.0.
-2. **#5** — Move `token` into the constructor (every public method takes `string token`). Breaking change — bundle for 2.1/3.0.
+## High-Value Next Targets
 
-Modernization batch (#10–#13) is earmarked for 3.0: `System.Text.Json`, `ILogger` abstractions, `IHttpClientFactory`, sub-client partitioning.
+### 1. Decide whether constructor-only tokens are the final public API
 
-## Architectural Todo List
+The breaking change is implemented and tested, but only the refactor commit is pushed right now. The follow-up docs/test-server cleanup is still local. If this API shape is final, the next step is to commit and push the current local changes.
 
-### High severity
-- [x] **1.** Stop swallowing errors in transport. ✅ `e656fe3`
+### 2. Revisit serialization consistency
 
-### Medium severity
-- [x] **2.** Fake-async cleanup. ✅ `48b63c8`
-- [x] **3.** Remove `filePath` magic-string side channel. ✅ `d3e0683`
-- [ ] **4.** Pick one serialization strategy. Breaking — bundle for 2.1/3.0.
-- [ ] **5.** Move `token` into constructor. Breaking — bundle for 2.1/3.0.
-- [x] **6.** Drop `RedcapApi` from `IRedcapTransport`. ✅ `d3e0683`
+`Utils.GetProperties` is gone, while import methods now lean on `JsonConvert.SerializeObject(...)`. If there is still a desire for one consistent serialization strategy across all import/export helpers, this is the next architectural cleanup to tackle.
 
-### Low severity
-- [x] **7.** Replace `Override` enum with `bool`. ✅ `d3e0683`
-- [x] **8.** Fix parameter ordering on `DeleteRecordsAsync`. ✅ (this session)
-- [x] **9.** Use `ArgumentException.ThrowIfNullOrEmpty` in `Utils.CheckToken`. ✅ (this session)
+### 3. Consider narrowing `RedcapApi.cs` duplication further
 
-### Modernization (batch for 3.0)
-- [ ] **10.** `Newtonsoft.Json` → `System.Text.Json`
-- [ ] **11.** `Serilog` → `Microsoft.Extensions.Logging.Abstractions`
-- [ ] **12.** Add `IHttpClientFactory` support
-- [ ] **13.** Consider sub-client partitioning — `IRedcap` has 76 methods on one interface
+The shared execution helpers are in better shape now, but there are still opportunities to normalize small repeated payload-building patterns across partials if desired. This is lower priority than the public API / serialization decisions.
 
 ## Relevant Files
 
-- `src/RedcapApi/Interfaces/IRedcapTransport.cs` — transport contract; next transport work lands here
-- `src/RedcapApi/Api/DefaultRedcapTransport.cs` — production transport implementation
-- `src/RedcapApi/Utilities/Utils.cs` — static HTTP helpers + utility extensions; todos #9 lands here
-- `src/RedcapApi/Api/RedcapApi.cs` — core class: constructors, `ExecuteAsync`, `ExecuteDownloadAsync`, protected virtuals
-- `src/RedcapApi/Api/RedcapApi.Records.cs:246` — todo #8 parameter ordering
-- `tests/RedcapApi.Tests/RedcapApiTransportTests.cs` — payload-shape tests (house style); add tests here for any new endpoint work
-- `tests/RedcapApi.Tests/CancellationTests.cs` — cancellation token propagation tests
-- `CLAUDE.md` — build commands, architecture overview, test patterns
+- `README.md`
+- `src/RedcapApi/Api/RedcapApi.cs`
+- `src/RedcapApi/Api/RedcapApi.Projects.cs`
+- `tests/RedcapApi.Tests/LocalHttpServer.cs`
+- `tests/RedcapApi.Tests/UtilitiesTests.cs`
+- `tests/RedcapApi.Tests/HttpErrorTests.cs`
+- `tests/RedcapApi.Tests/RedcapApiTransportTests.cs`
+
+## Suggested Next Commands
+
+```bash
+git status --short
+dotnet test tests/RedcapApi.Tests/RedcapApi.Tests.csproj --no-restore --verbosity minimal
+```
