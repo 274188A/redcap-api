@@ -820,6 +820,44 @@ public class RedcapApiTransportTests
     }
 
     [Fact]
+    public async Task ExportUserRolesTypedAsync_UsesJsonPayloadAndDeserializesResponse()
+    {
+        var transport = new FakeTransport
+        {
+            ResponseBody = "[{\"unique_role_name\":\"U-123\",\"role_label\":\"Coordinator\",\"api_export\":\"1\",\"data_export\":\"2\",\"forms\":{\"demographics\":\"1\"}}]"
+        };
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var result = await api.ExportUserRolesTypedAsync(Content.UserRole, RedcapReturnFormat.xml);
+
+        Assert.NotNull(transport.LastDictionaryPayload);
+        Assert.Equal("userRole", transport.LastDictionaryPayload!["content"]);
+        Assert.Equal("json", transport.LastDictionaryPayload["format"]);
+        Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
+        Assert.Single(result);
+        Assert.Equal("U-123", result[0].UniqueRoleName);
+        Assert.Equal("Coordinator", result[0].RoleLabel);
+        Assert.Equal("1", result[0].ApiExport);
+        Assert.Equal("2", result[0].DataExport);
+        Assert.NotNull(result[0].Forms);
+        Assert.Equal("1", result[0].Forms!["demographics"]);
+    }
+
+    [Fact]
+    public async Task ExportUserRolesTypedAsync_WithInvalidJson_ThrowsRedcapApiException()
+    {
+        var transport = new FakeTransport
+        {
+            ResponseBody = "not json"
+        };
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var ex = await Assert.ThrowsAsync<RedcapApiException>(() => api.ExportUserRolesTypedAsync());
+
+        Assert.Equal("Failed to deserialize REDCap user role response.", ex.Message);
+    }
+
+    [Fact]
     public async Task ImportUserRolesAsync_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
@@ -1062,6 +1100,41 @@ public class RedcapApiTransportTests
     }
 
     [Fact]
+    public async Task ExportInstrumentsTypedAsync_UsesJsonPayloadAndDeserializesResponse()
+    {
+        var transport = new FakeTransport
+        {
+            ResponseBody = "[{\"instrument_name\":\"demographics\",\"instrument_label\":\"Demographics\"},{\"instrument_name\":\"follow_up\",\"instrument_label\":\"Follow Up\"}]"
+        };
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var result = await api.ExportInstrumentsTypedAsync();
+
+        Assert.NotNull(transport.LastDictionaryPayload);
+        Assert.Equal("instrument", transport.LastDictionaryPayload!["content"]);
+        Assert.Equal("json", transport.LastDictionaryPayload["format"]);
+        Assert.Equal(2, result.Count);
+        Assert.Equal("demographics", result[0].InstrumentName);
+        Assert.Equal("Demographics", result[0].InstrumentLabel);
+        Assert.Equal("follow_up", result[1].InstrumentName);
+        Assert.Equal("Follow Up", result[1].InstrumentLabel);
+    }
+
+    [Fact]
+    public async Task ExportInstrumentsTypedAsync_WithInvalidJson_ThrowsRedcapApiException()
+    {
+        var transport = new FakeTransport
+        {
+            ResponseBody = "not json"
+        };
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var ex = await Assert.ThrowsAsync<RedcapApiException>(() => api.ExportInstrumentsTypedAsync());
+
+        Assert.Equal("Failed to deserialize REDCap instrument response.", ex.Message);
+    }
+
+    [Fact]
     public async Task ExportInstrumentMappingAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
@@ -1074,6 +1147,43 @@ public class RedcapApiTransportTests
         Assert.Equal("csv", transport.LastDictionaryPayload["format"]);
         Assert.Equal("1", transport.LastDictionaryPayload["arms[0]"]);
         Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
+    }
+
+    [Fact]
+    public async Task ExportInstrumentMappingTypedAsync_UsesJsonPayloadAndDeserializesResponse()
+    {
+        var transport = new FakeTransport
+        {
+            ResponseBody = "[{\"arm_num\":\"1\",\"unique_event_name\":\"event_1_arm_1\",\"form\":\"survey_a\"},{\"arm_num\":\"2\",\"unique_event_name\":\"event_2_arm_2\",\"form\":\"follow_up\"}]"
+        };
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var result = await api.ExportInstrumentMappingTypedAsync(new[] { "1", "2" }, RedcapReturnFormat.xml);
+
+        Assert.NotNull(transport.LastDictionaryPayload);
+        Assert.Equal("formEventMapping", transport.LastDictionaryPayload!["content"]);
+        Assert.Equal("json", transport.LastDictionaryPayload["format"]);
+        Assert.Equal("1", transport.LastDictionaryPayload["arms[0]"]);
+        Assert.Equal("2", transport.LastDictionaryPayload["arms[1]"]);
+        Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
+        Assert.Equal(2, result.Count);
+        Assert.Equal("1", result[0].arm_num);
+        Assert.Equal("event_1_arm_1", result[0].unique_event_name);
+        Assert.Equal("survey_a", result[0].form);
+    }
+
+    [Fact]
+    public async Task ExportInstrumentMappingTypedAsync_WithInvalidJson_ThrowsRedcapApiException()
+    {
+        var transport = new FakeTransport
+        {
+            ResponseBody = "not json"
+        };
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var ex = await Assert.ThrowsAsync<RedcapApiException>(() => api.ExportInstrumentMappingTypedAsync());
+
+        Assert.Equal("Failed to deserialize REDCap instrument-event mapping response.", ex.Message);
     }
 
     [Fact]
@@ -1109,6 +1219,43 @@ public class RedcapApiTransportTests
         Assert.Equal("record_id", transport.LastDictionaryPayload["fields[0]"]);
         Assert.Equal("demographics", transport.LastDictionaryPayload["forms[0]"]);
         Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
+    }
+
+    [Fact]
+    public async Task ExportMetaDataTypedAsync_UsesJsonPayloadAndDeserializesResponse()
+    {
+        var transport = new FakeTransport
+        {
+            ResponseBody = "[{\"field_name\":\"record_id\",\"form_name\":\"demographics\",\"field_type\":\"text\"}]"
+        };
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var result = await api.ExportMetaDataTypedAsync(new[] { "record_id" }, new[] { "demographics" }, RedcapReturnFormat.xml);
+
+        Assert.NotNull(transport.LastDictionaryPayload);
+        Assert.Equal("metadata", transport.LastDictionaryPayload!["content"]);
+        Assert.Equal("json", transport.LastDictionaryPayload["format"]);
+        Assert.Equal("record_id", transport.LastDictionaryPayload["fields[0]"]);
+        Assert.Equal("demographics", transport.LastDictionaryPayload["forms[0]"]);
+        Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
+        Assert.Single(result);
+        Assert.Equal("record_id", result[0].field_name);
+        Assert.Equal("demographics", result[0].form_name);
+        Assert.Equal("text", result[0].field_type);
+    }
+
+    [Fact]
+    public async Task ExportMetaDataTypedAsync_WithInvalidJson_ThrowsRedcapApiException()
+    {
+        var transport = new FakeTransport
+        {
+            ResponseBody = "not json"
+        };
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var ex = await Assert.ThrowsAsync<RedcapApiException>(() => api.ExportMetaDataTypedAsync());
+
+        Assert.Equal("Failed to deserialize REDCap metadata response.", ex.Message);
     }
 
     [Fact]

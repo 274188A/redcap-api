@@ -50,6 +50,39 @@ namespace Redcap
         }
 
         /// <summary>
+        /// Exports metadata and deserializes the JSON response into a list of <see cref="RedcapMetaData"/>.
+        /// </summary>
+        /// <remarks>
+        /// This typed overload always requests JSON from REDCap.
+        /// </remarks>
+        /// <param name="fields">Specific field names to export. When omitted, all fields are returned.</param>
+        /// <param name="forms">Specific instrument names to export. When omitted, all forms are returned.</param>
+        /// <param name="returnFormat">json [default], xml, csv - specifies the format of error messages.</param>
+        /// <param name="cancellationToken">Cancellation token for the request.</param>
+        /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
+        /// <returns>The deserialized metadata rows.</returns>
+        public async Task<IReadOnlyList<RedcapMetaData>> ExportMetaDataTypedAsync(string[]? fields = default, string[]? forms = default, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        {
+            var response = await ExportMetaDataAsync(RedcapFormat.json, fields, forms, returnFormat, cancellationToken, timeOutSeconds);
+
+            try
+            {
+                var metadata = JsonConvert.DeserializeObject<List<RedcapMetaData>>(response);
+                if (metadata == null)
+                {
+                    throw new RedcapApiException("REDCap returned an empty metadata payload.");
+                }
+
+                return metadata;
+            }
+            catch (JsonException ex)
+            {
+                Log.Error(ex, "Failed to deserialize REDCap metadata response.");
+                throw new RedcapApiException("Failed to deserialize REDCap metadata response.", ex);
+            }
+        }
+
+        /// <summary>
         /// From Redcap Version 6.11.0<br/><br/>
         ///
         /// Import Metadata (Data Dictionary)<br/><br/>

@@ -39,6 +39,36 @@ namespace Redcap
         }
 
         /// <summary>
+        /// Exports instruments and deserializes the JSON response into a list of <see cref="RedcapInstrument"/>.
+        /// </summary>
+        /// <remarks>
+        /// This typed overload always requests JSON from REDCap.
+        /// </remarks>
+        /// <param name="cancellationToken">Cancellation token for the request.</param>
+        /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
+        /// <returns>The deserialized instruments.</returns>
+        public async Task<IReadOnlyList<RedcapInstrument>> ExportInstrumentsTypedAsync(CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        {
+            var response = await ExportInstrumentsAsync(RedcapFormat.json, cancellationToken, timeOutSeconds);
+
+            try
+            {
+                var instruments = JsonConvert.DeserializeObject<List<RedcapInstrument>>(response);
+                if (instruments == null)
+                {
+                    throw new RedcapApiException("REDCap returned an empty instrument payload.");
+                }
+
+                return instruments;
+            }
+            catch (JsonException ex)
+            {
+                Log.Error(ex, "Failed to deserialize REDCap instrument response.");
+                throw new RedcapApiException("Failed to deserialize REDCap instrument response.", ex);
+            }
+        }
+
+        /// <summary>
         /// From Redcap Version 6.4.0 <br/><br/>
         /// Export PDF file of Data Collection Instruments (either as blank or with data)  <br/><br/>
         /// This method allows you to export a PDF file for any of the following: 1) a single data collection instrument (blank), 2) all instruments (blank), 3) a single instrument (with data from a single record), 4) all instruments (with data from a single record), or 5) all instruments (with data from ALL records).
@@ -132,6 +162,38 @@ namespace Redcap
                     for (var i = 0; i < arms.Length; i++)
                         payload[$"arms[{i}]"] = arms[i];
             }, cancellationToken, timeOutSeconds);
+        }
+
+        /// <summary>
+        /// Exports instrument-event mappings and deserializes the JSON response into a list of <see cref="FormEventMapping"/>.
+        /// </summary>
+        /// <remarks>
+        /// This typed overload always requests JSON from REDCap.
+        /// </remarks>
+        /// <param name="arms">Arm numbers to export mappings for. When omitted, all mappings are returned.</param>
+        /// <param name="returnFormat">json [default], xml, csv - specifies the format of error messages.</param>
+        /// <param name="cancellationToken">Cancellation token for the request.</param>
+        /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
+        /// <returns>The deserialized instrument-event mappings.</returns>
+        public async Task<IReadOnlyList<FormEventMapping>> ExportInstrumentMappingTypedAsync(string[]? arms = default, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
+        {
+            var response = await ExportInstrumentMappingAsync(RedcapFormat.json, arms, returnFormat, cancellationToken, timeOutSeconds);
+
+            try
+            {
+                var mappings = JsonConvert.DeserializeObject<List<FormEventMapping>>(response);
+                if (mappings == null)
+                {
+                    throw new RedcapApiException("REDCap returned an empty instrument-event mapping payload.");
+                }
+
+                return mappings;
+            }
+            catch (JsonException ex)
+            {
+                Log.Error(ex, "Failed to deserialize REDCap instrument-event mapping response.");
+                throw new RedcapApiException("Failed to deserialize REDCap instrument-event mapping response.", ex);
+            }
         }
 
         /// <summary>

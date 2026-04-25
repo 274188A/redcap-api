@@ -40,7 +40,7 @@ Working list for turning `redcap-api` into a genuinely excellent library, not ju
 - [ ] Review whether string-returning methods should expose richer typed results in key places.
   - Many methods return raw `string` even when the response shape is well known.
   - Goal: identify high-value typed overloads without breaking existing consumers unnecessarily.
-  - Started: added `ExportProjectInfoTypedAsync`, `ExportDagsTypedAsync`, `ExportUserDagAssignmentTypedAsync`, `ExportUsersTypedAsync`, `ExportArmsTypedAsync`, and `ExportEventsTypedAsync` as the first typed export overloads, using existing or newly-introduced models while preserving the original string-returning APIs.
+  - Started: added `ExportProjectInfoTypedAsync`, `ExportDagsTypedAsync`, `ExportUserDagAssignmentTypedAsync`, `ExportUsersTypedAsync`, `ExportArmsTypedAsync`, `ExportEventsTypedAsync`, `ExportMetaDataTypedAsync`, `ExportInstrumentsTypedAsync`, `ExportInstrumentMappingTypedAsync`, and `ExportUserRolesTypedAsync` as the first typed export overloads, using existing or newly-introduced models while preserving the original string-returning APIs.
 
 - [ ] Decide the long-term shape of the giant `IRedcap` surface.
   - Today the API is split across partial interfaces/files but still presents one very large client.
@@ -68,18 +68,21 @@ Working list for turning `redcap-api` into a genuinely excellent library, not ju
 
 ## P1 Packaging And Release Quality
 
-- [ ] Add explicit package metadata to the library project.
+- [x] Add explicit package metadata to the library project.
   - Missing or unclear in `RedcapApi.csproj`: package id/version/source link/repository URL/package tags/license/readme inclusion.
   - File: `src/RedcapApi/RedcapApi.csproj`
   - Goal: make the NuGet package polished and self-describing.
+  - Done: added explicit package id/version, repository and project URLs, MIT license expression, tags, author/description, packed the root `README.md` into the NuGet package, and centralized dependency versions in `Directory.Packages.props`.
 
-- [ ] Add release-quality build settings.
+- [x] Add release-quality build settings.
   - Candidates: deterministic builds, SourceLink, symbol packages, XML docs validation, nullable/warning tightening.
   - Goal: more trustworthy packages and easier debugging for consumers.
+  - Done: enabled deterministic/CI-friendly build metadata, portable PDBs, symbol package generation, repository/source embedding settings, and GitHub SourceLink in `RedcapApi.csproj`.
 
-- [ ] Decide whether warnings should be elevated.
+- [x] Decide whether warnings should be elevated.
   - File: project files / CI
   - Goal: keep quality regressions from creeping in quietly.
+  - Done: the solution was already warning-clean in Release builds, so warnings are now treated as errors repo-wide via `Directory.Build.props`.
 
 ## P1 Test Quality
 
