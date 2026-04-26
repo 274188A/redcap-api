@@ -82,14 +82,7 @@ public partial class RedcapApi
         var _fileBytes = System.IO.File.ReadAllBytes(_binaryFile);
         return await ExecuteMultipartAsync(payload =>
         {
-            payload.Add(new StringContent(_token), "token");
-            payload.Add(new StringContent(Content.File.GetDisplayName()), "content");
-            payload.Add(new StringContent(RedcapAction.Import.GetDisplayName()), "action");
-            payload.Add(new StringContent(record), "record");
-            payload.Add(new StringContent(field), "field");
-            payload.Add(new StringContent(eventName), "event");
-            payload.Add(new StringContent(returnFormat.GetDisplayName()), "returnFormat");
-            payload.Add(new StringContent(IsNullOrEmpty(repeatInstance) ? "1" : repeatInstance!), "repeat_instance");
+            AddFileMultipartFields(payload, RedcapAction.Import, record, field, eventName, repeatInstance, returnFormat);
             var fileContent = new ByteArrayContent(_fileBytes);
             fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
             payload.Add(fileContent, "file", fileName);
@@ -115,15 +108,27 @@ public partial class RedcapApi
     {
         return await ExecuteMultipartAsync(payload =>
         {
-            payload.Add(new StringContent(_token), "token");
-            payload.Add(new StringContent(Content.File.GetDisplayName()), "content");
-            payload.Add(new StringContent(RedcapAction.Delete.GetDisplayName()), "action");
-            payload.Add(new StringContent(record), "record");
-            payload.Add(new StringContent(field), "field");
-            payload.Add(new StringContent(eventName), "event");
-            payload.Add(new StringContent(returnFormat.GetDisplayName()), "returnFormat");
-            payload.Add(new StringContent(IsNullOrEmpty(repeatInstance) ? "1" : repeatInstance!), "repeat_instance");
+            AddFileMultipartFields(payload, RedcapAction.Delete, record, field, eventName, repeatInstance, returnFormat);
         }, cancellationToken, timeOutSeconds);
+    }
+
+    private void AddFileMultipartFields(
+        MultipartFormDataContent payload,
+        RedcapAction action,
+        string record,
+        string field,
+        string eventName,
+        string? repeatInstance,
+        RedcapReturnFormat returnFormat)
+    {
+        payload.Add(new StringContent(_token), "token");
+        payload.Add(new StringContent(Content.File.GetDisplayName()), "content");
+        payload.Add(new StringContent(action.GetDisplayName()), "action");
+        payload.Add(new StringContent(record), "record");
+        payload.Add(new StringContent(field), "field");
+        payload.Add(new StringContent(eventName), "event");
+        payload.Add(new StringContent(returnFormat.GetDisplayName()), "returnFormat");
+        payload.Add(new StringContent(IsNullOrEmpty(repeatInstance) ? "1" : repeatInstance!), "repeat_instance");
     }
 
 }
