@@ -1,3 +1,4 @@
+using Redcap.Api;
 using Redcap.Exceptions;
 using Redcap.Models;
 using Redcap.Utilities;
@@ -32,7 +33,7 @@ public partial class RedcapApi
         return await ExecuteAsync(payload =>
         {
             AddFormattedRequest(payload, Content.Event, format, returnFormat);
-            AddIndexedValues(payload, "arms", arms);
+            AddIndexedValues(payload, PayloadKey.Arms, arms);
         }, cancellationToken, timeOutSeconds);
     }
 
@@ -79,7 +80,7 @@ public partial class RedcapApi
         return await ExecuteAsync(payload =>
         {
             AddImportRequest(payload, Content.Event, format, data, returnFormat);
-            payload["override"] = overrideBehavior ? "true" : "false";
+            payload[PayloadKey.Override] = overrideBehavior ? "true" : "false";
         }, cancellationToken, timeOutSeconds);
     }
 
@@ -104,7 +105,7 @@ public partial class RedcapApi
         return await ExecuteAsync(payload =>
         {
             AddActionRequest(payload, Content.Event, RedcapAction.Delete);
-            AddIndexedValues(payload, "events", events);
+            AddIndexedValues(payload, PayloadKey.Events, events);
         }, cancellationToken, timeOutSeconds);
     }
 

@@ -1,3 +1,4 @@
+using Redcap.Api;
 using Redcap.Models;
 
 using static System.String;
@@ -32,7 +33,7 @@ public partial class RedcapApi
         return await ExecuteAsync(payload =>
         {
             AddFormattedRequest(payload, Content.Report, format, returnFormat);
-            payload["report_id"] = reportId.ToString();
+            payload[PayloadKey.ReportId] = reportId.ToString();
             var rol = rawOrLabel.ToString();
             if (!IsNullOrEmpty(rol))
             {

@@ -4,10 +4,10 @@ using Redcap.Models;
 
 using Serilog;
 
+using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Http.Headers;
 using System.Reflection;
-using System.Text;
 
 namespace Redcap.Utilities;
 
@@ -17,13 +17,20 @@ namespace Redcap.Utilities;
 public static class Utils
 {
 
+    private static readonly ConcurrentDictionary<(Type, string), string> _displayNameCache = new();
+
     /// <summary>
     /// Method gets the display string for an enum. Falls back to the enum name when no [Display] attribute is present.
     /// </summary>
     public static string GetDisplayName(this Enum enumString)
     {
-        var member = enumString.GetType().GetMember(enumString.ToString()).FirstOrDefault();
-        return member?.GetCustomAttribute<DisplayAttribute>()?.GetName() ?? enumString.ToString();
+        var type = enumString.GetType();
+        var name = enumString.ToString();
+        return _displayNameCache.GetOrAdd((type, name), static key =>
+        {
+            var member = key.Item1.GetMember(key.Item2).FirstOrDefault();
+            return member?.GetCustomAttribute<DisplayAttribute>()?.GetName() ?? key.Item2;
+        });
     }
 
     /// <summary>
@@ -116,17 +123,7 @@ public static class Utils
             throw new ArgumentException("A non-empty array is required.", nameof(inputArray));
         }
 
-        StringBuilder builder = new StringBuilder();
-        foreach (T v in inputArray)
-        {
-            builder.Append(v);
-            if (inputArray.Length <= 1)
-            {
-                return builder.ToString();
-            }
-            builder.Append(",");
-        }
-        return builder.ToString().TrimEnd(',');
+        return string.Join(",", inputArray);
     }
 
     /// <summary>
@@ -318,7 +315,7 @@ public static class Utils
         }
 
         var fileName = GetDownloadFileName(response.Content.Headers);
-        var isPdf = payload.TryGetValue("content", out var contentVal) && contentVal == "pdf";
+        var isPdf = payload.TryGetValue(Redcap.Api.PayloadKey.Content, out var contentVal) && contentVal == "pdf";
         var fileExtension = string.Empty;
         if (isPdf)
         {
@@ -372,7 +369,7 @@ public static class Utils
 
     private static string GetPdfFallbackFileName(Dictionary<string, string> payload)
     {
-        return payload.TryGetValue("instrument", out var instrument) &&
+        return payload.TryGetValue(Redcap.Api.PayloadKey.Instrument, out var instrument) &&
             !string.IsNullOrWhiteSpace(instrument)
             ? instrument
             : "redcap-pdf-instruments";

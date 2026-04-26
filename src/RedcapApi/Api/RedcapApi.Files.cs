@@ -1,3 +1,4 @@
+using Redcap.Api;
 using Redcap.Exceptions;
 using Redcap.Models;
 using Redcap.Utilities;
@@ -55,7 +56,7 @@ public partial class RedcapApi
             payload["record"] = record!;
             payload["field"] = field;
             payload["event"] = eventName;
-            AddOptional(payload, "repeat_instance", repeatInstance);
+            AddOptional(payload, PayloadKey.RepeatInstance, repeatInstance);
         }, cancellationToken, timeOutSeconds);
     }
 
@@ -121,14 +122,14 @@ public partial class RedcapApi
         string? repeatInstance,
         RedcapReturnFormat returnFormat)
     {
-        payload.Add(new StringContent(_token), "token");
-        payload.Add(new StringContent(Content.File.GetDisplayName()), "content");
-        payload.Add(new StringContent(action.GetDisplayName()), "action");
-        payload.Add(new StringContent(record), "record");
-        payload.Add(new StringContent(field), "field");
-        payload.Add(new StringContent(eventName), "event");
-        payload.Add(new StringContent(returnFormat.GetDisplayName()), "returnFormat");
-        payload.Add(new StringContent(IsNullOrEmpty(repeatInstance) ? "1" : repeatInstance!), "repeat_instance");
+        payload.Add(new StringContent(_token), PayloadKey.Token);
+        payload.Add(new StringContent(Content.File.GetDisplayName()), PayloadKey.Content);
+        payload.Add(new StringContent(action.GetDisplayName()), PayloadKey.Action);
+        payload.Add(new StringContent(record), PayloadKey.Record);
+        payload.Add(new StringContent(field), PayloadKey.Field);
+        payload.Add(new StringContent(eventName), PayloadKey.Event);
+        payload.Add(new StringContent(returnFormat.GetDisplayName()), PayloadKey.ReturnFormat);
+        payload.Add(new StringContent(IsNullOrEmpty(repeatInstance) ? "1" : repeatInstance!), PayloadKey.RepeatInstance);
     }
 
 }

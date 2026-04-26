@@ -1,3 +1,4 @@
+using Redcap.Api;
 using Redcap.Exceptions;
 using Redcap.Models;
 using Redcap.Utilities;
@@ -148,9 +149,9 @@ public partial class RedcapApi
                 payload["returnMetadataOnly"] = returnMetadataOnly.ToString();
             }
 
-            AddOptional(payload, "records", recordsStr);
-            AddOptional(payload, "fields", fieldsStr);
-            AddOptional(payload, "events", eventsStr);
+            AddOptional(payload, PayloadKey.Records, recordsStr);
+            AddOptional(payload, PayloadKey.Fields, fieldsStr);
+            AddOptional(payload, PayloadKey.Events, eventsStr);
             if (exportSurveyFields)
             {
                 payload["exportSurveyFields"] = exportSurveyFields.ToString();

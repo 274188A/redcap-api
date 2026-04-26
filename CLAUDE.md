@@ -4,12 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Layout
 
-Two .NET 10 projects held together by `RedcapApi.slnxx`:
+Two .NET 10 projects held together by `RedcapApi.slnx`:
 
-- `src/RedcapApi` — the library (NuGet package `RedcapAPI`, version 2.0.0)
+- `src/RedcapApi` — the library
 - `tests/RedcapApi.Tests` — xUnit test project (transport-level + a few E2E tests)
 
-Both target `net10.0`. The library depends only on `Newtonsoft.Json` and `Serilog`.
+Both target `net10.0`. The library depends only on `Serilog`; JSON serialization uses `System.Text.Json` from the .NET runtime.
 
 ## Common Commands
 
@@ -28,8 +28,6 @@ dotnet test tests/RedcapApi.Tests/RedcapApi.Tests.csproj --filter "Category!=E2E
 # tests with coverage
 dotnet test tests/RedcapApi.Tests/RedcapApi.Tests.csproj --collect:"XPlat Code Coverage" --verbosity minimal
 
-# pack the NuGet
-dotnet pack src/RedcapApi/RedcapApi.csproj -c Release -o artifacts
 ```
 
 ## Architecture
@@ -54,11 +52,3 @@ The REDCap API is form-encoded with lower-case string parameters (`content=recor
 
 `RecordsTests.cs` is the only test class tagged `[Trait("Category", "E2E")]`. It silently returns early when `REDCAP_E2E_URL` / `REDCAP_E2E_TOKEN` are unset, so a default `dotnet test` run locally will pass without hitting any network. Use `REDCAP_E2E_URL`, `REDCAP_E2E_TOKEN`, `REDCAP_E2E_RECORD_ID`, `REDCAP_E2E_FORM` to actually exercise it.
 
-## CI
-
-Three pipelines exist and all must stay green:
-
-- `.github/workflows/ci.yml` — `dotnet restore/build/test` on push/PR to `master` (uses .NET 10 SDK, Ubuntu).
-- `.github/workflows/publish-github-packages.yml` — publishes the NuGet to GitHub Packages.
-- `bitbucket-pipelines.yml` — build + test + pack against `mcr.microsoft.com/dotnet/sdk:10.0`. Note this file currently has the pipeline block duplicated; only the first copy runs, but don't let the duplication grow.
-- `azure-pipelines.yml` / `.travis.yml` — older CI definitions still referenced by the README badge.

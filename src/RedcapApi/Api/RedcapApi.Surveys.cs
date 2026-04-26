@@ -1,3 +1,4 @@
+using Redcap.Api;
 using Redcap.Models;
 
 namespace Redcap;
@@ -27,10 +28,10 @@ public partial class RedcapApi
         return await ExecuteAsync(payload =>
         {
             AddContent(payload, Content.SurveyLink);
-            payload["record"] = record;
-            payload["instrument"] = instrument;
-            payload["event"] = eventName;
-            payload["repeat_instance"] = repeatInstance.ToString();
+            payload[PayloadKey.Record] = record;
+            payload[PayloadKey.Instrument] = instrument;
+            payload[PayloadKey.Event] = eventName;
+            payload[PayloadKey.RepeatInstance] = repeatInstance.ToString();
             AddReturnFormat(payload, returnFormat);
         }, cancellationToken, timeOutSeconds);
     }
@@ -56,10 +57,10 @@ public partial class RedcapApi
         return await ExecuteAsync(payload =>
         {
             AddContent(payload, Content.SurveyAccessCode);
-            payload["record"] = record;
-            payload["instrument"] = instrument;
-            payload["event"] = eventName;
-            payload["repeat_instance"] = repeatInstance.ToString();
+            payload[PayloadKey.Record] = record;
+            payload[PayloadKey.Instrument] = instrument;
+            payload[PayloadKey.Event] = eventName;
+            payload[PayloadKey.RepeatInstance] = repeatInstance.ToString();
             AddReturnFormat(payload, returnFormat);
         }, cancellationToken, timeOutSeconds);
     }
@@ -84,8 +85,8 @@ public partial class RedcapApi
         return await ExecuteAsync(payload =>
         {
             AddFormattedRequest(payload, Content.ParticipantList, format, returnFormat);
-            payload["instrument"] = instrument;
-            payload["event"] = eventName;
+            payload[PayloadKey.Instrument] = instrument;
+            payload[PayloadKey.Event] = eventName;
         }, cancellationToken, timeOutSeconds);
     }
 
@@ -108,7 +109,7 @@ public partial class RedcapApi
         return await ExecuteAsync(payload =>
         {
             AddContent(payload, Content.SurveyQueueLink);
-            payload["record"] = record;
+            payload[PayloadKey.Record] = record;
             AddReturnFormat(payload, returnFormat);
         }, cancellationToken, timeOutSeconds);
     }
@@ -134,10 +135,10 @@ public partial class RedcapApi
         return await ExecuteAsync(payload =>
         {
             AddContent(payload, Content.SurveyReturnCode);
-            payload["record"] = record;
-            payload["instrument"] = instrument;
-            payload["event"] = eventName;
-            payload["repeat_instance"] = repeatInstance!;
+            payload[PayloadKey.Record] = record;
+            payload[PayloadKey.Instrument] = instrument;
+            payload[PayloadKey.Event] = eventName;
+            payload[PayloadKey.RepeatInstance] = repeatInstance!;
             AddReturnFormat(payload, returnFormat);
         }, cancellationToken, timeOutSeconds);
     }

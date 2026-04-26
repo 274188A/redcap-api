@@ -293,28 +293,28 @@ public partial class RedcapApi : IRedcap, IDisposable
     {
         return new Dictionary<string, string>
         {
-            ["token"] = _token
+            [PayloadKey.Token] = _token
         };
     }
 
     private static void AddContent(Dictionary<string, string> payload, Content content)
     {
-        payload["content"] = content.GetDisplayName();
+        payload[PayloadKey.Content] = content.GetDisplayName();
     }
 
     private static void AddAction(Dictionary<string, string> payload, RedcapAction action)
     {
-        payload["action"] = action.GetDisplayName();
+        payload[PayloadKey.Action] = action.GetDisplayName();
     }
 
     private static void AddFormat(Dictionary<string, string> payload, RedcapFormat format)
     {
-        payload["format"] = format.GetDisplayName();
+        payload[PayloadKey.Format] = format.GetDisplayName();
     }
 
     private static void AddReturnFormat(Dictionary<string, string> payload, RedcapReturnFormat returnFormat)
     {
-        payload["returnFormat"] = returnFormat.GetDisplayName();
+        payload[PayloadKey.ReturnFormat] = returnFormat.GetDisplayName();
     }
 
     private static void AddFormattedRequest(
@@ -369,7 +369,7 @@ public partial class RedcapApi : IRedcap, IDisposable
 
     private static void AddData<T>(Dictionary<string, string> payload, T data)
     {
-        payload["data"] = JsonSerializer.Serialize(data, RedcapJsonOptions.Default);
+        payload[PayloadKey.Data] = JsonSerializer.Serialize(data, RedcapJsonOptions.Default);
     }
 
     private static T DeserializeResponse<T>(string response, string payloadName) where T : class

@@ -1,3 +1,4 @@
+using Redcap.Api;
 using Redcap.Exceptions;
 using Redcap.Models;
 using Redcap.Utilities;
@@ -28,8 +29,8 @@ public partial class RedcapApi
         return await ExecuteAsync(payload =>
         {
             AddFormattedRequest(payload, Content.MetaData, format, returnFormat);
-            AddIndexedValues(payload, "fields", fields);
-            AddIndexedValues(payload, "forms", forms);
+            AddIndexedValues(payload, PayloadKey.Fields, fields);
+            AddIndexedValues(payload, PayloadKey.Forms, forms);
         }, cancellationToken, timeOutSeconds);
     }
 

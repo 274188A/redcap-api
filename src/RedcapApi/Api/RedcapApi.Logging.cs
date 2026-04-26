@@ -1,3 +1,4 @@
+using Redcap.Api;
 using Redcap.Exceptions;
 using Redcap.Models;
 using Redcap.Utilities;
@@ -33,7 +34,7 @@ public partial class RedcapApi
         return await ExecuteAsync(payload =>
         {
             AddFormattedRequest(payload, Content.Log, format, returnFormat);
-            payload["logtype"] = logType.GetDisplayName();
+            payload[PayloadKey.LogType] = logType.GetDisplayName();
             AddOptional(payload, "user", user);
             AddOptional(payload, "record", record);
             AddOptional(payload, "dag", dag);

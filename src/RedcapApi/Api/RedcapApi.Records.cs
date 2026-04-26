@@ -1,3 +1,4 @@
+using Redcap.Api;
 using Redcap.Models;
 using Redcap.Utilities;
 
@@ -71,26 +72,26 @@ public partial class RedcapApi
         return await ExecuteAsync(payload =>
         {
             AddFormattedRequest(payload, Content.Record, format, returnFormat);
-            payload["type"] = redcapDataType.GetDisplayName();
+            payload[PayloadKey.Type] = redcapDataType.GetDisplayName();
             payload["exportBlankForGrayFormStatus"] = exportBlankForGrayFormStatus.ToString();
             if (recordsStr != null)
             {
-                payload["records"] = recordsStr;
+                payload[PayloadKey.Records] = recordsStr;
             }
 
             if (fieldsStr != null)
             {
-                payload["fields"] = fieldsStr;
+                payload[PayloadKey.Fields] = fieldsStr;
             }
 
             if (formsStr != null)
             {
-                payload["forms"] = formsStr;
+                payload[PayloadKey.Forms] = formsStr;
             }
 
             if (eventsStr != null)
             {
-                payload["events"] = eventsStr;
+                payload[PayloadKey.Events] = eventsStr;
             }
 
             var _rawOrLabel = rawOrLabel.ToString();
@@ -190,22 +191,22 @@ public partial class RedcapApi
         var eventsStr = events?.Length > 0 ? this.ConvertArraytoString(events) : null;
         return await ExecuteAsync(payload =>
         {
-            payload["records"] = record;
+            payload[PayloadKey.Records] = record;
             AddFormattedRequest(payload, Content.Record, format, onErrorFormat);
-            payload["type"] = redcapDataType.GetDisplayName();
+            payload[PayloadKey.Type] = redcapDataType.GetDisplayName();
             if (fieldsStr != null)
             {
-                payload["fields"] = fieldsStr;
+                payload[PayloadKey.Fields] = fieldsStr;
             }
 
             if (formsStr != null)
             {
-                payload["forms"] = formsStr;
+                payload[PayloadKey.Forms] = formsStr;
             }
 
             if (eventsStr != null)
             {
-                payload["events"] = eventsStr;
+                payload[PayloadKey.Events] = eventsStr;
             }
 
             var _rawOrLabel = rawOrLabel.ToString();
@@ -310,7 +311,7 @@ public partial class RedcapApi
         return await ExecuteAsync(payload =>
         {
             AddFormattedRequest(payload, Content.Record, format, returnFormat);
-            payload["type"] = redcapDataType.GetDisplayName();
+            payload[PayloadKey.Type] = redcapDataType.GetDisplayName();
             payload["overwriteBehavior"] = overwriteBehavior.ToString();
             payload["forceAutoNumber"] = forceAutoNumber.ToString();
             payload["backgroundProcess"] = backgroundProcess.ToString();
@@ -350,15 +351,15 @@ public partial class RedcapApi
         return await ExecuteAsync(payload =>
         {
             AddActionRequest(payload, Content.Record, RedcapAction.Delete);
-            AddIndexedValues(payload, "records", records);
+            AddIndexedValues(payload, PayloadKey.Records, records);
             if (arm.HasValue)
             {
-                payload["arm"] = arm.Value.ToString();
+                payload[PayloadKey.Arm] = arm.Value.ToString();
             }
 
             if (deleteLogging)
             {
-                payload["delete_logging"] = deleteLogging.ToString();
+                payload[PayloadKey.DeleteLogging] = deleteLogging.ToString();
             }
         }, cancellationToken, timeOutSeconds);
     }
@@ -391,18 +392,18 @@ public partial class RedcapApi
         return await ExecuteAsync(payload =>
         {
             AddActionRequest(payload, content, action);
-            AddIndexedValues(payload, "records", records);
+            AddIndexedValues(payload, PayloadKey.Records, records);
             if (arm.HasValue)
             {
-                payload["arm"] = arm.Value.ToString();
+                payload[PayloadKey.Arm] = arm.Value.ToString();
             }
 
-            payload["instrument"] = instrument.InstrumentName!;
-            payload["event"] = redcapEvent.EventName!;
-            payload["repeat_instance"] = repeatInstance.RepeatInstance.ToString();
+            payload[PayloadKey.Instrument] = instrument.InstrumentName!;
+            payload[PayloadKey.Event] = redcapEvent.EventName!;
+            payload[PayloadKey.RepeatInstance] = repeatInstance.RepeatInstance.ToString();
             if (deleteLogging)
             {
-                payload["delete_logging"] = deleteLogging.ToString();
+                payload[PayloadKey.DeleteLogging] = deleteLogging.ToString();
             }
         }, cancellationToken, timeOutSeconds);
     }
@@ -428,8 +429,8 @@ public partial class RedcapApi
         return await ExecuteAsync(payload =>
         {
             AddActionRequest(payload, Content.Record, RedcapAction.Rename);
-            payload["record"] = record!;
-            payload["new_record_name"] = newRecordName;
+            payload[PayloadKey.Record] = record!;
+            payload[PayloadKey.NewRecordName] = newRecordName;
             if (arm.HasValue)
             {
                 payload["arm"] = arm.Value.ToString();
@@ -458,8 +459,8 @@ public partial class RedcapApi
         return await ExecuteAsync(payload =>
         {
             AddActionRequest(payload, Content.Record, RedcapAction.Randomize);
-            payload["record"] = record!;
-            payload["randomization_id"] = randomizationId;
+            payload[PayloadKey.Record] = record!;
+            payload[PayloadKey.RandomizationId] = randomizationId;
             AddFormat(payload, format);
             AddReturnFormat(payload, returnFormat);
             payload["returnAlt"] = returnAlt.ToString();

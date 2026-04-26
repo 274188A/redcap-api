@@ -1,3 +1,4 @@
+using Redcap.Api;
 using Redcap.Exceptions;
 using Redcap.Models;
 
@@ -37,7 +38,7 @@ public partial class RedcapApi
         {
             AddActionRequest(payload, content, action, returnFormat);
             AddFormat(payload, format);
-            payload["name"] = name!;
+            payload[PayloadKey.Name] = name!;
             AddOptional(payload, "folder_id", folderId);
             AddOptional(payload, "dag_id", dagId);
             AddOptional(payload, "role_id", roleId);
@@ -89,7 +90,7 @@ public partial class RedcapApi
         return await ExecuteAsync(payload =>
         {
             AddActionRequest(payload, content, action, returnFormat);
-            AddOptional(payload, "doc_id", docId);
+            AddOptional(payload, PayloadKey.DocId, docId);
         }, cancellationToken, timeOutSeconds);
     }
 
@@ -115,7 +116,7 @@ public partial class RedcapApi
             : await ExecuteAsync(payload =>
         {
             AddActionRequest(payload, content, action, returnFormat);
-            payload["file"] = file!;
+            payload[PayloadKey.File] = file!;
             AddOptional(payload, "folder_id", folderId);
         }, cancellationToken, timeOutSeconds);
     }
@@ -141,7 +142,7 @@ public partial class RedcapApi
             : await ExecuteAsync(payload =>
         {
             AddActionRequest(payload, content, action, returnFormat);
-            payload["doc_id"] = docId!;
+            payload[PayloadKey.DocId] = docId!;
         }, cancellationToken, timeOutSeconds);
     }
 }
