@@ -56,10 +56,7 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = content.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
+                AddFormattedRequest(payload, content, format, returnFormat);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -122,11 +119,8 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = content.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
-                payload["data"] = JsonConvert.SerializeObject(data);
+                AddFormattedRequest(payload, content, format, returnFormat);
+                AddData(payload, data);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -149,11 +143,8 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = content.GetDisplayName();
-                payload["action"] = action.GetDisplayName();
-                for (var i = 0; i < roles.Count; i++)
-                    payload[$"roles[{i}]"] = roles[i];
+                AddActionRequest(payload, content, action);
+                AddIndexedValues(payload, "roles", roles);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -176,10 +167,7 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = content.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
-                payload["returnFormat"] = onErrorFormat.GetDisplayName();
+                AddFormattedRequest(payload, content, format, onErrorFormat);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -242,12 +230,7 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = content.GetDisplayName();
-                payload["action"] = action.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
-                payload["returnFormat"] = onErrorFormat.GetDisplayName();
-                payload["data"] = JsonConvert.SerializeObject(data);
+                AddImportRequest(payload, content, format, data, onErrorFormat, action);
             }, cancellationToken, timeOutSeconds);
         }
     }

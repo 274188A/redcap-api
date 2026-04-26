@@ -65,6 +65,14 @@ using var transport = new DefaultRedcapTransport(timeOutSeconds: 100);
 using var api = new RedcapApi("https://your-redcap-instance/api/", "YOUR_API_TOKEN", transport);
 ```
 
+For DI-heavy apps, you can pass a caller-owned `HttpClient` into the default transport:
+
+```csharp
+var httpClient = httpClientFactory.CreateClient("redcap");
+var transport = DefaultRedcapTransport.FromHttpClient(httpClient, timeOutSeconds: 100);
+var api = new RedcapApi("https://your-redcap-instance/api/", "YOUR_API_TOKEN", transport);
+```
+
 To download a file from a REDCap file-upload field, provide a destination directory:
 
 ```csharp

@@ -36,8 +36,7 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.GenerateNextRecordName.GetDisplayName();
+                AddContent(payload, Content.GenerateNextRecordName);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -80,10 +79,7 @@ namespace Redcap
             var eventsStr = events?.Length > 0 ? this.ConvertArraytoString(events) : null;
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.Record.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
+                AddFormattedRequest(payload, Content.Record, format, returnFormat);
                 payload["type"] = redcapDataType.GetDisplayName();
                 payload["exportBlankForGrayFormStatus"] = exportBlankForGrayFormStatus.ToString();
                 if (recordsStr != null) payload["records"] = recordsStr;
@@ -144,11 +140,8 @@ namespace Redcap
             var eventsStr = events?.Length > 0 ? this.ConvertArraytoString(events) : null;
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
                 payload["records"] = record;
-                payload["content"] = Content.Record.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
-                payload["returnFormat"] = onErrorFormat.GetDisplayName();
+                AddFormattedRequest(payload, Content.Record, format, onErrorFormat);
                 payload["type"] = redcapDataType.GetDisplayName();
                 if (fieldsStr != null) payload["fields"] = fieldsStr;
                 if (formsStr != null) payload["forms"] = formsStr;
@@ -207,16 +200,13 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.Record.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
+                AddFormattedRequest(payload, Content.Record, format, returnFormat);
                 payload["type"] = redcapDataType.GetDisplayName();
                 payload["overwriteBehavior"] = overwriteBehavior.ToString();
                 payload["forceAutoNumber"] = forceAutoNumber.ToString();
                 payload["backgroundProcess"] = backgroundProcess.ToString();
                 payload["csvDelimiter"] = csvDelimiter.ToString();
-                payload["data"] = JsonConvert.SerializeObject(data);
-                payload["returnFormat"] = returnFormat.GetDisplayName();
+                AddData(payload, data);
                 if (!IsNullOrEmpty(dateFormat)) payload["dateFormat"] = dateFormat!;
                 if (!IsNullOrEmpty(returnContent.ToString())) payload["returnContent"] = returnContent.ToString();
             }, cancellationToken, timeOutSeconds);
@@ -239,15 +229,12 @@ namespace Redcap
         /// <returns>the number of records deleted or (if instrument, event, and/or instance are provided) the number of items deleted over the total records specified.</returns>
         public async Task<string> DeleteRecordsAsync(string[] records, int? arm, bool deleteLogging = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
-            if (records?.Length < 1)
-                throw new RedcapApiException("Please provide the records you would like to remove.");
+            RequireItems(records, "Please provide the records you would like to remove.");
+
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.Record.GetDisplayName();
-                payload["action"] = RedcapAction.Delete.GetDisplayName();
-                for (var i = 0; i < records!.Length; i++)
-                    payload[$"records[{i}]"] = records[i];
+                AddActionRequest(payload, Content.Record, RedcapAction.Delete);
+                AddIndexedValues(payload, "records", records);
                 if (arm.HasValue) payload["arm"] = arm.Value.ToString();
                 if (deleteLogging) payload["delete_logging"] = deleteLogging.ToString();
             }, cancellationToken, timeOutSeconds);
@@ -276,15 +263,12 @@ namespace Redcap
         /// <returns>the number of records deleted or (if instrument, event, and/or instance are provided) the number of items deleted over the total records specified.</returns>
         public async Task<string> DeleteRecordsAsync(Content content, RedcapAction action, string[] records, int? arm, RedcapInstrument instrument, RedcapEvent redcapEvent, RedcapRepeatInstance repeatInstance, bool deleteLogging = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
-            if (records?.Length < 1)
-                throw new RedcapApiException("Please provide the records you would like to remove.");
+            RequireItems(records, "Please provide the records you would like to remove.");
+
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = content.GetDisplayName();
-                payload["action"] = action.GetDisplayName();
-                for (var i = 0; i < records!.Length; i++)
-                    payload[$"records[{i}]"] = records[i];
+                AddActionRequest(payload, content, action);
+                AddIndexedValues(payload, "records", records);
                 if (arm.HasValue) payload["arm"] = arm.Value.ToString();
                 payload["instrument"] = instrument.InstrumentName!;
                 payload["event"] = redcapEvent.EventName!;
@@ -313,9 +297,7 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.Record.GetDisplayName();
-                payload["action"] = RedcapAction.Rename.GetDisplayName();
+                AddActionRequest(payload, Content.Record, RedcapAction.Rename);
                 payload["record"] = record!;
                 payload["new_record_name"] = newRecordName;
                 if (arm.HasValue) payload["arm"] = arm.Value.ToString();
@@ -342,13 +324,11 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["action"] = RedcapAction.Randomize.GetDisplayName();
-                payload["content"] = Content.Record.GetDisplayName();
+                AddActionRequest(payload, Content.Record, RedcapAction.Randomize);
                 payload["record"] = record!;
                 payload["randomization_id"] = randomizationId;
-                payload["format"] = format.GetDisplayName();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
+                AddFormat(payload, format);
+                AddReturnFormat(payload, returnFormat);
                 payload["returnAlt"] = returnAlt.ToString();
             }, cancellationToken, timeOutSeconds);
         }

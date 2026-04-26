@@ -44,14 +44,12 @@ namespace Redcap
                 throw new RedcapApiException("Please provide a valid name for the folder to create in the Repository.");
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = content.GetDisplayName();
-                payload["action"] = action.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
-                if (!IsNullOrEmpty(folderId)) payload["folder_id"] = folderId!;
-                if (!IsNullOrEmpty(dagId)) payload["dag_id"] = dagId!;
-                if (!IsNullOrEmpty(roleId)) payload["role_id"] = roleId!;
+                AddActionRequest(payload, content, action, returnFormat);
+                AddFormat(payload, format);
+                payload["name"] = name!;
+                AddOptional(payload, "folder_id", folderId);
+                AddOptional(payload, "dag_id", dagId);
+                AddOptional(payload, "role_id", roleId);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -75,12 +73,9 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = content.GetDisplayName();
-                payload["action"] = action.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
-                if (!IsNullOrEmpty(folderId)) payload["folder_id"] = folderId!;
+                AddActionRequest(payload, content, action, returnFormat);
+                AddFormat(payload, format);
+                AddOptional(payload, "folder_id", folderId);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -102,11 +97,8 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = content.GetDisplayName();
-                payload["action"] = action.GetDisplayName();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
-                if (!IsNullOrEmpty(docId)) payload["doc_id"] = docId!;
+                AddActionRequest(payload, content, action, returnFormat);
+                AddOptional(payload, "doc_id", docId);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -131,12 +123,9 @@ namespace Redcap
                 throw new RedcapApiException("Please provide a file to import.");
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = content.GetDisplayName();
-                payload["action"] = action.GetDisplayName();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
+                AddActionRequest(payload, content, action, returnFormat);
                 payload["file"] = file!;
-                if (!IsNullOrEmpty(folderId)) payload["folder_id"] = folderId!;
+                AddOptional(payload, "folder_id", folderId);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -160,10 +149,7 @@ namespace Redcap
                 throw new RedcapApiException("Please provide a document id to delete.");
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = content.GetDisplayName();
-                payload["action"] = action.GetDisplayName();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
+                AddActionRequest(payload, content, action, returnFormat);
                 payload["doc_id"] = docId!;
             }, cancellationToken, timeOutSeconds);
         }

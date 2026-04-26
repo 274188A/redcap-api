@@ -33,9 +33,7 @@ namespace Redcap
         {
             var version = await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.Version.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
+                AddFormattedRequest(payload, Content.Version, format);
             }, cancellationToken, timeOutSeconds);
 
             Version = version;

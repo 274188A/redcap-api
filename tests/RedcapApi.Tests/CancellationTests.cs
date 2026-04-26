@@ -98,6 +98,33 @@ public class CancellationTests
     }
 
     [Fact]
+    public void DefaultTransport_WhenHandlerIsInjected_DisposesOwnedHttpClient()
+    {
+        var handler = new TrackingHandler();
+        var transport = new DefaultRedcapTransport(handler);
+
+        transport.Dispose();
+
+        Assert.True(handler.DisposeCalled);
+    }
+
+    [Fact]
+    public async Task DefaultTransport_WhenHttpClientIsInjected_LeavesClientOwnedByCaller()
+    {
+        var handler = new TrackingHandler();
+        using var client = new HttpClient(handler);
+        var transport = DefaultRedcapTransport.FromHttpClient(client);
+
+        var response = await transport.SendPostRequestAsync(
+            new Dictionary<string, string> { ["token"] = Token },
+            new Uri("http://localhost/api"));
+        transport.Dispose();
+
+        Assert.Equal("ok", response);
+        Assert.False(handler.DisposeCalled);
+    }
+
+    [Fact]
     public async Task Dispose_WhenClientOwnsTransport_PreventsFurtherCalls()
     {
         using var server = new LocalHttpServer(_ => new TestResponse(200, "ok"));
@@ -182,6 +209,25 @@ public class CancellationTests
         public void Dispose()
         {
             DisposeCalled = true;
+        }
+    }
+
+    private sealed class TrackingHandler : HttpMessageHandler
+    {
+        public bool DisposeCalled { get; private set; }
+
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+            {
+                Content = new StringContent("ok")
+            });
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            DisposeCalled = true;
+            base.Dispose(disposing);
         }
     }
 }

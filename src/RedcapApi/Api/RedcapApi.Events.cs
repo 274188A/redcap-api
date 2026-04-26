@@ -36,16 +36,12 @@ namespace Redcap
         /// <returns>Events for the project in the format specified</returns>
         public async Task<string> ExportEventsAsync(RedcapFormat format, string[] arms, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
+            RequireItems(arms, "Please specify the arm you wish to export the events from.");
+
             return await ExecuteAsync(payload =>
             {
-                if (arms == null || arms.Length < 1)
-                    throw new InvalidOperationException("Please specify the arm you wish to export the events from.");
-                payload["token"] = _token;
-                payload["content"] = Content.Event.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
-                for (var i = 0; i < arms.Length; i++)
-                    payload[$"arms[{i}]"] = arms[i];
+                AddFormattedRequest(payload, Content.Event, format, returnFormat);
+                AddIndexedValues(payload, "arms", arms);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -101,17 +97,12 @@ namespace Redcap
         /// <returns>Number of Events imported</returns>
         public async Task<string> ImportEventsAsync<T>(bool overrideBehavior, RedcapFormat format, List<T> data, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
+            RequireItems(data, "Events can not be empty or null");
+
             return await ExecuteAsync(payload =>
             {
-                if (data.Count < 1)
-                    throw new ArgumentNullException(nameof(data), "Events can not be empty or null");
-                payload["token"] = _token;
-                payload["content"] = Content.Event.GetDisplayName();
-                payload["action"] = RedcapAction.Import.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
+                AddImportRequest(payload, Content.Event, format, data, returnFormat);
                 payload["override"] = overrideBehavior ? "true" : "false";
-                payload["returnFormat"] = returnFormat.GetDisplayName();
-                payload["data"] = JsonConvert.SerializeObject(data);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -131,15 +122,12 @@ namespace Redcap
         /// <returns>Number of Events deleted</returns>
         public async Task<string> DeleteEventsAsync(string[] events, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
+            RequireItems(events, "No events to delete...");
+
             return await ExecuteAsync(payload =>
             {
-                if (events.Length < 1)
-                    throw new InvalidOperationException("No events to delete...");
-                payload["token"] = _token;
-                payload["content"] = Content.Event.GetDisplayName();
-                payload["action"] = RedcapAction.Delete.GetDisplayName();
-                for (var i = 0; i < events.Length; i++)
-                    payload[$"events[{i}]"] = events[i];
+                AddActionRequest(payload, Content.Event, RedcapAction.Delete);
+                AddIndexedValues(payload, "events", events);
             }, cancellationToken, timeOutSeconds);
         }
 

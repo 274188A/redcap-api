@@ -41,18 +41,15 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.Report.GetDisplayName();
+                AddFormattedRequest(payload, Content.Report, format, returnFormat);
                 payload["report_id"] = reportId.ToString();
-                payload["format"] = format.GetDisplayName();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
                 var rol = rawOrLabel.ToString();
                 if (!IsNullOrEmpty(rol)) payload["rawOrLabel"] = rol;
                 var rolh = rawOrLabelHeaders.ToString();
                 if (!IsNullOrEmpty(rolh)) payload["rawOrLabelHeaders"] = rolh;
                 if (exportCheckboxLabel) payload["exportCheckboxLabel"] = exportCheckboxLabel.ToString();
-                if (!IsNullOrEmpty(csvDelimiter)) payload["csvDelimiter"] = csvDelimiter!;
-                if (!IsNullOrEmpty(decimalCharacter)) payload["decimalCharacter"] = decimalCharacter!;
+                AddOptional(payload, "csvDelimiter", csvDelimiter);
+                AddOptional(payload, "decimalCharacter", decimalCharacter);
             }, cancellationToken, timeOutSeconds);
         }
 

@@ -41,16 +41,13 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.Log.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
+                AddFormattedRequest(payload, Content.Log, format, returnFormat);
                 payload["logtype"] = logType.GetDisplayName();
-                if (!IsNullOrEmpty(user)) payload["user"] = user!;
-                if (!IsNullOrEmpty(record)) payload["record"] = record!;
-                if (!IsNullOrEmpty(dag)) payload["dag"] = dag!;
-                if (!IsNullOrEmpty(beginTime)) payload["beginTime"] = beginTime!;
-                if (!IsNullOrEmpty(endTime)) payload["endTime"] = endTime!;
+                AddOptional(payload, "user", user);
+                AddOptional(payload, "record", record);
+                AddOptional(payload, "dag", dag);
+                AddOptional(payload, "beginTime", beginTime);
+                AddOptional(payload, "endTime", endTime);
             }, cancellationToken, timeOutSeconds);
         }
 

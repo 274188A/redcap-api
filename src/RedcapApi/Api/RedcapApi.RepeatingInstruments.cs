@@ -32,9 +32,7 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.RepeatingFormsEvents.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
+                AddFormattedRequest(payload, Content.RepeatingFormsEvents, format);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -94,11 +92,8 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = content.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
-                payload["data"] = JsonConvert.SerializeObject(data);
+                AddFormattedRequest(payload, content, format, returnFormat);
+                AddData(payload, data);
             }, cancellationToken, timeOutSeconds);
         }
 

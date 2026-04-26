@@ -48,14 +48,11 @@ namespace Redcap
                 throw new RedcapApiException("No field provided to export");
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.File.GetDisplayName();
-                payload["action"] = RedcapAction.Export.GetDisplayName();
+                AddActionRequest(payload, Content.File, RedcapAction.Export, returnFormat);
                 payload["record"] = record!;
                 payload["field"] = field;
                 payload["event"] = eventName;
-                payload["returnFormat"] = returnFormat.GetDisplayName();
-                if (!IsNullOrEmpty(repeatInstance)) payload["repeat_instance"] = repeatInstance!;
+                AddOptional(payload, "repeat_instance", repeatInstance);
             }, cancellationToken, timeOutSeconds);
         }
 

@@ -49,12 +49,9 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.Project.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
-                payload["data"] = JsonConvert.SerializeObject(data);
-                if (!IsNullOrEmpty(odm)) payload["odm"] = odm;
+                AddFormattedRequest(payload, Content.Project, format, returnFormat);
+                AddData(payload, data);
+                AddOptional(payload, "odm", odm);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -77,10 +74,8 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.ProjectSettings.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
-                payload["data"] = JsonConvert.SerializeObject(projectInfo);
+                AddFormattedRequest(payload, Content.ProjectSettings, format);
+                AddData(payload, projectInfo);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -104,10 +99,7 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.Project.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
+                AddFormattedRequest(payload, Content.Project, format, returnFormat);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -168,18 +160,19 @@ namespace Redcap
         public async Task<string> ExportProjectXmlAsync(bool returnMetadataOnly = false, string[]? records = default, string[]? fields = default, string[]? events = default, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, bool exportSurveyFields = false, bool exportDataAccessGroups = false, string? filterLogic = default, bool exportFiles = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             var recordsStr = records?.Length > 0 ? this.ConvertArraytoString(records) : null;
+            var fieldsStr = fields?.Length > 0 ? this.ConvertArraytoString(fields) : null;
             var eventsStr = events?.Length > 0 ? this.ConvertArraytoString(events) : null;
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.ProjectXml.GetDisplayName();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
+                AddContent(payload, Content.ProjectXml);
+                AddReturnFormat(payload, returnFormat);
                 if (returnMetadataOnly) payload["returnMetadataOnly"] = returnMetadataOnly.ToString();
-                if (recordsStr != null) payload["records"] = recordsStr;
-                if (eventsStr != null) payload["events"] = eventsStr;
+                AddOptional(payload, "records", recordsStr);
+                AddOptional(payload, "fields", fieldsStr);
+                AddOptional(payload, "events", eventsStr);
                 if (exportSurveyFields) payload["exportSurveyFields"] = exportSurveyFields.ToString();
                 if (exportDataAccessGroups) payload["exportDataAccessGroups"] = exportDataAccessGroups.ToString();
-                if (!IsNullOrEmpty(filterLogic)) payload["filterLogic"] = filterLogic;
+                AddOptional(payload, "filterLogic", filterLogic);
                 if (exportFiles) payload["exportFiles"] = exportFiles.ToString();
             }, cancellationToken, timeOutSeconds);
         }

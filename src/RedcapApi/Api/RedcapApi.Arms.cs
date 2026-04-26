@@ -36,13 +36,9 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.Arm.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
+                AddFormattedRequest(payload, Content.Arm, format, returnFormat);
                 if (arms?.Length > 0)
-                    for (var i = 0; i < arms.Length; i++)
-                        payload[$"arms[{i}]"] = arms[i];
-                payload["returnFormat"] = returnFormat.GetDisplayName();
+                    AddIndexedValues(payload, "arms", arms);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -108,13 +104,8 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.Arm.GetDisplayName();
-                payload["action"] = action.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
+                AddImportRequest(payload, Content.Arm, format, data, returnFormat, action);
                 payload["override"] = overrideBehavior ? "true" : "false";
-                payload["returnFormat"] = returnFormat.GetDisplayName();
-                payload["data"] = JsonConvert.SerializeObject(data);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -135,15 +126,12 @@ namespace Redcap
         /// <returns>Number of Arms deleted</returns>
         public async Task<string> DeleteArmsAsync(string[] arms, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
+            RequireItems(arms, "No arm to delete, please specify arm");
+
             return await ExecuteAsync(payload =>
             {
-                if (arms == null || arms.Length < 1)
-                    throw new InvalidOperationException("No arm to delete, please specify arm");
-                payload["token"] = _token;
-                payload["content"] = Content.Arm.GetDisplayName();
-                payload["action"] = RedcapAction.Delete.GetDisplayName();
-                for (var i = 0; i < arms.Length; i++)
-                    payload[$"arms[{i}]"] = arms[i];
+                AddActionRequest(payload, Content.Arm, RedcapAction.Delete);
+                AddIndexedValues(payload, "arms", arms);
             }, cancellationToken, timeOutSeconds);
         }
 

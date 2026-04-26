@@ -33,10 +33,7 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.Dag.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
+                AddFormattedRequest(payload, Content.Dag, format, returnFormat);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -90,12 +87,7 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.Dag.GetDisplayName();
-                payload["action"] = RedcapAction.Import.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
-                payload["data"] = JsonConvert.SerializeObject(data);
+                AddImportRequest(payload, Content.Dag, format, data, returnFormat);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -112,15 +104,12 @@ namespace Redcap
         /// <returns>Number of DAGs deleted</returns>
         public async Task<string> DeleteDagsAsync(string[] dags, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
+            RequireItems(dags, "No dags to delete.");
+
             return await ExecuteAsync(payload =>
             {
-                if (dags.Length < 1)
-                    throw new InvalidOperationException("No dags to delete.");
-                payload["token"] = _token;
-                payload["content"] = Content.Dag.GetDisplayName();
-                payload["action"] = RedcapAction.Delete.GetDisplayName();
-                for (var i = 0; i < dags.Length; i++)
-                    payload[$"dags[{i}]"] = dags[i];
+                AddActionRequest(payload, Content.Dag, RedcapAction.Delete);
+                AddIndexedValues(payload, "dags", dags);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -141,10 +130,8 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
                 payload["dag"] = dag.UniqueGroupName!;
-                payload["content"] = Content.Dag.GetDisplayName();
-                payload["action"] = RedcapAction.Switch.GetDisplayName();
+                AddActionRequest(payload, Content.Dag, RedcapAction.Switch);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -164,10 +151,7 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.UserDagMapping.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
+                AddFormattedRequest(payload, Content.UserDagMapping, format, returnFormat);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -219,16 +203,11 @@ namespace Redcap
         /// <returns>Number of User-DAG assignments added or updated</returns>
         public async Task<string> ImportUserDagAssignmentAsync<T>(RedcapFormat format, List<T> data, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
+            RequireItems(data, "No data to import, please specify data to import.");
+
             return await ExecuteAsync(payload =>
             {
-                if (data.Count < 1)
-                    throw new InvalidOperationException("No data to import, please specify data to import.");
-                payload["token"] = _token;
-                payload["content"] = Content.UserDagMapping.GetDisplayName();
-                payload["action"] = RedcapAction.Import.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
-                payload["data"] = JsonConvert.SerializeObject(data);
+                AddImportRequest(payload, Content.UserDagMapping, format, data, returnFormat);
             }, cancellationToken, timeOutSeconds);
         }
 

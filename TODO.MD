@@ -50,22 +50,26 @@ Working list for turning `redcap-api` into a genuinely excellent library, not ju
 
 ## P1 Internal Design And Maintainability
 
-- [ ] Reduce remaining payload-building duplication across partials.
+- [x] Reduce remaining payload-building duplication across partials.
   - Many methods still hand-roll the same `"token"`, `"content"`, `"format"`, `"returnFormat"` patterns.
   - Files: `src/RedcapApi/Api/*.cs`
   - Goal: keep methods small, consistent, and hard to get wrong.
+  - Done: dictionary payloads now start from a token-bearing payload factory, and endpoint partials use shared helpers for `content`, `action`, `format`, `returnFormat`, optional string keys, and indexed arrays.
 
-- [ ] Introduce focused helper abstractions for common request shapes.
+- [x] Introduce focused helper abstractions for common request shapes.
   - Examples: export requests, import requests, delete requests, file download requests.
   - Goal: fewer copy-paste variations and easier future endpoint additions.
+  - Done: added focused helper methods for formatted requests, action requests, import requests, indexed value lists, and optional values; transport tests also pin the previously-missing file repository folder `name` and project XML `fields` payload keys.
 
-- [ ] Normalize argument validation strategy across the library.
+- [x] Normalize argument validation strategy across the library.
   - Some methods throw `RedcapApiException`, some rely on `ArgumentException`, some log and continue.
   - Goal: predictable consumer experience and simpler tests.
+  - Done: public endpoint collection validations now use a shared `RequireItems` helper that throws `RedcapApiException` before transport dispatch; lower-level utility and constructor guard clauses keep standard .NET argument exceptions.
 
-- [ ] Review serialization strategy intentionally.
+- [x] Review serialization strategy intentionally.
   - Current implementation relies on `JsonConvert.SerializeObject(...)` in many import methods.
   - Goal: document or refactor toward one explicit serialization policy.
+  - Done: kept Newtonsoft.Json as the explicit wire serializer for compatibility and centralized outbound `data` serialization through `AddData`, with import helpers calling the same path.
 
 ## P1 Packaging And Release Quality
 
@@ -123,9 +127,12 @@ Working list for turning `redcap-api` into a genuinely excellent library, not ju
 
 ## P2 Modernization Candidates
 
-- [ ] Evaluate moving from `Serilog` direct usage to `Microsoft.Extensions.Logging.Abstractions` or a library-neutral logging story.
-- [ ] Evaluate `System.Text.Json` versus `Newtonsoft.Json` intentionally rather than by inertia.
-- [ ] Evaluate `IHttpClientFactory` support for ASP.NET / DI-heavy consumers.
+- [x] Evaluate moving from `Serilog` direct usage to `Microsoft.Extensions.Logging.Abstractions` or a library-neutral logging story.
+  - Done: evaluated the current static Serilog usage. Keep Serilog for 2.0 to avoid another public constructor/dependency change in this pass; a future major should move logging behind an injectable abstraction or remove library-internal logging.
+- [x] Evaluate `System.Text.Json` versus `Newtonsoft.Json` intentionally rather than by inertia.
+  - Done: keep Newtonsoft.Json for 2.0 because typed models already use `[JsonProperty]` wire-name attributes extensively, and outbound serialization is now centralized through `AddData`.
+- [x] Evaluate `IHttpClientFactory` support for ASP.NET / DI-heavy consumers.
+  - Done: `DefaultRedcapTransport.FromHttpClient(...)` now accepts a caller-owned `HttpClient`, enabling use with `IHttpClientFactory` without taking a dependency on `Microsoft.Extensions.Http`; disposal tests cover both owned-handler and caller-owned-client paths.
 
 ## Suggested Order
 

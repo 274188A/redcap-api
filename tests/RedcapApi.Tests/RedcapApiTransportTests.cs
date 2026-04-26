@@ -1085,6 +1085,19 @@ public class RedcapApiTransportTests
     }
 
     [Fact]
+    public async Task ExportEventsAsync_WithNoArms_ThrowsRedcapApiException()
+    {
+        var transport = new FakeTransport();
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
+            api.ExportEventsAsync(RedcapFormat.json, Array.Empty<string>()));
+
+        Assert.Contains("Please specify the arm", ex.Message);
+        Assert.Null(transport.LastDictionaryPayload);
+    }
+
+    [Fact]
     public async Task ImportEventsAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
@@ -1116,6 +1129,19 @@ public class RedcapApiTransportTests
         Assert.Equal("json", transport.LastDictionaryPayload["format"]);
         Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
         Assert.Contains("baseline", transport.LastDictionaryPayload["data"]);
+    }
+
+    [Fact]
+    public async Task ImportEventsAsync_WithNoData_ThrowsRedcapApiException()
+    {
+        var transport = new FakeTransport();
+        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+
+        var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
+            api.ImportEventsAsync(false, RedcapFormat.json, new List<RedcapEvent>()));
+
+        Assert.Contains("Events can not be empty or null", ex.Message);
+        Assert.Null(transport.LastDictionaryPayload);
     }
 
     [Fact]
@@ -1433,6 +1459,7 @@ public class RedcapApiTransportTests
         await api.ExportProjectXmlAsync(
             returnMetadataOnly: true,
             records: new[] { "1", "2" },
+            fields: new[] { "field_1", "field_2" },
             events: new[] { "event_1_arm_1" },
             returnFormat: RedcapReturnFormat.xml,
             exportSurveyFields: true,
@@ -1445,6 +1472,7 @@ public class RedcapApiTransportTests
         Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
         Assert.Equal("True", transport.LastDictionaryPayload["returnMetadataOnly"]);
         Assert.Equal("1,2", transport.LastDictionaryPayload["records"]);
+        Assert.Equal("field_1,field_2", transport.LastDictionaryPayload["fields"]);
         Assert.Equal("event_1_arm_1", transport.LastDictionaryPayload["events"]);
         Assert.Equal("True", transport.LastDictionaryPayload["exportSurveyFields"]);
         Assert.Equal("True", transport.LastDictionaryPayload["exportDataAccessGroups"]);
@@ -1913,6 +1941,7 @@ public class RedcapApiTransportTests
         Assert.Equal("fileRepository", transport.LastDictionaryPayload!["content"]);
         Assert.Equal("createFolder", transport.LastDictionaryPayload["action"]);
         Assert.Equal("json", transport.LastDictionaryPayload["format"]);
+        Assert.Equal("new-folder", transport.LastDictionaryPayload["name"]);
         Assert.Equal("10", transport.LastDictionaryPayload["folder_id"]);
         Assert.Equal("20", transport.LastDictionaryPayload["dag_id"]);
         Assert.Equal("30", transport.LastDictionaryPayload["role_id"]);

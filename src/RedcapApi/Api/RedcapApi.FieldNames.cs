@@ -35,12 +35,8 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.ExportFieldNames.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
-                if (!IsNullOrEmpty(field))
-                    payload["field"] = field!;
+                AddFormattedRequest(payload, Content.ExportFieldNames, format, returnFormat);
+                AddOptional(payload, "field", field);
             }, cancellationToken, timeOutSeconds);
         }
 

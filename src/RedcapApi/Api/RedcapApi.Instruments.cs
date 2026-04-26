@@ -32,9 +32,7 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.Instrument.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
+                AddFormattedRequest(payload, Content.Instrument, format);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -88,12 +86,11 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.Pdf.GetDisplayName();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
-                if (!IsNullOrEmpty(recordId)) payload["record"] = recordId!;
-                if (!IsNullOrEmpty(eventName)) payload["event"] = eventName!;
-                if (!IsNullOrEmpty(instrument)) payload["instrument"] = instrument!;
+                AddContent(payload, Content.Pdf);
+                AddReturnFormat(payload, returnFormat);
+                AddOptional(payload, "record", recordId);
+                AddOptional(payload, "event", eventName);
+                AddOptional(payload, "instrument", instrument);
                 if (allRecord) payload["allRecords"] = allRecord.ToString();
             }, cancellationToken, timeOutSeconds);
         }
@@ -124,12 +121,11 @@ namespace Redcap
             }
             return await ExecuteDownloadAsync(filePath!, payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.Pdf.GetDisplayName();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
-                if (!IsNullOrEmpty(recordId)) payload["record"] = recordId!;
-                if (!IsNullOrEmpty(eventName)) payload["event"] = eventName!;
-                if (!IsNullOrEmpty(instrument)) payload["instrument"] = instrument!;
+                AddContent(payload, Content.Pdf);
+                AddReturnFormat(payload, returnFormat);
+                AddOptional(payload, "record", recordId);
+                AddOptional(payload, "event", eventName);
+                AddOptional(payload, "instrument", instrument);
                 if (allRecord) payload["allRecords"] = allRecord.ToString();
             }, cancellationToken, timeOutSeconds);
         }
@@ -154,13 +150,8 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.FormEventMapping.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
-                if (arms?.Length > 0)
-                    for (var i = 0; i < arms.Length; i++)
-                        payload[$"arms[{i}]"] = arms[i];
+                AddFormattedRequest(payload, Content.FormEventMapping, format, returnFormat);
+                AddIndexedValues(payload, "arms", arms);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -217,11 +208,8 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.FormEventMapping.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
-                payload["data"] = JsonConvert.SerializeObject(data);
+                AddFormattedRequest(payload, Content.FormEventMapping, format, returnFormat);
+                AddData(payload, data);
             }, cancellationToken, timeOutSeconds);
         }
 

@@ -133,7 +133,7 @@ namespace Redcap
 
             try
             {
-                var payload = new Dictionary<string, string>();
+                var payload = CreatePayload();
                 buildPayload(payload);
                 return await this.SendPostRequestAsync(payload, _uri,
                     cancellationToken: cancellationToken, timeOutSeconds);
@@ -209,7 +209,7 @@ namespace Redcap
 
             try
             {
-                var payload = new Dictionary<string, string>();
+                var payload = CreatePayload();
                 buildPayload(payload);
                 return await this.DownloadFileAsync(payload, _uri, destinationPath,
                     cancellationToken: cancellationToken, timeOutSeconds: timeOutSeconds);
@@ -277,6 +277,118 @@ namespace Redcap
         protected virtual string ExtractBehavior(OverwriteBehavior overwriteBehavior)
         {
             return Utils.ExtractBehavior(this, overwriteBehavior);
+        }
+
+        private Dictionary<string, string> CreatePayload()
+        {
+            return new Dictionary<string, string>
+            {
+                ["token"] = _token
+            };
+        }
+
+        private static void AddContent(Dictionary<string, string> payload, Content content)
+        {
+            payload["content"] = content.GetDisplayName();
+        }
+
+        private static void AddAction(Dictionary<string, string> payload, RedcapAction action)
+        {
+            payload["action"] = action.GetDisplayName();
+        }
+
+        private static void AddFormat(Dictionary<string, string> payload, RedcapFormat format)
+        {
+            payload["format"] = format.GetDisplayName();
+        }
+
+        private static void AddReturnFormat(Dictionary<string, string> payload, RedcapReturnFormat returnFormat)
+        {
+            payload["returnFormat"] = returnFormat.GetDisplayName();
+        }
+
+        private static void AddFormattedRequest(
+            Dictionary<string, string> payload,
+            Content content,
+            RedcapFormat format,
+            RedcapReturnFormat? returnFormat = null)
+        {
+            AddContent(payload, content);
+            AddFormat(payload, format);
+
+            if (returnFormat.HasValue)
+            {
+                AddReturnFormat(payload, returnFormat.Value);
+            }
+        }
+
+        private static void AddActionRequest(
+            Dictionary<string, string> payload,
+            Content content,
+            RedcapAction action,
+            RedcapReturnFormat? returnFormat = null)
+        {
+            AddContent(payload, content);
+            AddAction(payload, action);
+
+            if (returnFormat.HasValue)
+            {
+                AddReturnFormat(payload, returnFormat.Value);
+            }
+        }
+
+        private static void AddImportRequest<T>(
+            Dictionary<string, string> payload,
+            Content content,
+            RedcapFormat format,
+            T data,
+            RedcapReturnFormat? returnFormat = null,
+            RedcapAction action = RedcapAction.Import)
+        {
+            AddContent(payload, content);
+            AddAction(payload, action);
+            AddFormat(payload, format);
+
+            if (returnFormat.HasValue)
+            {
+                AddReturnFormat(payload, returnFormat.Value);
+            }
+
+            AddData(payload, data);
+        }
+
+        private static void AddData<T>(Dictionary<string, string> payload, T data)
+        {
+            payload["data"] = JsonConvert.SerializeObject(data);
+        }
+
+        private static void AddIndexedValues(Dictionary<string, string> payload, string key, IReadOnlyList<string>? values)
+        {
+            if (values == null || values.Count == 0)
+            {
+                return;
+            }
+
+            for (var i = 0; i < values.Count; i++)
+            {
+                payload[$"{key}[{i}]"] = values[i];
+            }
+        }
+
+        private static void AddOptional(Dictionary<string, string> payload, string key, string? value)
+        {
+            if (!IsNullOrEmpty(value))
+            {
+                payload[key] = value!;
+            }
+        }
+
+        private static void RequireItems<T>(IReadOnlyCollection<T>? values, string message)
+        {
+            if (values == null || values.Count == 0)
+            {
+                throw new RedcapApiException(message);
+            }
         }
 
         private void Dispose(bool disposing)

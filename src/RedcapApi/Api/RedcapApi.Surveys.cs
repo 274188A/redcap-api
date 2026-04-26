@@ -38,13 +38,12 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.SurveyLink.GetDisplayName();
+                AddContent(payload, Content.SurveyLink);
                 payload["record"] = record;
                 payload["instrument"] = instrument;
                 payload["event"] = eventName;
                 payload["repeat_instance"] = repeatInstance.ToString();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
+                AddReturnFormat(payload, returnFormat);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -68,13 +67,12 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.SurveyAccessCode.GetDisplayName();
+                AddContent(payload, Content.SurveyAccessCode);
                 payload["record"] = record;
                 payload["instrument"] = instrument;
                 payload["event"] = eventName;
                 payload["repeat_instance"] = repeatInstance.ToString();
-                payload["returnFormat"] = returnFormat.GetDisplayName();
+                AddReturnFormat(payload, returnFormat);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -97,12 +95,9 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.ParticipantList.GetDisplayName();
-                payload["format"] = format.GetDisplayName();
+                AddFormattedRequest(payload, Content.ParticipantList, format, returnFormat);
                 payload["instrument"] = instrument;
                 payload["event"] = eventName;
-                payload["returnFormat"] = returnFormat.GetDisplayName();
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -124,10 +119,9 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.SurveyQueueLink.GetDisplayName();
+                AddContent(payload, Content.SurveyQueueLink);
                 payload["record"] = record;
-                payload["returnFormat"] = returnFormat.GetDisplayName();
+                AddReturnFormat(payload, returnFormat);
             }, cancellationToken, timeOutSeconds);
         }
 
@@ -151,13 +145,12 @@ namespace Redcap
         {
             return await ExecuteAsync(payload =>
             {
-                payload["token"] = _token;
-                payload["content"] = Content.SurveyReturnCode.GetDisplayName();
+                AddContent(payload, Content.SurveyReturnCode);
                 payload["record"] = record;
                 payload["instrument"] = instrument;
                 payload["event"] = eventName;
                 payload["repeat_instance"] = repeatInstance!;
-                payload["returnFormat"] = returnFormat.GetDisplayName();
+                AddReturnFormat(payload, returnFormat);
             }, cancellationToken, timeOutSeconds);
         }
 

@@ -11,6 +11,7 @@ namespace Redcap.Api
     {
         private readonly HttpClient _client;
         private readonly TimeSpan _defaultTimeout;
+        private readonly bool _ownsClient;
 
         /// <param name="handler">
         /// Optional handler. Supply one when you need custom TLS settings (e.g. self-signed certs in dev).
@@ -19,12 +20,36 @@ namespace Redcap.Api
         /// Default request timeout applied when a call does not specify a positive <c>timeOutSeconds</c> override.
         /// </param>
         public DefaultRedcapTransport(HttpMessageHandler? handler = null, long timeOutSeconds = 100)
+            : this(
+                new HttpClient(handler ?? new HttpClientHandler())
+                {
+                    Timeout = Timeout.InfiniteTimeSpan
+                },
+                timeOutSeconds,
+                ownsClient: true)
         {
+        }
+
+        /// <summary>
+        /// Creates a transport around a caller-owned <see cref="HttpClient"/>, such as one created by
+        /// <c>IHttpClientFactory</c>.
+        /// </summary>
+        /// <param name="client">Caller-owned HTTP client. Disposing this transport will not dispose it.</param>
+        /// <param name="timeOutSeconds">
+        /// Default request timeout applied when a call does not specify a positive <c>timeOutSeconds</c> override.
+        /// </param>
+        public static DefaultRedcapTransport FromHttpClient(HttpClient client, long timeOutSeconds = 100)
+        {
+            return new DefaultRedcapTransport(client, timeOutSeconds, ownsClient: false);
+        }
+
+        private DefaultRedcapTransport(HttpClient client, long timeOutSeconds, bool ownsClient)
+        {
+            _client = client ?? throw new ArgumentNullException(nameof(client));
             _defaultTimeout = timeOutSeconds > 0
                 ? TimeSpan.FromSeconds(timeOutSeconds)
                 : TimeSpan.FromSeconds(100);
-            _client = new HttpClient(handler ?? new HttpClientHandler());
-            _client.Timeout = Timeout.InfiniteTimeSpan;
+            _ownsClient = ownsClient;
         }
 
         /// <inheritdoc />
@@ -64,7 +89,13 @@ namespace Redcap.Api
         }
 
         /// <inheritdoc />
-        public void Dispose() => _client.Dispose();
+        public void Dispose()
+        {
+            if (_ownsClient)
+            {
+                _client.Dispose();
+            }
+        }
 
         private async Task<T> ExecuteWithTimeoutAsync<T>(CancellationToken cancellationToken, long timeOutSeconds, Func<CancellationToken, Task<T>> action)
         {
