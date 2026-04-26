@@ -19,7 +19,7 @@ Make download, stream, form-encoding, and JSON behavior trustworthy end to end, 
 - [x] Update `Utils.DownloadFileAsync` to prefer `Content-Disposition` `filename*`, then `filename`.
 - [x] Preserve server-provided file extensions instead of blindly appending `.pdf`.
 - [x] Add tests for quoted filenames, filenames with existing extensions, and non-PDF downloads.
-- [ ] Add tests for missing filename headers.
+- [x] Add tests for missing filename headers.
 - [x] Keep the existing path-traversal guard in `ReadAsFileAsync` covered by tests.
 - [ ] Make PDF instrument exports use a predictable fallback name when the server does not send one.
 

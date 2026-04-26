@@ -250,6 +250,40 @@ public class UtilitiesTests
     }
 
     [Fact]
+    public async Task ExportFileAsync_WithoutFilenameHeaders_ThrowsAndDoesNotWriteFile()
+    {
+        using var server = new LocalHttpServer(_ => new TestResponse(
+            200,
+            "file-body",
+            "application/octet-stream"));
+        var api = new Redcap.RedcapApi(server.Url.ToString(), Token);
+        var tempDirectory = Path.Combine(Path.GetTempPath(), "redcap-export-file-" + Guid.NewGuid().ToString("N"));
+
+        try
+        {
+            var ex = await Assert.ThrowsAsync<Redcap.Exceptions.RedcapApiException>(() =>
+                api.ExportFileAsync(
+                    "1",
+                    "upload",
+                    "event_1_arm_1",
+                    "2",
+                    RedcapReturnFormat.xml,
+                    tempDirectory));
+
+            Assert.Contains("download filename", ex.Message, StringComparison.OrdinalIgnoreCase);
+            Assert.True(Directory.Exists(tempDirectory));
+            Assert.Empty(Directory.GetFiles(tempDirectory));
+        }
+        finally
+        {
+            if (Directory.Exists(tempDirectory))
+            {
+                Directory.Delete(tempDirectory, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     public async Task LocalHttpServer_CapturesHeadersCaseInsensitivelyAndRequestPath()
     {
         using var server = new LocalHttpServer(_ => new TestResponse(200, "ok"));
