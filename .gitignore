@@ -265,3 +265,6 @@ RedcapApi/nuget.config
 
 .claude/settings.local.json
 HANDOFF.md
+/.appdata
+/.dotnet-home
+/.claude/.claude
