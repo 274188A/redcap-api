@@ -268,3 +268,4 @@ HANDOFF.md
 /.appdata
 /.dotnet-home
 /.claude/.claude
+/.github/upgrades/scenarios/newtonsoft-json-migration
