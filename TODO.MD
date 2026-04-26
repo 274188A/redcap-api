@@ -21,20 +21,20 @@ Make download, stream, form-encoding, and JSON behavior trustworthy end to end, 
 - [x] Add tests for quoted filenames, filenames with existing extensions, and non-PDF downloads.
 - [x] Add tests for missing filename headers.
 - [x] Keep the existing path-traversal guard in `ReadAsFileAsync` covered by tests.
-- [ ] Make PDF instrument exports use a predictable fallback name when the server does not send one.
+- [x] Make PDF instrument exports use a predictable fallback name when the server does not send one.
 
 ## 3. Stream lifetime
 
-- [ ] Decide whether `GetStreamContentAsync` should return a readable buffered stream or a response-owning download object.
-- [ ] Replace the current disposed-stream behavior with the chosen contract.
-- [ ] Update `GetStreamContentAsync_ReturnsResponseStream` to assert the returned stream can read `stream-body`.
-- [ ] Keep non-success status coverage that preserves status code and response body.
+- [x] Decide whether `GetStreamContentAsync` should return a readable buffered stream or a response-owning download object.
+- [x] Replace the current disposed-stream behavior with the chosen contract.
+- [x] Update `GetStreamContentAsync_ReturnsResponseStream` to assert the returned stream can read `stream-body`.
+- [x] Keep non-success status coverage that preserves status code and response body.
 
 ## 4. Form encoding
 
-- [ ] Change `CustomFormUrlEncodedContent` to produce UTF-8 bytes, or replace it with the framework form encoder if behavior matches.
-- [ ] Add a request-capture test with non-ASCII values such as `cafe` with an accent.
-- [ ] Keep coverage for spaces as `+`, reserved characters, and empty dictionaries.
+- [x] Change `CustomFormUrlEncodedContent` to produce UTF-8 bytes, or replace it with the framework form encoder if behavior matches.
+- [x] Add a request-capture test with non-ASCII values such as `cafe` with an accent.
+- [x] Keep coverage for spaces as `+`, reserved characters, and empty dictionaries.
 
 ## 5. JSON serialization
 

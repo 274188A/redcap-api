@@ -164,7 +164,10 @@ public class UtilitiesTests
         using var stream = await Utils.GetStreamContentAsync(new Dictionary<string, string> { ["token"] = "abc" }, server.Url, client);
 
         Assert.NotNull(stream);
-        Assert.False(stream!.CanRead);
+        Assert.True(stream!.CanRead);
+        using var reader = new StreamReader(stream, Encoding.UTF8, leaveOpen: true);
+        var body = await reader.ReadToEndAsync();
+        Assert.Equal("stream-body", body);
     }
 
     [Fact]
@@ -197,6 +200,24 @@ public class UtilitiesTests
         Assert.Equal("ok", response);
         Assert.True(server.Requests.TryPeek(out var request));
         Assert.Equal(string.Empty, request!.Body);
+    }
+
+    [Fact]
+    public async Task SendPostRequestAsync_WithDictionary_UsesUtf8FormEncodingForNonAsciiValues()
+    {
+        using var server = new LocalHttpServer(_ => new TestResponse(200, "ok"));
+        using var client = new HttpClient();
+        var payload = new Dictionary<string, string>
+        {
+            ["note"] = "café au lait"
+        };
+
+        var response = await Utils.SendPostRequestAsync(payload, server.Url, client);
+
+        Assert.Equal("ok", response);
+        Assert.True(server.Requests.TryPeek(out var request));
+        Assert.Equal("note=caf%C3%A9+au+lait", request!.Body);
+        Assert.Equal("application/x-www-form-urlencoded; charset=utf-8", request.Headers["Content-Type"]);
     }
 
     [Fact]
@@ -273,6 +294,76 @@ public class UtilitiesTests
             Assert.Contains("download filename", ex.Message, StringComparison.OrdinalIgnoreCase);
             Assert.True(Directory.Exists(tempDirectory));
             Assert.Empty(Directory.GetFiles(tempDirectory));
+        }
+        finally
+        {
+            if (Directory.Exists(tempDirectory))
+            {
+                Directory.Delete(tempDirectory, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public async Task ExportPDFInstrumentsAsync_WithoutFilenameHeaders_UsesInstrumentNameFallback()
+    {
+        using var server = new LocalHttpServer(_ => new TestResponse(
+            200,
+            "pdf-body",
+            "application/pdf"));
+        var api = new Redcap.RedcapApi(server.Url.ToString(), Token);
+        var tempDirectory = Path.Combine(Path.GetTempPath(), "redcap-export-pdf-" + Guid.NewGuid().ToString("N"));
+
+        try
+        {
+            var savedFileName = await api.ExportPDFInstrumentsAsync(
+                "1",
+                "event_1_arm_1",
+                "survey_a",
+                false,
+                tempDirectory,
+                RedcapReturnFormat.xml);
+
+            var savedPath = Path.Combine(tempDirectory, "survey_a.pdf");
+
+            Assert.Equal("survey_a.pdf", savedFileName);
+            Assert.True(File.Exists(savedPath));
+            Assert.Equal("pdf-body", await File.ReadAllTextAsync(savedPath));
+        }
+        finally
+        {
+            if (Directory.Exists(tempDirectory))
+            {
+                Directory.Delete(tempDirectory, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public async Task ExportPDFInstrumentsAsync_WithoutFilenameHeadersAndInstrument_UsesGenericFallback()
+    {
+        using var server = new LocalHttpServer(_ => new TestResponse(
+            200,
+            "pdf-body",
+            "application/pdf"));
+        var api = new Redcap.RedcapApi(server.Url.ToString(), Token);
+        var tempDirectory = Path.Combine(Path.GetTempPath(), "redcap-export-pdf-" + Guid.NewGuid().ToString("N"));
+
+        try
+        {
+            var savedFileName = await api.ExportPDFInstrumentsAsync(
+                "1",
+                "event_1_arm_1",
+                instrument: null,
+                allRecord: true,
+                filePath: tempDirectory,
+                returnFormat: RedcapReturnFormat.xml);
+
+            var savedPath = Path.Combine(tempDirectory, "redcap-pdf-instruments.pdf");
+
+            Assert.Equal("redcap-pdf-instruments.pdf", savedFileName);
+            Assert.True(File.Exists(savedPath));
+            Assert.Equal("pdf-body", await File.ReadAllTextAsync(savedPath));
         }
         finally
         {

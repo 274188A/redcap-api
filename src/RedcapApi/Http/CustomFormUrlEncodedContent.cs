@@ -15,13 +15,16 @@ namespace Redcap.Http
         public CustomFormUrlEncodedContent(IEnumerable<KeyValuePair<string, string>> nameValueCollection)
             : base(CustomFormUrlEncodedContent.GetContentByteArray(nameValueCollection))
         {
-            base.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
+            base.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded")
+            {
+                CharSet = Encoding.UTF8.WebName
+            };
         }
         private static byte[] GetContentByteArray(IEnumerable<KeyValuePair<string, string>> nameValueCollection)
         {
             if (nameValueCollection == null)
             {
-                throw new ArgumentNullException("nameValueCollection");
+                throw new ArgumentNullException(nameof(nameValueCollection));
             }
             StringBuilder stringBuilder = new StringBuilder();
             foreach (KeyValuePair<string, string> current in nameValueCollection)
@@ -35,7 +38,7 @@ namespace Redcap.Http
                 stringBuilder.Append('=');
                 stringBuilder.Append(CustomFormUrlEncodedContent.Encode(current.Value));
             }
-            return Encoding.Default.GetBytes(stringBuilder.ToString());
+            return Encoding.UTF8.GetBytes(stringBuilder.ToString());
         }
         private static string Encode(string data)
         {

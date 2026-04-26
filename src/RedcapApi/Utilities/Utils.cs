@@ -239,14 +239,18 @@ namespace Redcap.Utilities
         /// <returns>Stream</returns>
         public static async Task<Stream?> GetStreamContentAsync(Dictionary<string, string> payload, Uri uri, HttpClient client, CancellationToken cancellationToken = default)
         {
-            var content = new FormUrlEncodedContent(payload);
+            using var content = new CustomFormUrlEncodedContent(payload);
             using var response = await client.PostAsync(uri, content, cancellationToken);
             if (!response.IsSuccessStatusCode)
             {
                 var body = await response.Content.ReadAsStringAsync();
                 throw new RedcapApiException($"REDCap returned {(int)response.StatusCode} {response.ReasonPhrase}", response.StatusCode, body);
             }
-            return await response.Content.ReadAsStreamAsync();
+
+            var stream = new MemoryStream();
+            await response.Content.CopyToAsync(stream, cancellationToken);
+            stream.Position = 0;
+            return stream;
         }
 
         /// <summary>
@@ -313,7 +317,7 @@ namespace Redcap.Utilities
             var fileExtension = string.Empty;
             if (isPdf)
             {
-                fileName = payload.TryGetValue("instrument", out var inst) ? inst : fileName;
+                fileName ??= GetPdfFallbackFileName(payload);
                 if (!string.IsNullOrEmpty(fileName) && !Path.HasExtension(fileName))
                 {
                     fileExtension = "pdf";
@@ -359,6 +363,17 @@ namespace Redcap.Utilities
             }
 
             return savedFileName;
+        }
+
+        private static string GetPdfFallbackFileName(Dictionary<string, string> payload)
+        {
+            if (payload.TryGetValue("instrument", out var instrument) &&
+                !string.IsNullOrWhiteSpace(instrument))
+            {
+                return instrument;
+            }
+
+            return "redcap-pdf-instruments";
         }
 
         /// <summary>
