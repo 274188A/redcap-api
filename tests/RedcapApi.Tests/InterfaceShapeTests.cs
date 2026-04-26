@@ -5,12 +5,10 @@ namespace RedcapApi.Tests;
 
 public class InterfaceShapeTests
 {
-    private const string Token = "token123";
-
     [Fact]
     public void RedcapApi_CanBeUsedThroughFocusedDomainInterfaces()
     {
-        var api = new Redcap.RedcapApi("http://localhost/", Token, new FakeTransport());
+        var api = new Redcap.RedcapApi(TestConstants.BaseUrl, TestConstants.Token, new FakeTransport());
 
         Assert.IsAssignableFrom<IRedcap>(api);
         Assert.IsAssignableFrom<IRedcapRecords>(api);

@@ -46,10 +46,10 @@ Priority bands:
 
 ### Code Quality
 
-- [ ] **Simplify `ConvertArraytoString<T>()` in `src/RedcapApi/Utilities/Utils.cs`**
+- [x] **Simplify `ConvertArraytoString<T>()` in `src/RedcapApi/Utilities/Utils.cs`**
   The method uses a manual `StringBuilder` loop that appends a trailing comma on every element and calls `TrimEnd(',')`. Replace the entire loop body with `return string.Join(",", inputArray);`. Existing tests in `UtilitiesTests.cs` cover the behavior; verify they still pass.
 
-- [ ] **Cache reflection results in `GetDisplayName(this Enum)` in `src/RedcapApi/Utilities/Utils.cs`**
+- [x] **Cache reflection results in `GetDisplayName(this Enum)` in `src/RedcapApi/Utilities/Utils.cs`**
   `GetDisplayName` calls `GetType().GetMember(...)` and `GetCustomAttribute<DisplayAttribute>()` on every invocation — once per payload key per API call. Introduce a `static readonly ConcurrentDictionary<(Type, string), string> _displayNameCache` and populate it on first access for each `(type, memberName)` pair. Public signature is unchanged; no test changes required.
 
 - [x] **Introduce a `PayloadKey` static constants class**
@@ -62,7 +62,7 @@ Priority bands:
 
 ### Testing
 
-- [ ] **Extract `TestConstants` from test files**
+- [x] **Extract `TestConstants` from test files**
   The string `"token123"` is declared as `private const string Token` independently in every test class. Create `tests/RedcapApi.Tests/TestConstants.cs` with `internal static class TestConstants { public const string Token = "token123"; ... }` and replace all duplicate declarations. Add any other repeated literals (localhost base URL, common record IDs) as named constants here.
 
 - [ ] **Convert copy-paste overload tests to `[Theory]` + `[InlineData]`**

@@ -7,14 +7,12 @@ namespace RedcapApi.Tests;
 
 public class CancellationTests
 {
-    private const string Token = "token123";
-
     [Fact]
     public async Task ExportRecordsAsync_ForwardsCancellationTokenToTransport()
     {
         using var cts = new CancellationTokenSource();
         var transport = new TokenCapturingTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+        var api = new Redcap.RedcapApi(TestConstants.BaseUrl, TestConstants.Token, transport);
 
         await api.ExportRecordsAsync(cancellationToken: cts.Token);
 
@@ -26,7 +24,7 @@ public class CancellationTests
     {
         using var cts = new CancellationTokenSource();
         var transport = new TokenCapturingTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+        var api = new Redcap.RedcapApi(TestConstants.BaseUrl, TestConstants.Token, transport);
         var data = new List<object> { new { record_id = "1" } };
 
         await api.ImportRecordsAsync(RedcapFormat.json, RedcapDataType.flat, OverwriteBehavior.normal, false, false, data, cancellationToken: cts.Token);
@@ -39,7 +37,7 @@ public class CancellationTests
     {
         using var cts = new CancellationTokenSource();
         var transport = new TokenCapturingTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+        var api = new Redcap.RedcapApi(TestConstants.BaseUrl, TestConstants.Token, transport);
         var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tempDir);
         try
@@ -60,7 +58,7 @@ public class CancellationTests
         using var cts = new CancellationTokenSource();
         await cts.CancelAsync();
         var transport = new CancellationRespectingTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+        var api = new Redcap.RedcapApi(TestConstants.BaseUrl, TestConstants.Token, transport);
 
         await Assert.ThrowsAsync<OperationCanceledException>(() =>
             api.ExportRecordsAsync(cancellationToken: cts.Token));
@@ -75,7 +73,7 @@ public class CancellationTests
             return new TestResponse(200, "ok");
         });
         using var transport = new DefaultRedcapTransport(timeOutSeconds: 10);
-        var api = new Redcap.RedcapApi(server.Url.ToString(), Token, transport);
+        var api = new Redcap.RedcapApi(server.Url.ToString(), TestConstants.Token, transport);
 
         await Assert.ThrowsAsync<TaskCanceledException>(() =>
             api.ExportUsersAsync(timeOutSeconds: 1));
@@ -85,7 +83,7 @@ public class CancellationTests
     public void Dispose_WhenTransportIsInjected_DoesNotDisposeTransport()
     {
         var transport = new DisposableTrackingTransport();
-        var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
+        var api = new Redcap.RedcapApi(TestConstants.BaseUrl, TestConstants.Token, transport);
 
         api.Dispose();
 
@@ -111,7 +109,7 @@ public class CancellationTests
         var transport = DefaultRedcapTransport.FromHttpClient(client);
 
         var response = await transport.SendPostRequestAsync(
-            new Dictionary<string, string> { ["token"] = Token },
+            new Dictionary<string, string> { ["token"] = TestConstants.Token },
             new Uri("http://localhost/api"));
         transport.Dispose();
 
@@ -123,7 +121,7 @@ public class CancellationTests
     public async Task Dispose_WhenClientOwnsTransport_PreventsFurtherCalls()
     {
         using var server = new LocalHttpServer(_ => new TestResponse(200, "ok"));
-        var api = new Redcap.RedcapApi(server.Url.ToString(), Token);
+        var api = new Redcap.RedcapApi(server.Url.ToString(), TestConstants.Token);
         api.Dispose();
 
         await Assert.ThrowsAsync<ObjectDisposedException>(() => api.ExportUsersAsync());
