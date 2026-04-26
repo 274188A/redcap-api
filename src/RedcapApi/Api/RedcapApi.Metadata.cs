@@ -2,8 +2,6 @@ using Redcap.Exceptions;
 using Redcap.Models;
 using Redcap.Utilities;
 
-using Serilog;
-using System.Text.Json;
 
 namespace Redcap;
 
@@ -51,16 +49,7 @@ public partial class RedcapApi
     {
         var response = await ExportMetaDataAsync(RedcapFormat.json, fields, forms, returnFormat, cancellationToken, timeOutSeconds);
 
-        try
-        {
-            var metadata = JsonSerializer.Deserialize<List<RedcapMetaData>>(response, RedcapJsonOptions.Default);
-            return metadata == null ? throw new RedcapApiException("REDCap returned an empty metadata payload.") : (IReadOnlyList<RedcapMetaData>)metadata;
-        }
-        catch (JsonException ex)
-        {
-            Log.Error(ex, "Failed to deserialize REDCap metadata response.");
-            throw new RedcapApiException("Failed to deserialize REDCap metadata response.", ex);
-        }
+        return DeserializeResponse<List<RedcapMetaData>>(response, "metadata");
     }
 
     /// <summary>

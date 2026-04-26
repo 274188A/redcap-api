@@ -360,6 +360,20 @@ public partial class RedcapApi : IRedcap, IDisposable
         payload["data"] = JsonSerializer.Serialize(data, RedcapJsonOptions.Default);
     }
 
+    private static T DeserializeResponse<T>(string response, string payloadName) where T : class
+    {
+        try
+        {
+            var result = JsonSerializer.Deserialize<T>(response, RedcapJsonOptions.Default);
+            return result ?? throw new RedcapApiException($"REDCap returned an empty {payloadName} payload.");
+        }
+        catch (JsonException ex)
+        {
+            Log.Error(ex, "Failed to deserialize REDCap {PayloadName} response.", payloadName);
+            throw new RedcapApiException($"Failed to deserialize REDCap {payloadName} response.", ex);
+        }
+    }
+
     private static void AddIndexedValues(Dictionary<string, string> payload, string key, IReadOnlyList<string>? values)
     {
         if (values == null || values.Count == 0)

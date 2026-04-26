@@ -2,8 +2,6 @@ using Redcap.Exceptions;
 using Redcap.Models;
 using Redcap.Utilities;
 
-using Serilog;
-using System.Text.Json;
 
 namespace Redcap;
 
@@ -48,16 +46,7 @@ public partial class RedcapApi
     {
         var response = await ExportFieldNamesAsync(RedcapFormat.json, field, returnFormat, cancellationToken, timeOutSeconds);
 
-        try
-        {
-            var fieldNames = JsonSerializer.Deserialize<List<RedcapFieldName>>(response, RedcapJsonOptions.Default);
-            return fieldNames == null ? throw new RedcapApiException("REDCap returned an empty field-name payload.") : (IReadOnlyList<RedcapFieldName>)fieldNames;
-        }
-        catch (JsonException ex)
-        {
-            Log.Error(ex, "Failed to deserialize REDCap field-name response.");
-            throw new RedcapApiException("Failed to deserialize REDCap field-name response.", ex);
-        }
+        return DeserializeResponse<List<RedcapFieldName>>(response, "field-name");
     }
 
 }

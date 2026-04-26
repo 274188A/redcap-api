@@ -2,8 +2,6 @@ using Redcap.Exceptions;
 using Redcap.Models;
 using Redcap.Utilities;
 
-using Serilog;
-using System.Text.Json;
 
 namespace Redcap;
 
@@ -42,18 +40,7 @@ public partial class RedcapApi
     {
         var response = await ExportRepeatingInstrumentsAndEventsAsync(RedcapFormat.json, cancellationToken, timeOutSeconds);
 
-        try
-        {
-            var repeatingInstruments = JsonSerializer.Deserialize<List<RedcapRepeatInstrument>>(response, RedcapJsonOptions.Default);
-            return repeatingInstruments == null
-                ? throw new RedcapApiException("REDCap returned an empty repeating instruments payload.")
-                : (IReadOnlyList<RedcapRepeatInstrument>)repeatingInstruments;
-        }
-        catch (JsonException ex)
-        {
-            Log.Error(ex, "Failed to deserialize REDCap repeating instruments response.");
-            throw new RedcapApiException("Failed to deserialize REDCap repeating instruments response.", ex);
-        }
+        return DeserializeResponse<List<RedcapRepeatInstrument>>(response, "repeating instruments");
     }
 
     /// <summary>

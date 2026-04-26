@@ -2,8 +2,6 @@ using Redcap.Exceptions;
 using Redcap.Models;
 using Redcap.Utilities;
 
-using Serilog;
-using System.Text.Json;
 
 namespace Redcap;
 
@@ -110,16 +108,7 @@ public partial class RedcapApi
     {
         var response = await ExportProjectInfoAsync(RedcapFormat.json, returnFormat, cancellationToken, timeOutSeconds);
 
-        try
-        {
-            var projectInfo = JsonSerializer.Deserialize<RedcapProjectInfo>(response, RedcapJsonOptions.Default);
-            return projectInfo == null ? throw new RedcapApiException("REDCap returned an empty project info payload.") : projectInfo;
-        }
-        catch (JsonException ex)
-        {
-            Log.Error(ex, "Failed to deserialize REDCap project info response.");
-            throw new RedcapApiException("Failed to deserialize REDCap project info response.", ex);
-        }
+        return DeserializeResponse<RedcapProjectInfo>(response, "project info");
     }
 
     /// <summary>

@@ -2,8 +2,6 @@ using Redcap.Exceptions;
 using Redcap.Models;
 using Redcap.Utilities;
 
-using Serilog;
-using System.Text.Json;
 
 namespace Redcap;
 
@@ -44,16 +42,7 @@ public partial class RedcapApi
     {
         var response = await ExportDagsAsync(RedcapFormat.json, returnFormat, cancellationToken, timeOutSeconds);
 
-        try
-        {
-            var dags = JsonSerializer.Deserialize<List<RedcapDag>>(response, RedcapJsonOptions.Default);
-            return dags == null ? throw new RedcapApiException("REDCap returned an empty DAG payload.") : (IReadOnlyList<RedcapDag>)dags;
-        }
-        catch (JsonException ex)
-        {
-            Log.Error(ex, "Failed to deserialize REDCap DAG response.");
-            throw new RedcapApiException("Failed to deserialize REDCap DAG response.", ex);
-        }
+        return DeserializeResponse<List<RedcapDag>>(response, "DAG");
     }
 
     /// <summary>
@@ -157,16 +146,7 @@ public partial class RedcapApi
     {
         var response = await ExportUserDagAssignmentAsync(RedcapFormat.json, returnFormat, cancellationToken, timeOutSeconds);
 
-        try
-        {
-            var assignments = JsonSerializer.Deserialize<List<RedcapUserDagAssignment>>(response, RedcapJsonOptions.Default);
-            return assignments == null ? throw new RedcapApiException("REDCap returned an empty user-DAG assignment payload.") : (IReadOnlyList<RedcapUserDagAssignment>)assignments;
-        }
-        catch (JsonException ex)
-        {
-            Log.Error(ex, "Failed to deserialize REDCap user-DAG assignment response.");
-            throw new RedcapApiException("Failed to deserialize REDCap user-DAG assignment response.", ex);
-        }
+        return DeserializeResponse<List<RedcapUserDagAssignment>>(response, "user-DAG assignment");
     }
 
     /// <summary>

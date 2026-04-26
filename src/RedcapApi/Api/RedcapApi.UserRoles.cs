@@ -2,8 +2,6 @@ using Redcap.Exceptions;
 using Redcap.Models;
 using Redcap.Utilities;
 
-using Serilog;
-using System.Text.Json;
 
 namespace Redcap;
 
@@ -68,16 +66,7 @@ public partial class RedcapApi
     {
         var response = await ExportUserRolesAsync(content, RedcapFormat.json, returnFormat, cancellationToken, timeOutSeconds);
 
-        try
-        {
-            var roles = JsonSerializer.Deserialize<List<RedcapUserRole>>(response, RedcapJsonOptions.Default);
-            return roles == null ? throw new RedcapApiException("REDCap returned an empty user role payload.") : (IReadOnlyList<RedcapUserRole>)roles;
-        }
-        catch (JsonException ex)
-        {
-            Log.Error(ex, "Failed to deserialize REDCap user role response.");
-            throw new RedcapApiException("Failed to deserialize REDCap user role response.", ex);
-        }
+        return DeserializeResponse<List<RedcapUserRole>>(response, "user role");
     }
 
     /// <summary>
@@ -174,16 +163,7 @@ public partial class RedcapApi
     {
         var response = await ExportUserRoleAssignmentAsync(content, RedcapFormat.json, onErrorFormat, cancellationToken, timeOutSeconds);
 
-        try
-        {
-            var assignments = JsonSerializer.Deserialize<List<RedcapUserRoleAssignment>>(response, RedcapJsonOptions.Default);
-            return assignments == null ? throw new RedcapApiException("REDCap returned an empty user role assignment payload.") : (IReadOnlyList<RedcapUserRoleAssignment>)assignments;
-        }
-        catch (JsonException ex)
-        {
-            Log.Error(ex, "Failed to deserialize REDCap user role assignment response.");
-            throw new RedcapApiException("Failed to deserialize REDCap user role assignment response.", ex);
-        }
+        return DeserializeResponse<List<RedcapUserRoleAssignment>>(response, "user role assignment");
     }
 
     /// <summary>

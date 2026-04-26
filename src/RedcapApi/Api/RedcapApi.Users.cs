@@ -2,8 +2,6 @@ using Redcap.Exceptions;
 using Redcap.Models;
 using Redcap.Utilities;
 
-using Serilog;
-using System.Text.Json;
 
 namespace Redcap;
 
@@ -50,16 +48,7 @@ public partial class RedcapApi
     {
         var response = await ExportUsersAsync(RedcapFormat.json, returnFormat, cancellationToken, timeOutSeconds);
 
-        try
-        {
-            var users = JsonSerializer.Deserialize<List<RedcapUser>>(response, RedcapJsonOptions.Default);
-            return users == null ? throw new RedcapApiException("REDCap returned an empty user payload.") : (IReadOnlyList<RedcapUser>)users;
-        }
-        catch (JsonException ex)
-        {
-            Log.Error(ex, "Failed to deserialize REDCap user response.");
-            throw new RedcapApiException("Failed to deserialize REDCap user response.", ex);
-        }
+        return DeserializeResponse<List<RedcapUser>>(response, "user");
     }
 
     /// <summary>

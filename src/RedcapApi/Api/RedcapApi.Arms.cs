@@ -2,8 +2,6 @@ using Redcap.Exceptions;
 using Redcap.Models;
 using Redcap.Utilities;
 
-using Serilog;
-using System.Text.Json;
 
 namespace Redcap;
 
@@ -52,16 +50,7 @@ public partial class RedcapApi
     {
         var response = await ExportArmsAsync(RedcapFormat.json, arms, returnFormat, cancellationToken, timeOutSeconds);
 
-        try
-        {
-            var exportedArms = JsonSerializer.Deserialize<List<RedcapArm>>(response, RedcapJsonOptions.Default);
-            return exportedArms == null ? throw new RedcapApiException("REDCap returned an empty arm payload.") : (IReadOnlyList<RedcapArm>)exportedArms;
-        }
-        catch (JsonException ex)
-        {
-            Log.Error(ex, "Failed to deserialize REDCap arm response.");
-            throw new RedcapApiException("Failed to deserialize REDCap arm response.", ex);
-        }
+        return DeserializeResponse<List<RedcapArm>>(response, "arm");
     }
 
     /// <summary>

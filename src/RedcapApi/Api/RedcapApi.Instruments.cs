@@ -3,7 +3,6 @@ using Redcap.Models;
 using Redcap.Utilities;
 
 using Serilog;
-using System.Text.Json;
 
 using static System.String;
 
@@ -44,16 +43,7 @@ public partial class RedcapApi
     {
         var response = await ExportInstrumentsAsync(RedcapFormat.json, cancellationToken, timeOutSeconds);
 
-        try
-        {
-            var instruments = JsonSerializer.Deserialize<List<RedcapInstrument>>(response, RedcapJsonOptions.Default);
-            return instruments == null ? throw new RedcapApiException("REDCap returned an empty instrument payload.") : (IReadOnlyList<RedcapInstrument>)instruments;
-        }
-        catch (JsonException ex)
-        {
-            Log.Error(ex, "Failed to deserialize REDCap instrument response.");
-            throw new RedcapApiException("Failed to deserialize REDCap instrument response.", ex);
-        }
+        return DeserializeResponse<List<RedcapInstrument>>(response, "instrument");
     }
 
     /// <summary>
@@ -166,16 +156,7 @@ public partial class RedcapApi
     {
         var response = await ExportInstrumentMappingAsync(RedcapFormat.json, arms, returnFormat, cancellationToken, timeOutSeconds);
 
-        try
-        {
-            var mappings = JsonSerializer.Deserialize<List<FormEventMapping>>(response, RedcapJsonOptions.Default);
-            return mappings == null ? throw new RedcapApiException("REDCap returned an empty instrument-event mapping payload.") : (IReadOnlyList<FormEventMapping>)mappings;
-        }
-        catch (JsonException ex)
-        {
-            Log.Error(ex, "Failed to deserialize REDCap instrument-event mapping response.");
-            throw new RedcapApiException("Failed to deserialize REDCap instrument-event mapping response.", ex);
-        }
+        return DeserializeResponse<List<FormEventMapping>>(response, "instrument-event mapping");
     }
 
     /// <summary>
