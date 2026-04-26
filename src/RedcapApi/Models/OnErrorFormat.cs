@@ -1,33 +1,32 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Redcap.Models
+namespace Redcap.Models;
+
+/// <summary>
+/// The format that the response object should be if there are errors generated when executing the http request.
+/// OnErrorFormat, 0 = json
+/// OnErrorFormat, 1 = csv
+/// OnErrorFormat, 2 = xml
+/// </summary>
+public enum OnErrorFormat
 {
     /// <summary>
-    /// The format that the response object should be if there are errors generated when executing the http request.
-    /// OnErrorFormat, 0 = json
-    /// OnErrorFormat, 1 = csv
-    /// OnErrorFormat, 2 = xml
+    /// Default Javascript Notation
     /// </summary>
-    public enum OnErrorFormat
-    {
-        /// <summary>
-        /// Default Javascript Notation
-        /// </summary>
-        /// 
-        [Display(Name = "json")]
-        json = 0,
-        /// <summary>
-        /// Comma Seperated Values
-        /// </summary>
-        /// 
-        [Display(Name = "csv")]
+    /// 
+    [Display(Name = "json")]
+    json = 0,
+    /// <summary>
+    /// Comma Seperated Values
+    /// </summary>
+    /// 
+    [Display(Name = "csv")]
 
-        csv = 1,
-        /// <summary>
-        /// Extensible Markup Language
-        /// </summary>
-        /// 
-        [Display(Name = "xml")]
-        xml = 2
-    }
+    csv = 1,
+    /// <summary>
+    /// Extensible Markup Language
+    /// </summary>
+    /// 
+    [Display(Name = "xml")]
+    xml = 2
 }

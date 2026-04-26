@@ -1,17 +1,16 @@
-﻿namespace Redcap.Models
+﻿namespace Redcap.Models;
+
+/// <summary>
+/// raw [default], label - export the raw coded values or labels for the options of multiple choice fields
+/// </summary>
+public enum RawOrLabel
 {
     /// <summary>
-    /// raw [default], label - export the raw coded values or labels for the options of multiple choice fields
+    /// raw coded values
     /// </summary>
-    public enum RawOrLabel
-    {
-        /// <summary>
-        /// raw coded values
-        /// </summary>
-        raw = 0,
-        /// <summary>
-        /// labels for the values
-        /// </summary>
-        label = 1
-    }
+    raw = 0,
+    /// <summary>
+    /// labels for the values
+    /// </summary>
+    label = 1
 }

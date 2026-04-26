@@ -1,52 +1,47 @@
 ﻿using System.Net.Http.Headers;
 using System.Text;
 
-namespace Redcap.Http
+namespace Redcap.Http;
+
+/// <summary>
+/// https://stackoverflow.com/a/23740338
+/// </summary>
+public class CustomFormUrlEncodedContent : ByteArrayContent
 {
     /// <summary>
-    /// https://stackoverflow.com/a/23740338
+    /// 
     /// </summary>
-    public class CustomFormUrlEncodedContent : ByteArrayContent
+    /// <param name="nameValueCollection"></param>
+    public CustomFormUrlEncodedContent(IEnumerable<KeyValuePair<string, string>> nameValueCollection)
+        : base(CustomFormUrlEncodedContent.GetContentByteArray(nameValueCollection))
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="nameValueCollection"></param>
-        public CustomFormUrlEncodedContent(IEnumerable<KeyValuePair<string, string>> nameValueCollection)
-            : base(CustomFormUrlEncodedContent.GetContentByteArray(nameValueCollection))
+        base.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded")
         {
-            base.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded")
-            {
-                CharSet = Encoding.UTF8.WebName
-            };
+            CharSet = Encoding.UTF8.WebName
+        };
+    }
+    private static byte[] GetContentByteArray(IEnumerable<KeyValuePair<string, string>> nameValueCollection)
+    {
+        if (nameValueCollection == null)
+        {
+            throw new ArgumentNullException(nameof(nameValueCollection));
         }
-        private static byte[] GetContentByteArray(IEnumerable<KeyValuePair<string, string>> nameValueCollection)
+        StringBuilder stringBuilder = new StringBuilder();
+        foreach (KeyValuePair<string, string> current in nameValueCollection)
         {
-            if (nameValueCollection == null)
+            if (stringBuilder.Length > 0)
             {
-                throw new ArgumentNullException(nameof(nameValueCollection));
+                stringBuilder.Append('&');
             }
-            StringBuilder stringBuilder = new StringBuilder();
-            foreach (KeyValuePair<string, string> current in nameValueCollection)
-            {
-                if (stringBuilder.Length > 0)
-                {
-                    stringBuilder.Append('&');
-                }
 
-                stringBuilder.Append(CustomFormUrlEncodedContent.Encode(current.Key));
-                stringBuilder.Append('=');
-                stringBuilder.Append(CustomFormUrlEncodedContent.Encode(current.Value));
-            }
-            return Encoding.UTF8.GetBytes(stringBuilder.ToString());
+            stringBuilder.Append(CustomFormUrlEncodedContent.Encode(current.Key));
+            stringBuilder.Append('=');
+            stringBuilder.Append(CustomFormUrlEncodedContent.Encode(current.Value));
         }
-        private static string Encode(string data)
-        {
-            if (string.IsNullOrEmpty(data))
-            {
-                return string.Empty;
-            }
-            return System.Net.WebUtility.UrlEncode(data).Replace("%20", "+");
-        }
+        return Encoding.UTF8.GetBytes(stringBuilder.ToString());
+    }
+    private static string Encode(string data)
+    {
+        return string.IsNullOrEmpty(data) ? string.Empty : System.Net.WebUtility.UrlEncode(data).Replace("%20", "+");
     }
 }

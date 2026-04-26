@@ -1,28 +1,27 @@
 using Newtonsoft.Json;
 
-namespace Redcap.Models
+namespace Redcap.Models;
+
+/// <summary>
+/// Export/import-specific field name returned by REDCap.
+/// </summary>
+public class RedcapFieldName
 {
     /// <summary>
-    /// Export/import-specific field name returned by REDCap.
+    /// Original project field name.
     /// </summary>
-    public class RedcapFieldName
-    {
-        /// <summary>
-        /// Original project field name.
-        /// </summary>
-        [JsonProperty("original_field_name")]
-        public string? OriginalFieldName { get; set; }
+    [JsonProperty("original_field_name")]
+    public string? OriginalFieldName { get; set; }
 
-        /// <summary>
-        /// Raw coded checkbox choice value, or blank for non-checkbox fields.
-        /// </summary>
-        [JsonProperty("choice_value")]
-        public string? ChoiceValue { get; set; }
+    /// <summary>
+    /// Raw coded checkbox choice value, or blank for non-checkbox fields.
+    /// </summary>
+    [JsonProperty("choice_value")]
+    public string? ChoiceValue { get; set; }
 
-        /// <summary>
-        /// Field name used when exporting or importing data.
-        /// </summary>
-        [JsonProperty("export_field_name")]
-        public string? ExportFieldName { get; set; }
-    }
+    /// <summary>
+    /// Field name used when exporting or importing data.
+    /// </summary>
+    [JsonProperty("export_field_name")]
+    public string? ExportFieldName { get; set; }
 }

@@ -2,25 +2,24 @@ using Newtonsoft.Json;
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Redcap.Models
+namespace Redcap.Models;
+
+/// <summary>
+/// REDCap user-to-role mapping.
+/// </summary>
+public class RedcapUserRoleAssignment
 {
     /// <summary>
-    /// REDCap user-to-role mapping.
+    /// username
     /// </summary>
-    public class RedcapUserRoleAssignment
-    {
-        /// <summary>
-        /// username
-        /// </summary>
-        [Display(Name = "username")]
-        [JsonProperty("username")]
-        public string? Username { get; set; }
+    [Display(Name = "username")]
+    [JsonProperty("username")]
+    public string? Username { get; set; }
 
-        /// <summary>
-        /// unique role name
-        /// </summary>
-        [Display(Name = "unique_role_name")]
-        [JsonProperty("unique_role_name")]
-        public string? UniqueRoleName { get; set; }
-    }
+    /// <summary>
+    /// unique role name
+    /// </summary>
+    [Display(Name = "unique_role_name")]
+    [JsonProperty("unique_role_name")]
+    public string? UniqueRoleName { get; set; }
 }
