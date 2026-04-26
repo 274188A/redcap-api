@@ -32,14 +32,21 @@ public partial class RedcapApi
     public async Task<string> ExportFileAsync(string? record, string field, string eventName, string? repeatInstance = "1", RedcapReturnFormat returnFormat = RedcapReturnFormat.json, string? filePath = null, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
     {
         if (IsNullOrEmpty(filePath))
+        {
             throw new RedcapApiException("Must contain a file path to save the file.");
+        }
+
         if (!Directory.Exists(filePath))
         {
             Log.Warning("The directory provided does not exist! Creating a folder for you.");
             Directory.CreateDirectory(filePath!);
         }
+
         if (IsNullOrEmpty(record))
+        {
             throw new RedcapApiException("No record provided to export");
+        }
+
         return IsNullOrEmpty(field) || IsNullOrEmpty(eventName)
             ? throw new RedcapApiException("No field provided to export")
             : await ExecuteDownloadAsync(filePath!, payload =>

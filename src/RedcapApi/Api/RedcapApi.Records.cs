@@ -73,23 +73,82 @@ public partial class RedcapApi
             AddFormattedRequest(payload, Content.Record, format, returnFormat);
             payload["type"] = redcapDataType.GetDisplayName();
             payload["exportBlankForGrayFormStatus"] = exportBlankForGrayFormStatus.ToString();
-            if (recordsStr != null) payload["records"] = recordsStr;
-            if (fieldsStr != null) payload["fields"] = fieldsStr;
-            if (formsStr != null) payload["forms"] = formsStr;
-            if (eventsStr != null) payload["events"] = eventsStr;
+            if (recordsStr != null)
+            {
+                payload["records"] = recordsStr;
+            }
+
+            if (fieldsStr != null)
+            {
+                payload["fields"] = fieldsStr;
+            }
+
+            if (formsStr != null)
+            {
+                payload["forms"] = formsStr;
+            }
+
+            if (eventsStr != null)
+            {
+                payload["events"] = eventsStr;
+            }
+
             var _rawOrLabel = rawOrLabel.ToString();
-            if (!IsNullOrEmpty(_rawOrLabel)) payload["rawOrLabel"] = _rawOrLabel;
+            if (!IsNullOrEmpty(_rawOrLabel))
+            {
+                payload["rawOrLabel"] = _rawOrLabel;
+            }
+
             var _rawOrLabelHeaders = rawOrLabelHeaders.ToString();
-            if (!IsNullOrEmpty(_rawOrLabelHeaders)) payload["rawOrLabelHeaders"] = _rawOrLabelHeaders;
-            if (exportCheckboxLabel) payload["exportCheckboxLabel"] = exportCheckboxLabel.ToString();
-            if (exportSurveyFields) payload["exportSurveyFields"] = exportSurveyFields.ToString();
-            if (exportDataAccessGroups) payload["exportDataAccessGroups"] = exportDataAccessGroups.ToString();
-            if (!IsNullOrEmpty(filterLogic)) payload["filterLogic"] = filterLogic!;
-            if (dateRangeBegin.HasValue) payload["dateRangeBegin"] = dateRangeBegin.Value.ToString("yyyy-MM-dd HH:mm:ss");
-            if (dateRangeEnd.HasValue) payload["dateRangeEnd"] = dateRangeEnd.Value.ToString("yyyy-MM-dd HH:mm:ss");
-            if (format == RedcapFormat.csv) payload["csvDelimiter"] = csvDelimiter.ToString();
-            if (decimalCharacter != DecimalCharacter.none) payload["decimalCharacter"] = decimalCharacter.ToString();
-            if (combineCheckboxOptions) payload["combineCheckboxOptions"] = combineCheckboxOptions.ToString();
+            if (!IsNullOrEmpty(_rawOrLabelHeaders))
+            {
+                payload["rawOrLabelHeaders"] = _rawOrLabelHeaders;
+            }
+
+            if (exportCheckboxLabel)
+            {
+                payload["exportCheckboxLabel"] = exportCheckboxLabel.ToString();
+            }
+
+            if (exportSurveyFields)
+            {
+                payload["exportSurveyFields"] = exportSurveyFields.ToString();
+            }
+
+            if (exportDataAccessGroups)
+            {
+                payload["exportDataAccessGroups"] = exportDataAccessGroups.ToString();
+            }
+
+            if (!IsNullOrEmpty(filterLogic))
+            {
+                payload["filterLogic"] = filterLogic!;
+            }
+
+            if (dateRangeBegin.HasValue)
+            {
+                payload["dateRangeBegin"] = dateRangeBegin.Value.ToString("yyyy-MM-dd HH:mm:ss");
+            }
+
+            if (dateRangeEnd.HasValue)
+            {
+                payload["dateRangeEnd"] = dateRangeEnd.Value.ToString("yyyy-MM-dd HH:mm:ss");
+            }
+
+            if (format == RedcapFormat.csv)
+            {
+                payload["csvDelimiter"] = csvDelimiter.ToString();
+            }
+
+            if (decimalCharacter != DecimalCharacter.none)
+            {
+                payload["decimalCharacter"] = decimalCharacter.ToString();
+            }
+
+            if (combineCheckboxOptions)
+            {
+                payload["combineCheckboxOptions"] = combineCheckboxOptions.ToString();
+            }
         }, cancellationToken, timeOutSeconds);
     }
 
@@ -134,23 +193,82 @@ public partial class RedcapApi
             payload["records"] = record;
             AddFormattedRequest(payload, Content.Record, format, onErrorFormat);
             payload["type"] = redcapDataType.GetDisplayName();
-            if (fieldsStr != null) payload["fields"] = fieldsStr;
-            if (formsStr != null) payload["forms"] = formsStr;
-            if (eventsStr != null) payload["events"] = eventsStr;
+            if (fieldsStr != null)
+            {
+                payload["fields"] = fieldsStr;
+            }
+
+            if (formsStr != null)
+            {
+                payload["forms"] = formsStr;
+            }
+
+            if (eventsStr != null)
+            {
+                payload["events"] = eventsStr;
+            }
+
             var _rawOrLabel = rawOrLabel.ToString();
-            if (!IsNullOrEmpty(_rawOrLabel)) payload["rawOrLabel"] = _rawOrLabel;
+            if (!IsNullOrEmpty(_rawOrLabel))
+            {
+                payload["rawOrLabel"] = _rawOrLabel;
+            }
+
             var _rawOrLabelHeaders = rawOrLabelHeaders.ToString();
-            if (!IsNullOrEmpty(_rawOrLabelHeaders)) payload["rawOrLabelHeaders"] = _rawOrLabelHeaders;
-            if (exportCheckboxLabel) payload["exportCheckboxLabel"] = exportCheckboxLabel.ToString();
-            if (exportSurveyFields) payload["exportSurveyFields"] = exportSurveyFields.ToString();
-            if (exportDataAccessGroups) payload["exportDataAccessGroups"] = exportDataAccessGroups.ToString();
-            if (!IsNullOrEmpty(filterLogic)) payload["filterLogic"] = filterLogic!;
-            if (dateRangeBegin.HasValue) payload["dateRangeBegin"] = dateRangeBegin.Value.ToString("yyyy-MM-dd HH:mm:ss");
-            if (dateRangeEnd.HasValue) payload["dateRangeEnd"] = dateRangeEnd.Value.ToString("yyyy-MM-dd HH:mm:ss");
-            if (format == RedcapFormat.csv) payload["csvDelimiter"] = csvDelimiter.ToString();
-            if (decimalCharacter != DecimalCharacter.none) payload["decimalCharacter"] = decimalCharacter.ToString();
-            if (combineCheckboxOptions) payload["combineCheckboxOptions"] = combineCheckboxOptions.ToString();
-            if (exportBlankForGrayFormStatus) payload["exportBlankForGrayFormStatus"] = exportBlankForGrayFormStatus.ToString();
+            if (!IsNullOrEmpty(_rawOrLabelHeaders))
+            {
+                payload["rawOrLabelHeaders"] = _rawOrLabelHeaders;
+            }
+
+            if (exportCheckboxLabel)
+            {
+                payload["exportCheckboxLabel"] = exportCheckboxLabel.ToString();
+            }
+
+            if (exportSurveyFields)
+            {
+                payload["exportSurveyFields"] = exportSurveyFields.ToString();
+            }
+
+            if (exportDataAccessGroups)
+            {
+                payload["exportDataAccessGroups"] = exportDataAccessGroups.ToString();
+            }
+
+            if (!IsNullOrEmpty(filterLogic))
+            {
+                payload["filterLogic"] = filterLogic!;
+            }
+
+            if (dateRangeBegin.HasValue)
+            {
+                payload["dateRangeBegin"] = dateRangeBegin.Value.ToString("yyyy-MM-dd HH:mm:ss");
+            }
+
+            if (dateRangeEnd.HasValue)
+            {
+                payload["dateRangeEnd"] = dateRangeEnd.Value.ToString("yyyy-MM-dd HH:mm:ss");
+            }
+
+            if (format == RedcapFormat.csv)
+            {
+                payload["csvDelimiter"] = csvDelimiter.ToString();
+            }
+
+            if (decimalCharacter != DecimalCharacter.none)
+            {
+                payload["decimalCharacter"] = decimalCharacter.ToString();
+            }
+
+            if (combineCheckboxOptions)
+            {
+                payload["combineCheckboxOptions"] = combineCheckboxOptions.ToString();
+            }
+
+            if (exportBlankForGrayFormStatus)
+            {
+                payload["exportBlankForGrayFormStatus"] = exportBlankForGrayFormStatus.ToString();
+            }
         }, cancellationToken, timeOutSeconds);
     }
 
@@ -198,8 +316,15 @@ public partial class RedcapApi
             payload["backgroundProcess"] = backgroundProcess.ToString();
             payload["csvDelimiter"] = csvDelimiter.ToString();
             AddData(payload, data);
-            if (!IsNullOrEmpty(dateFormat)) payload["dateFormat"] = dateFormat!;
-            if (!IsNullOrEmpty(returnContent.ToString())) payload["returnContent"] = returnContent.ToString();
+            if (!IsNullOrEmpty(dateFormat))
+            {
+                payload["dateFormat"] = dateFormat!;
+            }
+
+            if (!IsNullOrEmpty(returnContent.ToString()))
+            {
+                payload["returnContent"] = returnContent.ToString();
+            }
         }, cancellationToken, timeOutSeconds);
     }
 
@@ -226,8 +351,15 @@ public partial class RedcapApi
         {
             AddActionRequest(payload, Content.Record, RedcapAction.Delete);
             AddIndexedValues(payload, "records", records);
-            if (arm.HasValue) payload["arm"] = arm.Value.ToString();
-            if (deleteLogging) payload["delete_logging"] = deleteLogging.ToString();
+            if (arm.HasValue)
+            {
+                payload["arm"] = arm.Value.ToString();
+            }
+
+            if (deleteLogging)
+            {
+                payload["delete_logging"] = deleteLogging.ToString();
+            }
         }, cancellationToken, timeOutSeconds);
     }
 
@@ -260,11 +392,18 @@ public partial class RedcapApi
         {
             AddActionRequest(payload, content, action);
             AddIndexedValues(payload, "records", records);
-            if (arm.HasValue) payload["arm"] = arm.Value.ToString();
+            if (arm.HasValue)
+            {
+                payload["arm"] = arm.Value.ToString();
+            }
+
             payload["instrument"] = instrument.InstrumentName!;
             payload["event"] = redcapEvent.EventName!;
             payload["repeat_instance"] = repeatInstance.RepeatInstance.ToString();
-            if (deleteLogging) payload["delete_logging"] = deleteLogging.ToString();
+            if (deleteLogging)
+            {
+                payload["delete_logging"] = deleteLogging.ToString();
+            }
         }, cancellationToken, timeOutSeconds);
     }
 
@@ -291,7 +430,10 @@ public partial class RedcapApi
             AddActionRequest(payload, Content.Record, RedcapAction.Rename);
             payload["record"] = record!;
             payload["new_record_name"] = newRecordName;
-            if (arm.HasValue) payload["arm"] = arm.Value.ToString();
+            if (arm.HasValue)
+            {
+                payload["arm"] = arm.Value.ToString();
+            }
         }, cancellationToken, timeOutSeconds);
     }
 

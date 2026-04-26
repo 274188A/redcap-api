@@ -30,7 +30,9 @@ public partial class RedcapApi
         {
             AddFormattedRequest(payload, Content.Arm, format, returnFormat);
             if (arms?.Length > 0)
+            {
                 AddIndexedValues(payload, "arms", arms);
+            }
         }, cancellationToken, timeOutSeconds);
     }
 

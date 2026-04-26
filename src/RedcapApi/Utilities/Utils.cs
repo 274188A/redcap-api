@@ -31,8 +31,15 @@ public static class Utils
     /// </summary>
     public static async Task ReadAsFileAsync(this HttpContent httpContent, string fileName, string path, bool overwrite, string fileExtension = "pdf", CancellationToken cancellationToken = default)
     {
-        if (httpContent == null) throw new ArgumentNullException(nameof(httpContent));
-        if (string.IsNullOrWhiteSpace(path)) throw new ArgumentException("Path must be provided.", nameof(path));
+        if (httpContent == null)
+        {
+            throw new ArgumentNullException(nameof(httpContent));
+        }
+
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            throw new ArgumentException("Path must be provided.", nameof(path));
+        }
 
         // Strip directory separators from caller- or server-supplied names.
         var rawName = (fileName ?? string.Empty).Replace("\"", "");

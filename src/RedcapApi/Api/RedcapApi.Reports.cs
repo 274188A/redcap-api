@@ -34,10 +34,22 @@ public partial class RedcapApi
             AddFormattedRequest(payload, Content.Report, format, returnFormat);
             payload["report_id"] = reportId.ToString();
             var rol = rawOrLabel.ToString();
-            if (!IsNullOrEmpty(rol)) payload["rawOrLabel"] = rol;
+            if (!IsNullOrEmpty(rol))
+            {
+                payload["rawOrLabel"] = rol;
+            }
+
             var rolh = rawOrLabelHeaders.ToString();
-            if (!IsNullOrEmpty(rolh)) payload["rawOrLabelHeaders"] = rolh;
-            if (exportCheckboxLabel) payload["exportCheckboxLabel"] = exportCheckboxLabel.ToString();
+            if (!IsNullOrEmpty(rolh))
+            {
+                payload["rawOrLabelHeaders"] = rolh;
+            }
+
+            if (exportCheckboxLabel)
+            {
+                payload["exportCheckboxLabel"] = exportCheckboxLabel.ToString();
+            }
+
             AddOptional(payload, "csvDelimiter", csvDelimiter);
             AddOptional(payload, "decimalCharacter", decimalCharacter);
         }, cancellationToken, timeOutSeconds);

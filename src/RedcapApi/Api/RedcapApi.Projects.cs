@@ -153,14 +153,29 @@ public partial class RedcapApi
         {
             AddContent(payload, Content.ProjectXml);
             AddReturnFormat(payload, returnFormat);
-            if (returnMetadataOnly) payload["returnMetadataOnly"] = returnMetadataOnly.ToString();
+            if (returnMetadataOnly)
+            {
+                payload["returnMetadataOnly"] = returnMetadataOnly.ToString();
+            }
+
             AddOptional(payload, "records", recordsStr);
             AddOptional(payload, "fields", fieldsStr);
             AddOptional(payload, "events", eventsStr);
-            if (exportSurveyFields) payload["exportSurveyFields"] = exportSurveyFields.ToString();
-            if (exportDataAccessGroups) payload["exportDataAccessGroups"] = exportDataAccessGroups.ToString();
+            if (exportSurveyFields)
+            {
+                payload["exportSurveyFields"] = exportSurveyFields.ToString();
+            }
+
+            if (exportDataAccessGroups)
+            {
+                payload["exportDataAccessGroups"] = exportDataAccessGroups.ToString();
+            }
+
             AddOptional(payload, "filterLogic", filterLogic);
-            if (exportFiles) payload["exportFiles"] = exportFiles.ToString();
+            if (exportFiles)
+            {
+                payload["exportFiles"] = exportFiles.ToString();
+            }
         }, cancellationToken, timeOutSeconds);
     }
 

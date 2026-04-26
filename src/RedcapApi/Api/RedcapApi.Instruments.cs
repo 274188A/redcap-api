@@ -80,7 +80,10 @@ public partial class RedcapApi
             AddOptional(payload, "record", recordId);
             AddOptional(payload, "event", eventName);
             AddOptional(payload, "instrument", instrument);
-            if (allRecord) payload["allRecords"] = allRecord.ToString();
+            if (allRecord)
+            {
+                payload["allRecords"] = allRecord.ToString();
+            }
         }, cancellationToken, timeOutSeconds);
     }
 
@@ -115,7 +118,10 @@ public partial class RedcapApi
             AddOptional(payload, "record", recordId);
             AddOptional(payload, "event", eventName);
             AddOptional(payload, "instrument", instrument);
-            if (allRecord) payload["allRecords"] = allRecord.ToString();
+            if (allRecord)
+            {
+                payload["allRecords"] = allRecord.ToString();
+            }
         }, cancellationToken, timeOutSeconds);
     }
 
