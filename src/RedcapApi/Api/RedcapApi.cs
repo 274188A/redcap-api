@@ -357,7 +357,7 @@ public partial class RedcapApi : IRedcap, IDisposable
 
     private static void AddData<T>(Dictionary<string, string> payload, T data)
     {
-        payload["data"] = JsonSerializer.Serialize(data);
+        payload["data"] = JsonSerializer.Serialize(data, RedcapJsonOptions.Default);
     }
 
     private static void AddIndexedValues(Dictionary<string, string> payload, string key, IReadOnlyList<string>? values)

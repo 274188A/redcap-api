@@ -66,7 +66,7 @@ public partial class RedcapApi
 
         try
         {
-            var entries = JsonSerializer.Deserialize<List<RedcapLogEntry>>(response);
+            var entries = JsonSerializer.Deserialize<List<RedcapLogEntry>>(response, RedcapJsonOptions.Default);
             return entries == null ? throw new RedcapApiException("REDCap returned an empty logging payload.") : (IReadOnlyList<RedcapLogEntry>)entries;
         }
         catch (JsonException ex)

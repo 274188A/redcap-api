@@ -1,5 +1,6 @@
 using Redcap.Exceptions;
 using Redcap.Models;
+using Redcap.Utilities;
 
 using Serilog;
 using System.Text.Json;
@@ -49,7 +50,7 @@ public partial class RedcapApi
 
         try
         {
-            var fieldNames = JsonSerializer.Deserialize<List<RedcapFieldName>>(response);
+            var fieldNames = JsonSerializer.Deserialize<List<RedcapFieldName>>(response, RedcapJsonOptions.Default);
             return fieldNames == null ? throw new RedcapApiException("REDCap returned an empty field-name payload.") : (IReadOnlyList<RedcapFieldName>)fieldNames;
         }
         catch (JsonException ex)

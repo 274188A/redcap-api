@@ -38,11 +38,11 @@ Make download, stream, form-encoding, and JSON behavior trustworthy end to end, 
 
 ## 5. JSON serialization
 
-- [ ] Replace `Newtonsoft.Json` usage with `System.Text.Json`.
-- [ ] Preserve REDCap wire names for typed models, especially snake_case fields and existing import payload shapes.
-- [ ] Add serialization/deserialization tests around representative export and import models before removing the package reference.
-- [ ] Centralize JSON options so typed exports, imports, and helper methods use the same settings.
-- [ ] Remove the `Newtonsoft.Json` package reference once behavior is covered by tests.
+- [x] Replace `Newtonsoft.Json` usage with `System.Text.Json`.
+- [x] Preserve REDCap wire names for typed models, especially snake_case fields and existing import payload shapes.
+- [x] Add serialization/deserialization tests around representative export and import models before removing the package reference.
+- [x] Centralize JSON options so typed exports, imports, and helper methods use the same settings.
+- [x] Remove the `Newtonsoft.Json` package reference once behavior is covered by tests.
 
 ## 6. Architecture cleanup
 

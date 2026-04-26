@@ -1,5 +1,6 @@
 using Redcap.Exceptions;
 using Redcap.Models;
+using Redcap.Utilities;
 
 using Serilog;
 using System.Text.Json;
@@ -54,7 +55,7 @@ public partial class RedcapApi
 
         try
         {
-            var events = JsonSerializer.Deserialize<List<RedcapEvent>>(response);
+            var events = JsonSerializer.Deserialize<List<RedcapEvent>>(response, RedcapJsonOptions.Default);
             return events == null ? throw new RedcapApiException("REDCap returned an empty event payload.") : (IReadOnlyList<RedcapEvent>)events;
         }
         catch (JsonException ex)
