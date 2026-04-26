@@ -136,6 +136,10 @@ public partial class RedcapApi : IRedcap, IDisposable
             return await this.SendPostRequestAsync(payload, _uri,
                 cancellationToken: cancellationToken, timeOutSeconds);
         }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
         catch (RedcapApiException Ex)
         {
             Log.Error(Ex, "REDCap API call failed");
@@ -161,6 +165,10 @@ public partial class RedcapApi : IRedcap, IDisposable
             buildPayload(payload);
             return await this.SendPostRequestAsync(payload, _uri,
                 cancellationToken: cancellationToken, timeOutSeconds);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
         }
         catch (RedcapApiException Ex)
         {
@@ -211,6 +219,10 @@ public partial class RedcapApi : IRedcap, IDisposable
             buildPayload(payload);
             return await this.DownloadFileAsync(payload, _uri, destinationPath,
                 cancellationToken: cancellationToken, timeOutSeconds: timeOutSeconds);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
         }
         catch (RedcapApiException Ex)
         {

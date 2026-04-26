@@ -48,10 +48,9 @@ Make download, stream, form-encoding, and JSON behavior trustworthy end to end, 
 
 - [x] Add a shared typed-response helper for JSON deserialization and consistent `RedcapApiException` messages.
 - [x] Add multipart payload helpers for common fields such as `token`, `content`, `action`, `returnFormat`, and `repeat_instance`.
-- [ ] Review cancellation and timeout behavior after the download work, especially whether caller cancellation should stay as `OperationCanceledException`.
-- [ ] Consider focused tests for caller-owned `HttpClient` behavior in `DefaultRedcapTransport.FromHttpClient(...)`.
+- [x] Review cancellation and timeout behavior after the download work, especially whether caller cancellation should stay as `OperationCanceledException`.
+- [x] Consider focused tests for caller-owned `HttpClient` behavior in `DefaultRedcapTransport.FromHttpClient(...)`.
 
 ## Verification
 
-- [ ] Run `dotnet test tests/RedcapApi.Tests/RedcapApi.Tests.csproj --no-restore --verbosity minimal`.
-- [ ] Run `dotnet pack src/RedcapApi/RedcapApi.csproj -c Release -o artifacts` before publishing.
+- [x] Run `dotnet test tests/RedcapApi.Tests/RedcapApi.Tests.csproj --no-restore --verbosity minimal`.

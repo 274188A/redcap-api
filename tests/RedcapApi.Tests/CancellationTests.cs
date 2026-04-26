@@ -1,5 +1,4 @@
 using Redcap.Api;
-using Redcap.Exceptions;
 using Redcap.Interfaces;
 using Redcap.Models;
 using Xunit;
@@ -55,22 +54,20 @@ public class CancellationTests
         }
     }
 
-    // When the transport itself respects the cancellation token, ExecuteAsync
-    // wraps the resulting OperationCanceledException in RedcapApiException.
     [Fact]
-    public async Task ExportRecordsAsync_WhenTransportRespectsCancelledToken_ThrowsRedcapApiException()
+    public async Task ExportRecordsAsync_WhenTransportRespectsCancelledToken_ThrowsOperationCanceledException()
     {
         using var cts = new CancellationTokenSource();
         await cts.CancelAsync();
         var transport = new CancellationRespectingTransport();
         var api = new Redcap.RedcapApi("http://localhost/", Token, transport);
 
-        await Assert.ThrowsAsync<RedcapApiException>(() =>
+        await Assert.ThrowsAsync<OperationCanceledException>(() =>
             api.ExportRecordsAsync(cancellationToken: cts.Token));
     }
 
     [Fact]
-    public async Task ExportUsersAsync_WhenPerCallTimeoutExceeded_ThrowsRedcapApiException()
+    public async Task ExportUsersAsync_WhenPerCallTimeoutExceeded_ThrowsTaskCanceledException()
     {
         using var server = new LocalHttpServer(_ =>
         {
@@ -80,10 +77,8 @@ public class CancellationTests
         using var transport = new DefaultRedcapTransport(timeOutSeconds: 10);
         var api = new Redcap.RedcapApi(server.Url.ToString(), Token, transport);
 
-        var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
+        await Assert.ThrowsAsync<TaskCanceledException>(() =>
             api.ExportUsersAsync(timeOutSeconds: 1));
-
-        Assert.IsType<TaskCanceledException>(ex.InnerException);
     }
 
     [Fact]
