@@ -1,8 +1,8 @@
-using Newtonsoft.Json;
 using Redcap.Exceptions;
 using Redcap.Models;
 
 using Serilog;
+using System.Text.Json;
 
 namespace Redcap;
 
@@ -69,7 +69,7 @@ public partial class RedcapApi
 
         try
         {
-            var roles = JsonConvert.DeserializeObject<List<RedcapUserRole>>(response);
+            var roles = JsonSerializer.Deserialize<List<RedcapUserRole>>(response);
             return roles == null ? throw new RedcapApiException("REDCap returned an empty user role payload.") : (IReadOnlyList<RedcapUserRole>)roles;
         }
         catch (JsonException ex)
@@ -175,7 +175,7 @@ public partial class RedcapApi
 
         try
         {
-            var assignments = JsonConvert.DeserializeObject<List<RedcapUserRoleAssignment>>(response);
+            var assignments = JsonSerializer.Deserialize<List<RedcapUserRoleAssignment>>(response);
             return assignments == null ? throw new RedcapApiException("REDCap returned an empty user role assignment payload.") : (IReadOnlyList<RedcapUserRoleAssignment>)assignments;
         }
         catch (JsonException ex)

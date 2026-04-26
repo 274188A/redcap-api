@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Redcap.Models;
 
@@ -10,48 +10,48 @@ public class RedcapLogEntry
     /// <summary>
     /// REDCap log timestamp.
     /// </summary>
-    [JsonProperty("timestamp")]
+    [JsonPropertyName("timestamp")]
     public string? Timestamp { get; set; }
 
     /// <summary>
     /// Username associated with the log entry.
     /// </summary>
-    [JsonProperty("username")]
+    [JsonPropertyName("username")]
     public string? Username { get; set; }
 
     /// <summary>
     /// Logged action/event type.
     /// </summary>
-    [JsonProperty("action")]
+    [JsonPropertyName("action")]
     public string? Action { get; set; }
 
     /// <summary>
     /// REDCap record associated with the entry, when applicable.
     /// </summary>
-    [JsonProperty("record")]
+    [JsonPropertyName("record")]
     public string? Record { get; set; }
 
     /// <summary>
     /// REDCap instrument associated with the entry, when applicable.
     /// </summary>
-    [JsonProperty("instrument")]
+    [JsonPropertyName("instrument")]
     public string? Instrument { get; set; }
 
     /// <summary>
     /// REDCap event associated with the entry, when applicable.
     /// </summary>
-    [JsonProperty("event")]
+    [JsonPropertyName("event")]
     public string? Event { get; set; }
 
     /// <summary>
     /// Data access group associated with the entry, when applicable.
     /// </summary>
-    [JsonProperty("dag")]
+    [JsonPropertyName("dag")]
     public string? Dag { get; set; }
 
     /// <summary>
     /// Human-readable details for the logged action.
     /// </summary>
-    [JsonProperty("details")]
+    [JsonPropertyName("details")]
     public string? Details { get; set; }
 }

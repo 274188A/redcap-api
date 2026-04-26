@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 using System.ComponentModel.DataAnnotations;
 
@@ -13,119 +13,119 @@ public class RedcapUser
     /// username
     /// </summary>
     [Display(Name = "username")]
-    [JsonProperty("username")]
+    [JsonPropertyName("username")]
     public string? Username { get; set; }
 
     /// <summary>
     /// email
     /// </summary>
     [Display(Name = "email")]
-    [JsonProperty("email")]
+    [JsonPropertyName("email")]
     public string? Email { get; set; }
 
     /// <summary>
     /// first name
     /// </summary>
     [Display(Name = "firstname")]
-    [JsonProperty("firstname")]
+    [JsonPropertyName("firstname")]
     public string? FirstName { get; set; }
 
     /// <summary>
     /// last name
     /// </summary>
     [Display(Name = "lastname")]
-    [JsonProperty("lastname")]
+    [JsonPropertyName("lastname")]
     public string? LastName { get; set; }
 
     /// <summary>
     /// expiration date
     /// </summary>
     [Display(Name = "expiration")]
-    [JsonProperty("expiration")]
+    [JsonPropertyName("expiration")]
     public string? Expiration { get; set; }
 
     /// <summary>
     /// data access group
     /// </summary>
     [Display(Name = "data_access_group")]
-    [JsonProperty("data_access_group")]
+    [JsonPropertyName("data_access_group")]
     public string? DataAccessGroup { get; set; }
 
     /// <summary>
     /// design
     /// </summary>
     [Display(Name = "design")]
-    [JsonProperty("design")]
+    [JsonPropertyName("design")]
     public string? Design { get; set; }
 
     /// <summary>
     /// user rights
     /// </summary>
     [Display(Name = "user_rights")]
-    [JsonProperty("user_rights")]
+    [JsonPropertyName("user_rights")]
     public string? UserRights { get; set; }
 
     /// <summary>
     /// data access groups
     /// </summary>
     [Display(Name = "data_access_groups")]
-    [JsonProperty("data_access_groups")]
+    [JsonPropertyName("data_access_groups")]
     public string? DataAccessGroups { get; set; }
 
     /// <summary>
     /// data export
     /// </summary>
     [Display(Name = "data_export")]
-    [JsonProperty("data_export")]
+    [JsonPropertyName("data_export")]
     public string? DataExport { get; set; }
 
     /// <summary>
     /// reports
     /// </summary>
     [Display(Name = "reports")]
-    [JsonProperty("reports")]
+    [JsonPropertyName("reports")]
     public string? Reports { get; set; }
 
     /// <summary>
     /// stats and charts
     /// </summary>
     [Display(Name = "stats_and_charts")]
-    [JsonProperty("stats_and_charts")]
+    [JsonPropertyName("stats_and_charts")]
     public string? StatsAndCharts { get; set; }
 
     /// <summary>
     /// manage survey participants
     /// </summary>
     [Display(Name = "manage_survey_participants")]
-    [JsonProperty("manage_survey_participants")]
+    [JsonPropertyName("manage_survey_participants")]
     public string? ManageSurveyParticipants { get; set; }
 
     /// <summary>
     /// calendar
     /// </summary>
     [Display(Name = "calendar")]
-    [JsonProperty("calendar")]
+    [JsonPropertyName("calendar")]
     public string? Calendar { get; set; }
 
     /// <summary>
     /// data import tool
     /// </summary>
     [Display(Name = "data_import_tool")]
-    [JsonProperty("data_import_tool")]
+    [JsonPropertyName("data_import_tool")]
     public string? DataImportTool { get; set; }
 
     /// <summary>
     /// data comparison tool
     /// </summary>
     [Display(Name = "data_comparison_tool")]
-    [JsonProperty("data_comparison_tool")]
+    [JsonPropertyName("data_comparison_tool")]
     public string? DataComparisonTool { get; set; }
 
     /// <summary>
     /// logging
     /// </summary>
     [Display(Name = "logging")]
-    [JsonProperty("logging")]
+    [JsonPropertyName("logging")]
     public string? Logging { get; set; }
 
 
@@ -133,104 +133,104 @@ public class RedcapUser
     /// file repository
     /// </summary>
     [Display(Name = "file_repository")]
-    [JsonProperty("file_repository")]
+    [JsonPropertyName("file_repository")]
     public string? FileRepository { get; set; }
 
     /// <summary>
     /// data quality create
     /// </summary>
     [Display(Name = "data_quality_create")]
-    [JsonProperty("data_quality_create")]
+    [JsonPropertyName("data_quality_create")]
     public string? DataQualityCreate { get; set; }
 
     /// <summary>
     /// data quality execute
     /// </summary>
     [Display(Name = "data_quality_execute")]
-    [JsonProperty("data_quality_execute")]
+    [JsonPropertyName("data_quality_execute")]
     public string? DataQualityExecute { get; set; }
 
     /// <summary>
     /// api export
     /// </summary>
     [Display(Name = "api_export")]
-    [JsonProperty("api_export")]
+    [JsonPropertyName("api_export")]
     public string? ApiExport { get; set; }
 
     /// <summary>
     /// api import
     /// </summary>
     [Display(Name = "api_import")]
-    [JsonProperty("api_import")]
+    [JsonPropertyName("api_import")]
     public string? ApiImport { get; set; }
 
     /// <summary>
     /// mobile app
     /// </summary>
     [Display(Name = "mobile_app")]
-    [JsonProperty("mobile_app")]
+    [JsonPropertyName("mobile_app")]
     public string? MobileApp { get; set; }
 
     /// <summary>
     /// record create tool
     /// </summary>
     [Display(Name = "record_create_tool")]
-    [JsonProperty("record_create_tool")]
+    [JsonPropertyName("record_create_tool")]
     public string? RecordCreateTool { get; set; }
 
     /// <summary>
     /// mobile app download data
     /// </summary>
     [Display(Name = "mobile_app_download_data")]
-    [JsonProperty("mobile_app_download_data")]
+    [JsonPropertyName("mobile_app_download_data")]
     public string? MobileAppDownloadData { get; set; }
 
     /// <summary>
     /// record create
     /// </summary>
     [Display(Name = "record_create")]
-    [JsonProperty("record_create")]
+    [JsonPropertyName("record_create")]
     public string? RecordCreate { get; set; }
 
     /// <summary>
     /// record rename
     /// </summary>
     [Display(Name = "record_rename")]
-    [JsonProperty("record_rename")]
+    [JsonPropertyName("record_rename")]
     public string? RecordRename { get; set; }
 
     /// <summary>
     /// record delete
     /// </summary>
     [Display(Name = "record_delete")]
-    [JsonProperty("record_delete")]
+    [JsonPropertyName("record_delete")]
     public string? RecordDelete { get; set; }
 
     /// <summary>
     /// lock records all forms
     /// </summary>
     [Display(Name = "lock_records_all_forms")]
-    [JsonProperty("lock_records_all_forms")]
+    [JsonPropertyName("lock_records_all_forms")]
     public string? LockRecordsAllForms { get; set; }
 
     /// <summary>
     /// lock records
     /// </summary>
     [Display(Name = "lock_records")]
-    [JsonProperty("lock_records")]
+    [JsonPropertyName("lock_records")]
     public string? LockRecords { get; set; }
 
     /// <summary>
     /// lock records customization
     /// </summary>
     [Display(Name = "lock_records_customization")]
-    [JsonProperty("lock_records_customization")]
+    [JsonPropertyName("lock_records_customization")]
     public string? LockRecordsCustomization { get; set; }
 
     /// <summary>
     /// Form-level rights for each instrument.
     /// </summary>
     [Display(Name = "forms")]
-    [JsonProperty("forms")]
+    [JsonPropertyName("forms")]
     public Dictionary<string, string>? Forms { get; set; }
 }

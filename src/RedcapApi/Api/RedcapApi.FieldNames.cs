@@ -1,8 +1,8 @@
-using Newtonsoft.Json;
 using Redcap.Exceptions;
 using Redcap.Models;
 
 using Serilog;
+using System.Text.Json;
 
 namespace Redcap;
 
@@ -49,7 +49,7 @@ public partial class RedcapApi
 
         try
         {
-            var fieldNames = JsonConvert.DeserializeObject<List<RedcapFieldName>>(response);
+            var fieldNames = JsonSerializer.Deserialize<List<RedcapFieldName>>(response);
             return fieldNames == null ? throw new RedcapApiException("REDCap returned an empty field-name payload.") : (IReadOnlyList<RedcapFieldName>)fieldNames;
         }
         catch (JsonException ex)

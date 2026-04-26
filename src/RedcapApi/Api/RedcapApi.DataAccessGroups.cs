@@ -1,8 +1,8 @@
-using Newtonsoft.Json;
 using Redcap.Exceptions;
 using Redcap.Models;
 
 using Serilog;
+using System.Text.Json;
 
 namespace Redcap;
 
@@ -45,7 +45,7 @@ public partial class RedcapApi
 
         try
         {
-            var dags = JsonConvert.DeserializeObject<List<RedcapDag>>(response);
+            var dags = JsonSerializer.Deserialize<List<RedcapDag>>(response);
             return dags == null ? throw new RedcapApiException("REDCap returned an empty DAG payload.") : (IReadOnlyList<RedcapDag>)dags;
         }
         catch (JsonException ex)
@@ -158,7 +158,7 @@ public partial class RedcapApi
 
         try
         {
-            var assignments = JsonConvert.DeserializeObject<List<RedcapUserDagAssignment>>(response);
+            var assignments = JsonSerializer.Deserialize<List<RedcapUserDagAssignment>>(response);
             return assignments == null ? throw new RedcapApiException("REDCap returned an empty user-DAG assignment payload.") : (IReadOnlyList<RedcapUserDagAssignment>)assignments;
         }
         catch (JsonException ex)

@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Redcap.Models;
 
@@ -14,12 +14,12 @@ public class RedcapRepeatInstrument : RedcapEvent
     /// The unique instrument/form name that is repeated for the specific event.
     /// e.g demographics
     /// </summary>
-    [JsonProperty("form_name")]
+    [JsonPropertyName("form_name")]
     public string? FormName { get; set; }
 
     /// <summary>
     /// The custom form/instrument label for this repeating instrument or event.
     /// </summary>
-    [JsonProperty("custom_form_label")]
+    [JsonPropertyName("custom_form_label")]
     public string? CustomFormLabel { get; set; }
 }

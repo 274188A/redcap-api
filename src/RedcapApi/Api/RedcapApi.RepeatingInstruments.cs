@@ -1,8 +1,8 @@
-using Newtonsoft.Json;
 using Redcap.Exceptions;
 using Redcap.Models;
 
 using Serilog;
+using System.Text.Json;
 
 namespace Redcap;
 
@@ -43,7 +43,7 @@ public partial class RedcapApi
 
         try
         {
-            var repeatingInstruments = JsonConvert.DeserializeObject<List<RedcapRepeatInstrument>>(response);
+            var repeatingInstruments = JsonSerializer.Deserialize<List<RedcapRepeatInstrument>>(response);
             return repeatingInstruments == null
                 ? throw new RedcapApiException("REDCap returned an empty repeating instruments payload.")
                 : (IReadOnlyList<RedcapRepeatInstrument>)repeatingInstruments;

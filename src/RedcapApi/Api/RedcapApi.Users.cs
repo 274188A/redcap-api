@@ -1,8 +1,8 @@
-using Newtonsoft.Json;
 using Redcap.Exceptions;
 using Redcap.Models;
 
 using Serilog;
+using System.Text.Json;
 
 namespace Redcap;
 
@@ -51,7 +51,7 @@ public partial class RedcapApi
 
         try
         {
-            var users = JsonConvert.DeserializeObject<List<RedcapUser>>(response);
+            var users = JsonSerializer.Deserialize<List<RedcapUser>>(response);
             return users == null ? throw new RedcapApiException("REDCap returned an empty user payload.") : (IReadOnlyList<RedcapUser>)users;
         }
         catch (JsonException ex)

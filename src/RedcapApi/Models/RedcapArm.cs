@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Redcap.Models;
 
@@ -11,12 +11,12 @@ public class RedcapArm
     /// Number associated with the event, e.g "1"
     /// </summary>
     /// 
-    [JsonProperty("arm_num")]
+    [JsonPropertyName("arm_num")]
     public string? ArmNumber { get; set; }
     /// <summary>
     /// Name of the event. e.g "event1_arm_1"
     /// </summary>
     /// 
-    [JsonProperty("name")]
+    [JsonPropertyName("name")]
     public string? Name { get; set; }
 }

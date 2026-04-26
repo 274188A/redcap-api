@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
 
 using Redcap.Api;
 using Redcap.Exceptions;
@@ -357,7 +357,7 @@ public partial class RedcapApi : IRedcap, IDisposable
 
     private static void AddData<T>(Dictionary<string, string> payload, T data)
     {
-        payload["data"] = JsonConvert.SerializeObject(data);
+        payload["data"] = JsonSerializer.Serialize(data);
     }
 
     private static void AddIndexedValues(Dictionary<string, string> payload, string key, IReadOnlyList<string>? values)

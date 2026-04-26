@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Redcap.Models;
 
@@ -10,12 +10,12 @@ public class RedcapUserDagAssignment
     /// <summary>
     /// Existing REDCap username.
     /// </summary>
-    [JsonProperty("username")]
+    [JsonPropertyName("username")]
     public string? Username { get; set; }
 
     /// <summary>
     /// Unique group name for the assigned data access group.
     /// </summary>
-    [JsonProperty("redcap_data_access_group")]
+    [JsonPropertyName("redcap_data_access_group")]
     public string? RedcapDataAccessGroup { get; set; }
 }

@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 using System.ComponentModel.DataAnnotations;
 
@@ -13,13 +13,13 @@ public class RedcapUserRoleAssignment
     /// username
     /// </summary>
     [Display(Name = "username")]
-    [JsonProperty("username")]
+    [JsonPropertyName("username")]
     public string? Username { get; set; }
 
     /// <summary>
     /// unique role name
     /// </summary>
     [Display(Name = "unique_role_name")]
-    [JsonProperty("unique_role_name")]
+    [JsonPropertyName("unique_role_name")]
     public string? UniqueRoleName { get; set; }
 }

@@ -1,8 +1,8 @@
-using Newtonsoft.Json;
 using Redcap.Exceptions;
 using Redcap.Models;
 
 using Serilog;
+using System.Text.Json;
 
 namespace Redcap;
 
@@ -53,7 +53,7 @@ public partial class RedcapApi
 
         try
         {
-            var exportedArms = JsonConvert.DeserializeObject<List<RedcapArm>>(response);
+            var exportedArms = JsonSerializer.Deserialize<List<RedcapArm>>(response);
             return exportedArms == null ? throw new RedcapApiException("REDCap returned an empty arm payload.") : (IReadOnlyList<RedcapArm>)exportedArms;
         }
         catch (JsonException ex)

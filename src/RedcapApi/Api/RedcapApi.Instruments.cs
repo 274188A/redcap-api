@@ -1,8 +1,8 @@
-using Newtonsoft.Json;
 using Redcap.Exceptions;
 using Redcap.Models;
 
 using Serilog;
+using System.Text.Json;
 
 using static System.String;
 
@@ -45,7 +45,7 @@ public partial class RedcapApi
 
         try
         {
-            var instruments = JsonConvert.DeserializeObject<List<RedcapInstrument>>(response);
+            var instruments = JsonSerializer.Deserialize<List<RedcapInstrument>>(response);
             return instruments == null ? throw new RedcapApiException("REDCap returned an empty instrument payload.") : (IReadOnlyList<RedcapInstrument>)instruments;
         }
         catch (JsonException ex)
@@ -167,7 +167,7 @@ public partial class RedcapApi
 
         try
         {
-            var mappings = JsonConvert.DeserializeObject<List<FormEventMapping>>(response);
+            var mappings = JsonSerializer.Deserialize<List<FormEventMapping>>(response);
             return mappings == null ? throw new RedcapApiException("REDCap returned an empty instrument-event mapping payload.") : (IReadOnlyList<FormEventMapping>)mappings;
         }
         catch (JsonException ex)

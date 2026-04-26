@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Redcap.Models;
 
@@ -15,13 +15,13 @@ public class RedcapDag
     /// group name
     /// </summary>
     /// 
-    [JsonProperty("data_access_group_name")]
+    [JsonPropertyName("data_access_group_name")]
     public string? GroupName { get; set; }
     /// <summary>
     /// auto-generated unique group name
     /// </summary>
     /// 
-    [JsonProperty("unique_group_name")]
+    [JsonPropertyName("unique_group_name")]
 
     public string? UniqueGroupName { get; set; }
 }
