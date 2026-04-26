@@ -200,6 +200,56 @@ public class UtilitiesTests
     }
 
     [Fact]
+    public async Task ExportFileAsync_SavesReturnedFileToDestinationPath()
+    {
+        using var server = new LocalHttpServer(_ => new TestResponse(
+            200,
+            "file-body",
+            "application/octet-stream",
+            new Dictionary<string, string>
+            {
+                ["Content-Disposition"] = "attachment; filename=\"upload.txt\""
+            }));
+        var api = new Redcap.RedcapApi(server.Url.ToString(), Token);
+        var tempDirectory = Path.Combine(Path.GetTempPath(), "redcap-export-file-" + Guid.NewGuid().ToString("N"));
+
+        try
+        {
+            var savedFileName = await api.ExportFileAsync(
+                "1",
+                "upload",
+                "event_1_arm_1",
+                "2",
+                RedcapReturnFormat.xml,
+                tempDirectory);
+
+            var savedPath = Path.Combine(tempDirectory, "upload.txt");
+
+            Assert.Equal("upload.txt", savedFileName);
+            Assert.True(File.Exists(savedPath));
+            Assert.Equal("file-body", await File.ReadAllTextAsync(savedPath));
+
+            Assert.True(server.Requests.TryPeek(out var request));
+            Assert.Contains("token=token123", request!.Body);
+            Assert.Contains("content=file", request.Body);
+            Assert.Contains("action=export", request.Body);
+            Assert.Contains("record=1", request.Body);
+            Assert.Contains("field=upload", request.Body);
+            Assert.Contains("event=event_1_arm_1", request.Body);
+            Assert.Contains("repeat_instance=2", request.Body);
+            Assert.Contains("returnFormat=xml", request.Body);
+            Assert.DoesNotContain("filePath", request.Body);
+        }
+        finally
+        {
+            if (Directory.Exists(tempDirectory))
+            {
+                Directory.Delete(tempDirectory, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     public async Task LocalHttpServer_CapturesHeadersCaseInsensitivelyAndRequestPath()
     {
         using var server = new LocalHttpServer(_ => new TestResponse(200, "ok"));

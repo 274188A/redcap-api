@@ -46,7 +46,7 @@ namespace Redcap
                 throw new RedcapApiException("No record provided to export");
             if (IsNullOrEmpty(field) || IsNullOrEmpty(eventName))
                 throw new RedcapApiException("No field provided to export");
-            return await ExecuteAsync(payload =>
+            return await ExecuteDownloadAsync(filePath!, payload =>
             {
                 AddActionRequest(payload, Content.File, RedcapAction.Export, returnFormat);
                 payload["record"] = record!;

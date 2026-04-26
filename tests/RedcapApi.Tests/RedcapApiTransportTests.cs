@@ -1717,6 +1717,7 @@ public class RedcapApiTransportTests
             Assert.Equal("file", transport.LastDictionaryPayload!["content"]);
             Assert.Equal("export", transport.LastDictionaryPayload["action"]);
             Assert.False(transport.LastDictionaryPayload.ContainsKey("filePath"));
+            Assert.Equal(tempFolder, transport.LastDownloadDestinationPath);
             Assert.Equal("2", transport.LastDictionaryPayload["repeat_instance"]);
         }
         finally
@@ -1744,6 +1745,7 @@ public class RedcapApiTransportTests
             Assert.Equal("export", transport.LastDictionaryPayload["action"]);
             Assert.Equal("2", transport.LastDictionaryPayload["repeat_instance"]);
             Assert.False(transport.LastDictionaryPayload.ContainsKey("filePath"));
+            Assert.Equal(tempFolder, transport.LastDownloadDestinationPath);
         }
         finally
         {
@@ -1805,6 +1807,7 @@ public class RedcapApiTransportTests
             Assert.NotNull(transport.LastDictionaryPayload);
             Assert.False(transport.LastDictionaryPayload!.ContainsKey("repeat_instance"));
             Assert.False(transport.LastDictionaryPayload.ContainsKey("filePath"));
+            Assert.Equal(tempFolder, transport.LastDownloadDestinationPath);
         }
         finally
         {

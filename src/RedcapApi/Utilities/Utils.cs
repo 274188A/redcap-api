@@ -44,9 +44,11 @@ namespace Redcap.Utilities
                 throw new ArgumentException("fileName did not contain a usable file name.", nameof(fileName));
             }
 
-            if (!string.IsNullOrEmpty(fileExtension))
+            var normalizedExtension = fileExtension.TrimStart('.');
+            if (!string.IsNullOrEmpty(normalizedExtension) &&
+                !safeName.EndsWith("." + normalizedExtension, StringComparison.OrdinalIgnoreCase))
             {
-                safeName = safeName + "." + fileExtension;
+                safeName = safeName + "." + normalizedExtension;
             }
 
             var rootPath = Path.GetFullPath(path);
@@ -306,27 +308,57 @@ namespace Redcap.Utilities
                 throw new RedcapApiException($"REDCap returned {(int)response.StatusCode} {response.ReasonPhrase}", response.StatusCode, body);
             }
 
-            var headers = response.Content.Headers;
-            var fileName = headers.ContentType?.Parameters.Select(x => x.Value).FirstOrDefault();
-            if (!string.IsNullOrEmpty(fileName))
-            {
-                response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
-                {
-                    FileName = fileName
-                };
-            }
-
+            var fileName = GetDownloadFileName(response.Content.Headers);
             var isPdf = payload.TryGetValue("content", out var contentVal) && contentVal == "pdf";
+            var fileExtension = string.Empty;
             if (isPdf)
             {
                 fileName = payload.TryGetValue("instrument", out var inst) ? inst : fileName;
-                await response.Content.ReadAsFileAsync(fileName!, destinationPath, true, "pdf", cancellationToken: cancellationToken);
+                if (!string.IsNullOrEmpty(fileName) && !Path.HasExtension(fileName))
+                {
+                    fileExtension = "pdf";
+                }
             }
-            else
+
+            if (string.IsNullOrWhiteSpace(fileName))
             {
-                await response.Content.ReadAsFileAsync(fileName!, destinationPath, true, cancellationToken: cancellationToken);
+                throw new InvalidOperationException("Response did not include a download filename.");
             }
-            return fileName ?? string.Empty;
+
+            await response.Content.ReadAsFileAsync(fileName, destinationPath, true, fileExtension, cancellationToken: cancellationToken);
+            return GetSavedFileName(fileName, fileExtension);
+        }
+
+        private static string? GetDownloadFileName(HttpContentHeaders headers)
+        {
+            var contentDisposition = headers.ContentDisposition;
+            return CleanHeaderFileName(contentDisposition?.FileNameStar)
+                ?? CleanHeaderFileName(contentDisposition?.FileName)
+                ?? CleanHeaderFileName(headers.ContentType?.Parameters.Select(x => x.Value).FirstOrDefault());
+        }
+
+        private static string? CleanHeaderFileName(string? fileName)
+        {
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                return null;
+            }
+
+            var cleaned = fileName.Trim().Trim('"');
+            return string.IsNullOrWhiteSpace(cleaned) ? null : cleaned;
+        }
+
+        private static string GetSavedFileName(string fileName, string fileExtension)
+        {
+            var savedFileName = Path.GetFileName(CleanHeaderFileName(fileName) ?? fileName);
+            var normalizedExtension = fileExtension.TrimStart('.');
+            if (!string.IsNullOrEmpty(normalizedExtension) &&
+                !savedFileName.EndsWith("." + normalizedExtension, StringComparison.OrdinalIgnoreCase))
+            {
+                savedFileName += "." + normalizedExtension;
+            }
+
+            return savedFileName;
         }
 
         /// <summary>

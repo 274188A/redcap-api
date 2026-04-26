@@ -1,26 +1,57 @@
 # TODO
 
-This file is no longer an active backlog.
+This backlog tracks the next reliability pass for the REDCap client library.
 
-The hardening and cleanup pass that originally lived here is complete, and every item from that list has already been implemented.
+## Goal
 
-## Completed areas
+Make download, stream, form-encoding, and JSON behavior trustworthy end to end, then reduce repeated request and typed-response plumbing.
 
-- Correctness and contract work:
-  per-request timeout behavior, disposal ownership, fail-fast utility behavior, and doc/code alignment.
-- Public API shape:
-  cached REDCap version exposure, async naming cleanup, typed export overloads, and smaller interface groupings.
-- Internal maintainability:
-  shared payload-building helpers, common request-shape helpers, consistent endpoint validation, and centralized outbound serialization.
-- Packaging and release quality:
-  package metadata, deterministic build settings, source-link/symbol packaging, and warnings-as-errors.
-- Tests and developer experience:
-  expanded transport and HTTP behavior coverage, richer README examples, and a rewritten contributor guide.
-- DI-friendly transport support:
-  caller-owned `HttpClient` support through `DefaultRedcapTransport.FromHttpClient(...)`.
+## 1. File download contract
 
-## Current state
+- [x] Add `LocalHttpServer` coverage for `ExportFileAsync` saving a returned file to `filePath`.
+- [x] Assert the export-file payload still includes `token`, `content=file`, `action=export`, `record`, `field`, `event`, and optional `repeat_instance`.
+- [x] Assert `filePath` is never posted to REDCap; it is only a local save destination.
+- [x] Route `ExportFileAsync` through the transport download path instead of the normal string-response path.
+- [x] Keep or deliberately change the current behavior that creates a missing destination directory.
 
-- No open items remain in this file.
-- If new work is needed, start a fresh backlog instead of extending this completed one.
-- Prefer tracking future work by concrete outcome or issue rather than by historical cleanup phase.
+## 2. Download filename handling
+
+- [x] Update `Utils.DownloadFileAsync` to prefer `Content-Disposition` `filename*`, then `filename`.
+- [x] Preserve server-provided file extensions instead of blindly appending `.pdf`.
+- [x] Add tests for quoted filenames, filenames with existing extensions, and non-PDF downloads.
+- [ ] Add tests for missing filename headers.
+- [x] Keep the existing path-traversal guard in `ReadAsFileAsync` covered by tests.
+- [ ] Make PDF instrument exports use a predictable fallback name when the server does not send one.
+
+## 3. Stream lifetime
+
+- [ ] Decide whether `GetStreamContentAsync` should return a readable buffered stream or a response-owning download object.
+- [ ] Replace the current disposed-stream behavior with the chosen contract.
+- [ ] Update `GetStreamContentAsync_ReturnsResponseStream` to assert the returned stream can read `stream-body`.
+- [ ] Keep non-success status coverage that preserves status code and response body.
+
+## 4. Form encoding
+
+- [ ] Change `CustomFormUrlEncodedContent` to produce UTF-8 bytes, or replace it with the framework form encoder if behavior matches.
+- [ ] Add a request-capture test with non-ASCII values such as `cafe` with an accent.
+- [ ] Keep coverage for spaces as `+`, reserved characters, and empty dictionaries.
+
+## 5. JSON serialization
+
+- [ ] Replace `Newtonsoft.Json` usage with `System.Text.Json`.
+- [ ] Preserve REDCap wire names for typed models, especially snake_case fields and existing import payload shapes.
+- [ ] Add serialization/deserialization tests around representative export and import models before removing the package reference.
+- [ ] Centralize JSON options so typed exports, imports, and helper methods use the same settings.
+- [ ] Remove the `Newtonsoft.Json` package reference once behavior is covered by tests.
+
+## 6. Architecture cleanup
+
+- [ ] Add a shared typed-response helper for JSON deserialization and consistent `RedcapApiException` messages.
+- [ ] Add multipart payload helpers for common fields such as `token`, `content`, `action`, `returnFormat`, and `repeat_instance`.
+- [ ] Review cancellation and timeout behavior after the download work, especially whether caller cancellation should stay as `OperationCanceledException`.
+- [ ] Consider focused tests for caller-owned `HttpClient` behavior in `DefaultRedcapTransport.FromHttpClient(...)`.
+
+## Verification
+
+- [ ] Run `dotnet test tests/RedcapApi.Tests/RedcapApi.Tests.csproj --no-restore --verbosity minimal`.
+- [ ] Run `dotnet pack src/RedcapApi/RedcapApi.csproj -c Release -o artifacts` before publishing.
