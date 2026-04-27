@@ -74,6 +74,14 @@ public interface IRedcapRecords
     Task<string> ExportRecordsAsync(RedcapFormat format, RedcapDataType redcapDataType, string[]? records = null, string[]? fields = null, string[]? forms = null, string[]? events = null, RawOrLabel rawOrLabel = RawOrLabel.raw, RawOrLabelHeaders rawOrLabelHeaders = RawOrLabelHeaders.raw, bool exportCheckboxLabel = false, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, bool exportSurveyFields = false, bool exportDataAccessGroups = false, string? filterLogic = default, DateTime? dateRangeBegin = default, DateTime? dateRangeEnd = default, CsvDelimiter csvDelimiter = CsvDelimiter.comma, DecimalCharacter decimalCharacter = DecimalCharacter.none, bool exportBlankForGrayFormStatus = false, bool combineCheckboxOptions = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
 
     /// <summary>
+    /// Exports records using an options object instead of a long optional-parameter list.
+    /// </summary>
+    /// <param name="options">Export options that map to the record export payload.</param>
+    /// <param name="cancellationToken">Cancellation token for the request.</param>
+    /// <returns>Data from the project in the format and type specified ordered by the record and then by event id.</returns>
+    Task<string> ExportRecordsAsync(RecordExportOptions options, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// From Redcap version with version 10.3.0<br/>
     /// Import Records<br/>
     /// This method allows you to import a set of records for a project
@@ -107,6 +115,15 @@ public interface IRedcapRecords
     /// <param name="timeOutSeconds">Number of seconds before the http request times out.</param>
     /// <returns>the content specified by returnContent</returns>
     Task<string> ImportRecordsAsync<T>(RedcapFormat format, RedcapDataType redcapDataType, OverwriteBehavior overwriteBehavior, bool forceAutoNumber, bool backgroundProcess, List<T> data, string? dateFormat = default, CsvDelimiter csvDelimiter = CsvDelimiter.tab, ReturnContent returnContent = ReturnContent.count, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100);
+
+    /// <summary>
+    /// Imports records using an options object instead of a long optional-parameter list.
+    /// </summary>
+    /// <typeparam name="T">The record payload item type.</typeparam>
+    /// <param name="options">Import options that map to the record import payload.</param>
+    /// <param name="cancellationToken">Cancellation token for the request.</param>
+    /// <returns>The content specified by the import return-content option.</returns>
+    Task<string> ImportRecordsAsync<T>(RecordImportOptions<T> options, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Delete Records<br/>

@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text.Json;
 
 using Redcap.Exceptions;
 using Redcap.Models;
@@ -12,7 +13,9 @@ public class HttpErrorTests
     [Theory]
     [InlineData(401)]
     [InlineData(403)]
+    [InlineData(429)]
     [InlineData(500)]
+    [InlineData(503)]
     public async Task ExportRecordsAsync_WhenServerReturnsError_ThrowsRedcapApiException(int statusCode)
     {
         using var server = new LocalHttpServer(_ => new TestResponse(statusCode, "server-error-body"));
@@ -52,5 +55,17 @@ public class HttpErrorTests
 
         Assert.Equal((HttpStatusCode)statusCode, ex.StatusCode);
         Assert.Equal("users-error-body", ex.ResponseBody);
+    }
+
+    [Fact]
+    public async Task ExportDagsTypedAsync_WhenServerReturnsMalformedJson_ThrowsRedcapApiException()
+    {
+        using var server = new LocalHttpServer(_ => new TestResponse(200, "not-json"));
+        var api = new Redcap.RedcapApi(server.Url.ToString(), TestConstants.Token);
+
+        var ex = await Assert.ThrowsAsync<RedcapApiException>(() => api.ExportDagsTypedAsync());
+
+        Assert.Equal("Failed to deserialize REDCap DAG response.", ex.Message);
+        Assert.IsType<JsonException>(ex.InnerException);
     }
 }

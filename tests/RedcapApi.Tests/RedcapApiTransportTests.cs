@@ -272,6 +272,59 @@ public class RedcapApiTransportTests
     }
 
     [Fact]
+    public async Task ExportRecordsAsync_OptionsOverload_UsesExpectedPayloadAndTimeout()
+    {
+        var transport = new FakeTransport();
+        var api = new Redcap.RedcapApi(TestConstants.BaseUrl, TestConstants.Token, transport);
+        var options = new RecordExportOptions
+        {
+            Format = RedcapFormat.csv,
+            RedcapDataType = RedcapDataType.flat,
+            Records = ["1", "2"],
+            Fields = ["field_1", "field_2"],
+            Forms = ["form_1"],
+            Events = ["event_1_arm_1"],
+            RawOrLabel = RawOrLabel.label,
+            RawOrLabelHeaders = RawOrLabelHeaders.label,
+            ExportCheckboxLabel = true,
+            ReturnFormat = RedcapReturnFormat.xml,
+            ExportSurveyFields = true,
+            ExportDataAccessGroups = true,
+            FilterLogic = "[age] > 30",
+            DateRangeBegin = new DateTime(2024, 1, 2, 3, 4, 5),
+            DateRangeEnd = new DateTime(2024, 1, 3, 3, 4, 5),
+            CsvDelimiter = CsvDelimiter.comma,
+            DecimalCharacter = DecimalCharacter.dot,
+            ExportBlankForGrayFormStatus = true,
+            CombineCheckboxOptions = true,
+            TimeOutSeconds = 42
+        };
+
+        await api.ExportRecordsAsync(options);
+
+        Assert.NotNull(transport.LastDictionaryPayload);
+        Assert.Equal("record", transport.LastDictionaryPayload!["content"]);
+        Assert.Equal("csv", transport.LastDictionaryPayload["format"]);
+        Assert.Equal("flat", transport.LastDictionaryPayload["type"]);
+        Assert.Equal("1,2", transport.LastDictionaryPayload["records"]);
+        Assert.Equal("field_1,field_2", transport.LastDictionaryPayload["fields"]);
+        Assert.Equal("form_1", transport.LastDictionaryPayload["forms"]);
+        Assert.Equal("event_1_arm_1", transport.LastDictionaryPayload["events"]);
+        Assert.Equal("label", transport.LastDictionaryPayload["rawOrLabel"]);
+        Assert.Equal("label", transport.LastDictionaryPayload["rawOrLabelHeaders"]);
+        Assert.Equal("True", transport.LastDictionaryPayload["exportCheckboxLabel"]);
+        Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
+        Assert.Equal("True", transport.LastDictionaryPayload["exportSurveyFields"]);
+        Assert.Equal("True", transport.LastDictionaryPayload["exportDataAccessGroups"]);
+        Assert.Equal("[age] > 30", transport.LastDictionaryPayload["filterLogic"]);
+        Assert.Equal("comma", transport.LastDictionaryPayload["csvDelimiter"]);
+        Assert.Equal("dot", transport.LastDictionaryPayload["decimalCharacter"]);
+        Assert.Equal("True", transport.LastDictionaryPayload["exportBlankForGrayFormStatus"]);
+        Assert.Equal("True", transport.LastDictionaryPayload["combineCheckboxOptions"]);
+        Assert.Equal(42, transport.LastTimeOutSeconds);
+    }
+
+    [Fact]
     public async Task ExportRecordsAsync_ContentOverload_UsesExpectedPayload()
     {
         var transport = new FakeTransport();
@@ -381,6 +434,43 @@ public class RedcapApiTransportTests
             Assert.Equal("ids", transport.LastDictionaryPayload["returnContent"]);
             Assert.Contains("Alice", transport.LastDictionaryPayload["data"]);
         }
+    }
+
+    [Fact]
+    public async Task ImportRecordsAsync_OptionsOverload_UsesExpectedPayloadAndTimeout()
+    {
+        var transport = new FakeTransport();
+        var api = new Redcap.RedcapApi(TestConstants.BaseUrl, TestConstants.Token, transport);
+        var options = new RecordImportOptions<TestRecordPayload>
+        {
+            Format = RedcapFormat.json,
+            RedcapDataType = RedcapDataType.flat,
+            OverwriteBehavior = OverwriteBehavior.overwrite,
+            ForceAutoNumber = true,
+            BackgroundProcess = true,
+            Data = [new TestRecordPayload { RecordId = "1", FirstName = "Alice" }],
+            DateFormat = "YMD",
+            CsvDelimiter = CsvDelimiter.comma,
+            ReturnContent = ReturnContent.ids,
+            ReturnFormat = RedcapReturnFormat.xml,
+            TimeOutSeconds = 21
+        };
+
+        await api.ImportRecordsAsync(options);
+
+        Assert.NotNull(transport.LastDictionaryPayload);
+        Assert.Equal("record", transport.LastDictionaryPayload!["content"]);
+        Assert.Equal("json", transport.LastDictionaryPayload["format"]);
+        Assert.Equal("flat", transport.LastDictionaryPayload["type"]);
+        Assert.Equal("overwrite", transport.LastDictionaryPayload["overwriteBehavior"]);
+        Assert.Equal("True", transport.LastDictionaryPayload["forceAutoNumber"]);
+        Assert.Equal("True", transport.LastDictionaryPayload["backgroundProcess"]);
+        Assert.Equal("YMD", transport.LastDictionaryPayload["dateFormat"]);
+        Assert.Equal("comma", transport.LastDictionaryPayload["csvDelimiter"]);
+        Assert.Equal("ids", transport.LastDictionaryPayload["returnContent"]);
+        Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
+        Assert.Contains("Alice", transport.LastDictionaryPayload["data"]);
+        Assert.Equal(21, transport.LastTimeOutSeconds);
     }
 
     [Fact]
@@ -2163,10 +2253,13 @@ public class RedcapApiTransportTests
 
         public string? LastDownloadDestinationPath { get; private set; }
 
+        public long LastTimeOutSeconds { get; private set; }
+
         public Task<Stream?> GetStreamContentAsync(Dictionary<string, string> payload, Uri uri, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
         {
             LastDictionaryPayload = new Dictionary<string, string>(payload);
             AllDictionaryPayloads.Add(LastDictionaryPayload);
+            LastTimeOutSeconds = timeOutSeconds;
             return Task.FromResult<Stream?>(new MemoryStream());
         }
 
@@ -2174,6 +2267,7 @@ public class RedcapApiTransportTests
         {
             LastMultipartPayload = payload;
             AllMultipartPayloads.Add(payload);
+            LastTimeOutSeconds = timeOutSeconds;
             return Task.FromResult(ResponseBody);
         }
 
@@ -2181,6 +2275,7 @@ public class RedcapApiTransportTests
         {
             LastDictionaryPayload = new Dictionary<string, string>(payload);
             AllDictionaryPayloads.Add(LastDictionaryPayload);
+            LastTimeOutSeconds = timeOutSeconds;
             return Task.FromResult(ResponseBody);
         }
 
@@ -2189,6 +2284,7 @@ public class RedcapApiTransportTests
             LastDictionaryPayload = new Dictionary<string, string>(payload);
             AllDictionaryPayloads.Add(LastDictionaryPayload);
             LastDownloadDestinationPath = destinationPath;
+            LastTimeOutSeconds = timeOutSeconds;
             return Task.FromResult(ResponseBody);
         }
     }

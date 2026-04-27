@@ -154,6 +154,37 @@ public partial class RedcapApi
     }
 
     /// <summary>
+    /// Exports records using an options object instead of a long optional-parameter list.
+    /// </summary>
+    public Task<string> ExportRecordsAsync(RecordExportOptions options, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+
+        return ExportRecordsAsync(
+            options.Format,
+            options.RedcapDataType,
+            options.Records,
+            options.Fields,
+            options.Forms,
+            options.Events,
+            options.RawOrLabel,
+            options.RawOrLabelHeaders,
+            options.ExportCheckboxLabel,
+            options.ReturnFormat,
+            options.ExportSurveyFields,
+            options.ExportDataAccessGroups,
+            options.FilterLogic,
+            options.DateRangeBegin,
+            options.DateRangeEnd,
+            options.CsvDelimiter,
+            options.DecimalCharacter,
+            options.ExportBlankForGrayFormStatus,
+            options.CombineCheckboxOptions,
+            cancellationToken,
+            options.TimeOutSeconds);
+    }
+
+    /// <summary>
     /// From Redcap Version 11.4.0<br/>
     /// Export Record<br/>
     /// This method allows you to export a single record for a project.
@@ -327,6 +358,28 @@ public partial class RedcapApi
                 payload["returnContent"] = returnContent.ToString();
             }
         }, cancellationToken, timeOutSeconds);
+    }
+
+    /// <summary>
+    /// Imports records using an options object instead of a long optional-parameter list.
+    /// </summary>
+    public Task<string> ImportRecordsAsync<T>(RecordImportOptions<T> options, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+
+        return ImportRecordsAsync(
+            options.Format,
+            options.RedcapDataType,
+            options.OverwriteBehavior,
+            options.ForceAutoNumber,
+            options.BackgroundProcess,
+            options.Data,
+            options.DateFormat,
+            options.CsvDelimiter,
+            options.ReturnContent,
+            options.ReturnFormat,
+            cancellationToken,
+            options.TimeOutSeconds);
     }
 
     /// <summary>

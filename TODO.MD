@@ -55,7 +55,7 @@ Priority bands:
 - [x] **Introduce a `PayloadKey` static constants class**
   Literal strings such as `"content"`, `"format"`, `"action"`, `"token"`, `"records"`, `"returnFormat"`, `"data"`, and `"type"` appear as dictionary keys throughout `src/RedcapApi/Api/RedcapApi.cs` and its partial files. Create `src/RedcapApi/Api/PayloadKey.cs` with `public static class PayloadKey` holding `public const string Content = "content";` etc. Replace all raw strings in `AddContent`, `AddFormattedRequest`, `AddActionRequest`, `AddImportRequest`, `CreatePayload`, and related helpers.
 
-- [ ] **Add `RecordExportOptions` / `RecordImportOptions` parameter objects**
+- [x] **Add `RecordExportOptions` / `RecordImportOptions` parameter objects**
   `ExportRecordsAsync` in `src/RedcapApi/Api/RedcapApi.Records.cs` has 21 parameters. Add non-breaking overloads `ExportRecordsAsync(RecordExportOptions options, CancellationToken cancellationToken = default)` and the equivalent for import, where the options objects carry all current optional parameters as properties with identical defaults. Keep all existing overloads intact — this is purely additive. Document in CONTRIBUTING.md that new endpoints with more than ~8 optional parameters should prefer options objects.
 
 ---
@@ -77,10 +77,10 @@ Priority bands:
 - [x] **Extend `FakeTransport` with `AllPayloads` history**
   `FakeTransport` (bottom of `RedcapApiTransportTests.cs`) only stores `LastDictionaryPayload` / `LastMultipartPayload` / `LastDownloadDestinationPath` — the most recent call only. Multi-step workflows that call multiple API methods sequentially cannot assert on earlier calls. Add `public List<Dictionary<string, string>> AllDictionaryPayloads { get; } = new();` and `public List<MultipartFormDataContent> AllMultipartPayloads { get; } = new();`, appending to them on each call alongside updating the `Last*` properties.
 
-- [ ] **Create `ValidationTests.cs` for guard-clause coverage**
+- [x] **Create `ValidationTests.cs` for guard-clause coverage**
   There is no dedicated test class for input-validation behavior. Create `tests/RedcapApi.Tests/ValidationTests.cs` and add tests verifying: `ArgumentNullException` from the constructor when `token` is null; `ArgumentException` when `token` is empty; `RedcapApiException` from `RequireItems(...)` when a required collection is empty (e.g., `DeleteArmsAsync(Array.Empty<RedcapArm>())`). Use `FakeTransport` and assert `LastDictionaryPayload == null` to confirm the transport is never invoked.
 
-- [ ] **Add 429 and 503 error simulation in `HttpErrorTests.cs`**
+- [x] **Add 429 and 503 error simulation in `HttpErrorTests.cs`**
   `HttpErrorTests.cs` tests only 401, 403, 400, and 500. Add `[InlineData(429)]` and `[InlineData(503)]` to the existing `[Theory]` so those status codes are verified to produce `RedcapApiException`. Also add a test for HTTP 200 with a malformed JSON body that verifies typed overloads (e.g., `ExportDagsTypedAsync`) throw `RedcapApiException` with a meaningful message rather than an unhandled `JsonException`.
 
 - [ ] **Expand the E2E test suite**
@@ -106,10 +106,10 @@ Priority bands:
 
 ## P3 — Nice-to-Have
 
-- [ ] **Clean up or remove `bitbucket-pipelines.yml`**
+- [x] **Clean up or remove `bitbucket-pipelines.yml`**
   CLAUDE.md notes the pipeline block is duplicated (only the first copy runs). Since this repo has no CI, either delete the file entirely or leave exactly one block with a comment. Do not let the duplication silently grow.
 
-- [ ] **Document the "no CI / no automated publish" decision in `CONTRIBUTING.md`**
+- [x] **Document the "no CI / no automated publish" decision in `CONTRIBUTING.md`**
   Add a short note so future contributors do not add CI pipelines or NuGet publish workflows. Saves future sessions from rediscovering the decision.
 
 ---

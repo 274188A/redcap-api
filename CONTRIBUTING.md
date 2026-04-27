@@ -78,6 +78,8 @@ Follow this sequence when extending the API:
 
 When the surrounding area already exposes multiple overloads, maintain parity unless there is a strong reason not to. This library has historically favored overload completeness, and the test suite assumes that style.
 
+For endpoints that need more than about eight optional parameters, prefer an additive options-object overload rather than continuing to grow the positional signature. Keep existing overloads for compatibility, but make the options form the easier path for new call sites.
+
 ## Typed overload guidance
 
 String-returning methods remain the compatibility baseline. Typed methods are additive.
@@ -121,6 +123,8 @@ Use `LocalHttpServer` only when you need real HTTP behavior that `FakeTransport`
 - `REDCAP_E2E_FORM`
 
 ## Docs and release hygiene
+
+This repo intentionally does not have CI pipelines or an automated NuGet/GitHub Packages publish workflow. Keep validation and release steps manual unless the maintainers explicitly decide to restore automation, and do not add new pipeline files as part of routine contribution work.
 
 If you change public behavior, also check the surrounding docs:
 
