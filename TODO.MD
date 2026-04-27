@@ -65,16 +65,16 @@ Priority bands:
 - [x] **Extract `TestConstants` from test files**
   The string `"token123"` is declared as `private const string Token` independently in every test class. Create `tests/RedcapApi.Tests/TestConstants.cs` with `internal static class TestConstants { public const string Token = "token123"; ... }` and replace all duplicate declarations. Add any other repeated literals (localhost base URL, common record IDs) as named constants here.
 
-- [ ] **Convert copy-paste overload tests to `[Theory]` + `[InlineData]`**
+- [x] **Convert copy-paste overload tests to `[Theory]` + `[InlineData]`**
   `RedcapApiTransportTests.cs` has 152 `[Fact]` methods and zero `[Theory]` usages. Many tests for overload variants differ only in which optional arguments are omitted. Identify clusters of structurally identical tests (e.g., multiple `ExportArmsAsync` overloads that each assert `content=arm`) and consolidate them into `[Theory]` + `[InlineData]` or `[MemberData]`. Target ≥20% reduction in total `[Fact]` count without losing any assertion coverage.
 
-- [ ] **Add cancellation forwarding tests for all domain areas**
+- [x] **Add cancellation forwarding tests for all domain areas**
   `CancellationTests.cs` verifies `CancellationToken` forwarding for Records, Files, and Users only. Every remaining domain (Arms, DAGs, Events, FieldNames, FileRepository, Instruments, Logging, Metadata, Projects, RepeatingInstruments, Reports, Surveys, UserRoles, Version) needs at least one `_ForwardsCancellationTokenToTransport` test. The pattern already exists in `CancellationTests.cs`.
 
-- [ ] **Add `ConcurrencyTests.cs`**
+- [x] **Add `ConcurrencyTests.cs`**
   There are no tests that verify the transport and API instance are safe under concurrent load. Add a test class that issues 20–50 parallel calls against a `LocalHttpServer` using a single shared `RedcapApi` instance and asserts all calls complete without exceptions or data mixing. This documents — and guards — the thread-safety invariant of `DefaultRedcapTransport`.
 
-- [ ] **Extend `FakeTransport` with `AllPayloads` history**
+- [x] **Extend `FakeTransport` with `AllPayloads` history**
   `FakeTransport` (bottom of `RedcapApiTransportTests.cs`) only stores `LastDictionaryPayload` / `LastMultipartPayload` / `LastDownloadDestinationPath` — the most recent call only. Multi-step workflows that call multiple API methods sequentially cannot assert on earlier calls. Add `public List<Dictionary<string, string>> AllDictionaryPayloads { get; } = new();` and `public List<MultipartFormDataContent> AllMultipartPayloads { get; } = new();`, appending to them on each call alongside updating the `Last*` properties.
 
 - [ ] **Create `ValidationTests.cs` for guard-clause coverage**

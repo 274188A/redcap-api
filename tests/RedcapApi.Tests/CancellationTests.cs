@@ -7,6 +7,24 @@ namespace RedcapApi.Tests;
 
 public class CancellationTests
 {
+    public static TheoryData<string, Func<Redcap.RedcapApi, CancellationToken, Task>> DomainCancellationCases => new()
+    {
+        { "Arms", (api, token) => api.ExportArmsAsync(cancellationToken: token) },
+        { "DAGs", (api, token) => api.ExportDagsAsync(cancellationToken: token) },
+        { "Events", (api, token) => api.ExportEventsAsync(RedcapFormat.json, new[] { "1" }, cancellationToken: token) },
+        { "FieldNames", (api, token) => api.ExportFieldNamesAsync(cancellationToken: token) },
+        { "FileRepository", (api, token) => api.ExportFilesFoldersFileRepositoryAsync(cancellationToken: token) },
+        { "Instruments", (api, token) => api.ExportInstrumentsAsync(cancellationToken: token) },
+        { "Logging", (api, token) => api.ExportLoggingAsync(cancellationToken: token) },
+        { "Metadata", (api, token) => api.ExportMetaDataAsync(cancellationToken: token) },
+        { "Projects", (api, token) => api.ExportProjectInfoAsync(cancellationToken: token) },
+        { "RepeatingInstruments", (api, token) => api.ExportRepeatingInstrumentsAndEventsAsync(cancellationToken: token) },
+        { "Reports", (api, token) => api.ExportReportsAsync(1, cancellationToken: token) },
+        { "Surveys", (api, token) => api.ExportSurveyQueueLinkAsync("1", cancellationToken: token) },
+        { "UserRoles", (api, token) => api.ExportUserRolesAsync(cancellationToken: token) },
+        { "Version", (api, token) => api.ExportRedcapVersionAsync(cancellationToken: token) },
+    };
+
     [Fact]
     public async Task ExportRecordsAsync_ForwardsCancellationTokenToTransport()
     {
@@ -50,6 +68,21 @@ public class CancellationTests
         {
             Directory.Delete(tempDir, recursive: true);
         }
+    }
+
+    [Theory]
+    [MemberData(nameof(DomainCancellationCases))]
+    public async Task RepresentativeDomainCalls_ForwardsCancellationTokenToTransport(
+        string _,
+        Func<Redcap.RedcapApi, CancellationToken, Task> apiCall)
+    {
+        using var cts = new CancellationTokenSource();
+        var transport = new TokenCapturingTransport();
+        var api = new Redcap.RedcapApi(TestConstants.BaseUrl, TestConstants.Token, transport);
+
+        await apiCall(api, cts.Token);
+
+        Assert.Equal(cts.Token, transport.LastCancellationToken);
     }
 
     [Fact]
