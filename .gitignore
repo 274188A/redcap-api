@@ -270,3 +270,5 @@ HANDOFF.md
 /.claude/.claude
 /.github/upgrades/scenarios/newtonsoft-json-migration
 redcap-api.code-workspace
+/docs/_site/
+/docs/api/

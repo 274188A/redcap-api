@@ -114,7 +114,7 @@ Priority bands:
 - [x] **Stryker.NET mutation testing**
   Run Stryker.NET against `src/RedcapApi` to measure mutation score for `Utils.cs`, `DefaultRedcapTransport.cs`, and the Execute helpers in `RedcapApi.cs`. A score below 70% in core logic suggests the test suite has blind spots that `[Theory]` consolidation alone will not catch. Add `stryker-config.json` and a `./build.ps1 -Target Mutate` target when approved. Runs locally — no CI required. Current baseline: `65.35%` mutation score.
 
-- [ ] **DocFX API documentation site**
+- [x] **DocFX API documentation site**
   The library has thorough XML doc comments on all public surfaces. Add a `docs/` folder with a `docfx.json` targeting `src/RedcapApi` and instructions in CONTRIBUTING.md for generating the site locally (`docfx docs/docfx.json --serve`).
 
 - [ ] **BenchmarkDotNet performance baselines**

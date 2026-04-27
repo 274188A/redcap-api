@@ -28,6 +28,7 @@ dotnet test tests/RedcapApi.Tests/RedcapApi.Tests.csproj --verbosity minimal
 Useful variants:
 
 ```bash
+dotnet tool restore --configfile NuGet.Config
 dotnet test tests/RedcapApi.Tests/RedcapApi.Tests.csproj --filter "FullyQualifiedName~ExportDagsAsync_UsesExpectedPayload"
 dotnet test tests/RedcapApi.Tests/RedcapApi.Tests.csproj --filter "Category!=E2E"
 dotnet test tests/RedcapApi.Tests/RedcapApi.Tests.csproj --collect:"XPlat Code Coverage" --verbosity minimal
@@ -126,6 +127,8 @@ Use `LocalHttpServer` only when you need real HTTP behavior that `FakeTransport`
 ## Docs and release hygiene
 
 This repo intentionally does not have CI pipelines or an automated NuGet/GitHub Packages publish workflow. Keep validation and release steps manual unless the maintainers explicitly decide to restore automation, and do not add new pipeline files as part of routine contribution work.
+
+To generate the local API documentation site, restore the local tools and then run `dotnet docfx docs/docfx.json --serve` from the repo root. The DocFX project lives under `docs/`, generates API metadata from `src/RedcapApi/RedcapApi.csproj`, and writes the preview site to `docs/_site/`.
 
 If you change public behavior, also check the surrounding docs:
 
