@@ -1,4 +1,4 @@
-using Redcap.Api;
+﻿using Redcap.Api;
 using Redcap.Models;
 using Redcap.Utilities;
 
@@ -524,9 +524,6 @@ public partial class RedcapApi
     /// Obsolete compatibility shim for <see cref="RandomizeRecordAsync(string, string, RedcapFormat, RedcapReturnFormat, bool, CancellationToken, long)"/>.
     /// </summary>
     [Obsolete("Use RandomizeRecordAsync instead.")]
-    public Task<string> RandomizeRecord(string record, string randomizationId, RedcapFormat format, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, bool returnAlt = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
-    {
-        return RandomizeRecordAsync(record, randomizationId, format, returnFormat, returnAlt, cancellationToken, timeOutSeconds);
-    }
+    public Task<string> RandomizeRecord(string record, string randomizationId, RedcapFormat format, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, bool returnAlt = false, CancellationToken cancellationToken = default, long timeOutSeconds = 100) => RandomizeRecordAsync(record, randomizationId, format, returnFormat, returnAlt, cancellationToken, timeOutSeconds);
 
 }
