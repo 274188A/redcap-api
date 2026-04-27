@@ -269,3 +269,4 @@ HANDOFF.md
 /.dotnet-home
 /.claude/.claude
 /.github/upgrades/scenarios/newtonsoft-json-migration
+redcap-api.code-workspace
