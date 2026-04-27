@@ -117,6 +117,16 @@ dotnet build RedcapApi.slnx -c Release
 dotnet test tests/RedcapApi.Tests/RedcapApi.Tests.csproj --verbosity minimal
 ```
 
+## Documentation
+
+Local API documentation lives under [docs/index.md](docs/index.md) and can be previewed with:
+
+```bash
+dotnet tool restore --configfile NuGet.Config
+dotnet restore RedcapApi.slnx --configfile NuGet.Config
+dotnet docfx docs/docfx.json --serve
+```
+
 End-to-end tests against a real REDCap instance are skipped by default. Set these environment variables to run them:
 
 | Variable | Description |
