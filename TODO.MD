@@ -14,7 +14,7 @@ Priority bands:
 
 ### Branch Merge
 
-- [ ] **Merge `newtonsoft-json-migration` → `master`**
+- [x] **Merge `newtonsoft-json-migration` → `master`**
   All 216 tests pass. Nothing else should land until `master` reflects the current working state. Run `git checkout master && git merge --no-ff newtonsoft-json-migration`, verify `dotnet test` still passes, then delete the feature branch.
 
 ---
@@ -83,23 +83,18 @@ Priority bands:
 - [x] **Add 429 and 503 error simulation in `HttpErrorTests.cs`**
   `HttpErrorTests.cs` tests only 401, 403, 400, and 500. Add `[InlineData(429)]` and `[InlineData(503)]` to the existing `[Theory]` so those status codes are verified to produce `RedcapApiException`. Also add a test for HTTP 200 with a malformed JSON body that verifies typed overloads (e.g., `ExportDagsTypedAsync`) throw `RedcapApiException` with a meaningful message rather than an unhandled `JsonException`.
 
-- [ ] **Expand the E2E test suite**
-  Only one E2E test exists (`ExportRecordAsync`). Add `[SkippableFact]` tests — guarded by the same `REDCAP_E2E_*` env-var pattern and `[Trait("Category", "E2E")]` attribute — for: `ImportRecordsAsync`, `ExportUsersAsync` / `ExportUsersTypedAsync`, an `ImportFileAsync` + `ExportFileAsync` round-trip, and `ExportSurveyLinkAsync`.
-
----
-
 ### Developer Experience
 
-- [ ] **Add `.editorconfig` at the repo root**
+- [x] **Add `.editorconfig` at the repo root**
   Without one, C# formatting rules are IDE-dependent with no tooling enforcement. Create `.editorconfig` with at minimum: `indent_style = space`, `indent_size = 4`, `end_of_line = lf`, `charset = utf-8-bom`, and the standard `[*.cs]` C# analyzer severity settings that align with `TreatWarningsAsErrors = true` already in `Directory.Build.props`.
 
-- [ ] **Add `global.json` to pin the .NET 10 SDK version**
+- [x] **Add `global.json` to pin the .NET 10 SDK version**
   Different team members may use different .NET 10 preview/stable SDK builds. Add `global.json` at the repo root with `{ "sdk": { "version": "10.0.xxx", "rollForward": "latestPatch" } }` where `xxx` matches the team's current toolchain (`dotnet --version`). This prevents build surprises when a new preview SDK ships.
 
-- [ ] **Add `Microsoft.CodeAnalysis.NetAnalyzers`**
+- [x] **Add `Microsoft.CodeAnalysis.NetAnalyzers`**
   The repo enforces `TreatWarningsAsErrors` but has no Roslyn analyzer package beyond the compiler. Add `<PackageVersion Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0" />` to `Directory.Packages.props` and `<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" PrivateAssets="all" />` to a shared `<ItemGroup>` in `Directory.Build.props`. Set baseline severities in `.editorconfig`.
 
-- [ ] **Add `build.ps1` for one-command dev setup**
+- [x] **Add `build.ps1` for one-command dev setup**
   Contributors currently assemble `dotnet` commands from CONTRIBUTING.md manually. Add `build.ps1` at the repo root with named targets: `Restore`, `Build`, `Test`, `TestE2E`. A `./build.ps1 -Target Test` invocation becomes the canonical "does everything pass?" command.
 
 ---
@@ -116,8 +111,8 @@ Priority bands:
 
 ## P4 — Future / Research
 
-- [ ] **Stryker.NET mutation testing**
-  Run Stryker.NET against `src/RedcapApi` to measure mutation score for `Utils.cs`, `DefaultRedcapTransport.cs`, and the Execute helpers in `RedcapApi.cs`. A score below 70% in core logic suggests the test suite has blind spots that `[Theory]` consolidation alone will not catch. Add `stryker-config.json` and a `./build.ps1 -Target Mutate` target when approved. Runs locally — no CI required.
+- [x] **Stryker.NET mutation testing**
+  Run Stryker.NET against `src/RedcapApi` to measure mutation score for `Utils.cs`, `DefaultRedcapTransport.cs`, and the Execute helpers in `RedcapApi.cs`. A score below 70% in core logic suggests the test suite has blind spots that `[Theory]` consolidation alone will not catch. Add `stryker-config.json` and a `./build.ps1 -Target Mutate` target when approved. Runs locally — no CI required. Current baseline: `65.35%` mutation score.
 
 - [ ] **DocFX API documentation site**
   The library has thorough XML doc comments on all public surfaces. Add a `docs/` folder with a `docfx.json` targeting `src/RedcapApi` and instructions in CONTRIBUTING.md for generating the site locally (`docfx docs/docfx.json --serve`).
@@ -127,3 +122,10 @@ Priority bands:
 
 - [ ] **ArchUnitNET architectural constraint tests**
   Add an `ArchitectureTests.cs` test class enforcing: classes in `Redcap.Api` must not reference the test project; `DefaultRedcapTransport` must only be instantiated through its constructors or `FromHttpClient`; `Utils.cs` must not have cyclic references back into `Redcap.Api`. Record current violations as known exceptions until resolved.
+
+---
+
+## Deferred Until Last
+
+- [ ] **Expand the E2E test suite**
+  Only one E2E test exists (`ExportRecordAsync`). Add `[SkippableFact]` tests — guarded by the same `REDCAP_E2E_*` env-var pattern and `[Trait("Category", "E2E")]` attribute — for: `ImportRecordsAsync`, `ExportUsersAsync` / `ExportUsersTypedAsync`, an `ImportFileAsync` + `ExportFileAsync` round-trip, and `ExportSurveyLinkAsync`.

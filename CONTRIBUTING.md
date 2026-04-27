@@ -32,6 +32,7 @@ dotnet test tests/RedcapApi.Tests/RedcapApi.Tests.csproj --filter "FullyQualifie
 dotnet test tests/RedcapApi.Tests/RedcapApi.Tests.csproj --filter "Category!=E2E"
 dotnet test tests/RedcapApi.Tests/RedcapApi.Tests.csproj --collect:"XPlat Code Coverage" --verbosity minimal
 dotnet pack src/RedcapApi/RedcapApi.csproj -c Release -o artifacts
+pwsh ./build.ps1 -Target Mutate
 ```
 
 ## Architecture rules
