@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 460" role="img" aria-labelledby="seam-title seam-desc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif">
+  <title id="seam-title">Transport seam — production vs. tests</title>
+  <desc id="seam-desc">Two side-by-side wiring diagrams showing how the same RedcapApi instance is connected to DefaultRedcapTransport with HttpClient in production, and to a FakeTransport that records the last payload in tests. The transport abstraction is the substitution point.</desc>
+
+  <style>
+    .panel { fill: #fbf9ff; stroke: #c8b8eb; stroke-width: 1.2; }
+    .box { fill: #ffffff; stroke: #512BD4; stroke-width: 1.6; }
+    .accent { fill: #f3eefc; stroke: #512BD4; stroke-width: 1.6; }
+    .seam { fill: #ede4ff; stroke: #512BD4; stroke-width: 1.6; stroke-dasharray: 6 4; }
+    .ext { fill: #fff5e6; stroke: #c89a3b; stroke-width: 1.4; }
+    .lbl-h { font-size: 14px; font-weight: 600; fill: #1f1235; text-anchor: middle; }
+    .lbl-sm { font-size: 11px; fill: #4a3a72; text-anchor: middle; }
+    .panel-title { font-size: 14px; font-weight: 700; fill: #1f1235; letter-spacing: 1px; }
+    .arrow { stroke: #512BD4; stroke-width: 1.4; fill: none; }
+  </style>
+
+  <defs>
+    <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#512BD4"/>
+    </marker>
+  </defs>
+
+  <!-- LEFT: production -->
+  <rect x="20" y="20" width="400" height="420" rx="10" class="panel"/>
+  <text x="40" y="50" class="panel-title">PRODUCTION</text>
+
+  <rect x="100" y="80" width="240" height="46" rx="6" class="accent"/>
+  <text x="220" y="103" class="lbl-h">RedcapApi</text>
+  <text x="220" y="118" class="lbl-sm">your code holds this instance</text>
+
+  <line x1="220" y1="126" x2="220" y2="156" class="arrow" marker-end="url(#ar2)"/>
+
+  <rect x="80" y="160" width="280" height="50" rx="6" class="seam"/>
+  <text x="220" y="183" class="lbl-h">IRedcapTransport</text>
+  <text x="220" y="200" class="lbl-sm">substitution point</text>
+
+  <line x1="220" y1="210" x2="220" y2="240" class="arrow" marker-end="url(#ar2)"/>
+
+  <rect x="60" y="244" width="320" height="50" rx="6" class="box"/>
+  <text x="220" y="267" class="lbl-h">DefaultRedcapTransport</text>
+  <text x="220" y="284" class="lbl-sm">owns / borrows an HttpClient</text>
+
+  <line x1="220" y1="294" x2="220" y2="324" class="arrow" marker-end="url(#ar2)"/>
+
+  <rect x="140" y="328" width="160" height="44" rx="6" class="box"/>
+  <text x="220" y="354" class="lbl-h">HttpClient</text>
+
+  <line x1="220" y1="372" x2="220" y2="396" class="arrow" marker-end="url(#ar2)"/>
+
+  <rect x="120" y="400" width="200" height="32" rx="6" class="ext"/>
+  <text x="220" y="421" class="lbl-h">REDCap server</text>
+
+  <!-- RIGHT: tests -->
+  <rect x="460" y="20" width="400" height="420" rx="10" class="panel"/>
+  <text x="480" y="50" class="panel-title">TESTS</text>
+
+  <rect x="540" y="80" width="240" height="46" rx="6" class="accent"/>
+  <text x="660" y="103" class="lbl-h">RedcapApi</text>
+  <text x="660" y="118" class="lbl-sm">same class, no source change</text>
+
+  <line x1="660" y1="126" x2="660" y2="156" class="arrow" marker-end="url(#ar2)"/>
+
+  <rect x="520" y="160" width="280" height="50" rx="6" class="seam"/>
+  <text x="660" y="183" class="lbl-h">IRedcapTransport</text>
+  <text x="660" y="200" class="lbl-sm">substitution point</text>
+
+  <line x1="660" y1="210" x2="660" y2="240" class="arrow" marker-end="url(#ar2)"/>
+
+  <rect x="500" y="244" width="320" height="84" rx="6" class="box"/>
+  <text x="660" y="267" class="lbl-h">FakeTransport (test)</text>
+  <text x="660" y="285" class="lbl-sm">captures LastDictionaryPayload</text>
+  <text x="660" y="301" class="lbl-sm">returns canned ResponseBody</text>
+  <text x="660" y="317" class="lbl-sm">no socket opens, no flake</text>
+
+  <text x="660" y="370" class="lbl-h" font-size="13">Assert on the captured payload</text>
+  <text x="660" y="390" class="lbl-sm">e.g. payload["content"] == "record"</text>
+  <text x="660" y="407" class="lbl-sm">payload["format"] == "json"</text>
+  <text x="660" y="424" class="lbl-sm">— that is the contract this library promises</text>
+</svg>

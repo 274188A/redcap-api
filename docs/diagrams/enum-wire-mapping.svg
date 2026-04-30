@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 320" role="img" aria-labelledby="enum-title enum-desc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif">
+  <title id="enum-title">Enum to wire-value mapping</title>
+  <desc id="enum-desc">Diagram showing the Adapter pattern at the wire boundary. A C# enum member decorated with the Display attribute is converted by Utils.GetDisplayName at runtime into a lower-case string used as a form field value in the outgoing payload.</desc>
+
+  <style>
+    .box { fill: #ffffff; stroke: #512BD4; stroke-width: 1.6; }
+    .accent { fill: #f3eefc; stroke: #512BD4; stroke-width: 1.6; }
+    .code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; fill: #1f1235; }
+    .code-key { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; fill: #7e3ad6; font-weight: 600; }
+    .lbl-h { font-size: 13px; font-weight: 700; fill: #1f1235; text-anchor: middle; letter-spacing: 0.5px; }
+    .lbl-sm { font-size: 11px; fill: #4a3a72; text-anchor: middle; }
+    .arrow { stroke: #512BD4; stroke-width: 1.6; fill: none; }
+    .arrow-lbl { font-size: 11px; fill: #512BD4; font-weight: 600; text-anchor: middle; }
+  </style>
+
+  <defs>
+    <marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#512BD4"/>
+    </marker>
+  </defs>
+
+  <!-- LEFT: source enum -->
+  <text x="140" y="40" class="lbl-h">SOURCE — C# enum</text>
+  <rect x="20" y="56" width="240" height="160" rx="8" class="box"/>
+  <text x="36" y="82" class="code">public enum Content {</text>
+  <text x="50" y="104" class="code-key">[Display(Name = "record")]</text>
+  <text x="50" y="124" class="code">Record,</text>
+  <text x="50" y="146" class="code-key">[Display(Name = "arm")]</text>
+  <text x="50" y="166" class="code">Arm,</text>
+  <text x="50" y="186" class="code">…</text>
+  <text x="36" y="206" class="code">}</text>
+  <text x="140" y="234" class="lbl-sm">src/RedcapApi/Models/Content.cs</text>
+
+  <!-- MIDDLE: adapter -->
+  <line x1="262" y1="136" x2="358" y2="136" class="arrow" marker-end="url(#ar3)"/>
+  <text x="310" y="124" class="arrow-lbl">reflection</text>
+
+  <rect x="360" y="86" width="180" height="100" rx="8" class="accent"/>
+  <text x="450" y="112" class="lbl-h">Utils.GetDisplayName()</text>
+  <text x="450" y="132" class="lbl-sm">extension method</text>
+  <text x="450" y="150" class="lbl-sm">reads [Display] via</text>
+  <text x="450" y="166" class="lbl-sm">DataAnnotations</text>
+  <text x="450" y="182" class="lbl-sm">— the Adapter</text>
+
+  <line x1="542" y1="136" x2="638" y2="136" class="arrow" marker-end="url(#ar3)"/>
+  <text x="590" y="124" class="arrow-lbl">payload[…]</text>
+
+  <!-- RIGHT: wire payload -->
+  <text x="720" y="40" class="lbl-h">WIRE — POST body</text>
+  <rect x="600" y="56" width="200" height="160" rx="8" class="box"/>
+  <text x="616" y="82" class="code">token=...&amp;</text>
+  <text x="616" y="104" class="code-key">content=record&amp;</text>
+  <text x="616" y="126" class="code">format=json&amp;</text>
+  <text x="616" y="148" class="code">type=flat&amp;</text>
+  <text x="616" y="170" class="code">action=export</text>
+  <text x="720" y="234" class="lbl-sm">application/x-www-form-urlencoded</text>
+
+  <!-- Caption -->
+  <rect x="120" y="262" width="580" height="44" rx="6" fill="#fff8e6" stroke="#c89a3b" stroke-width="1.2"/>
+  <text x="410" y="282" class="lbl-h" fill="#5a4310">The [Display(Name=…)] attribute is the wire contract.</text>
+  <text x="410" y="298" class="lbl-sm" fill="#5a4310">Adding a new Content value? The Display name is what REDCap will see.</text>
+</svg>

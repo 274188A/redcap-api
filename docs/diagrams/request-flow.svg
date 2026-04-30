@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 540" role="img" aria-labelledby="flow-title flow-desc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif">
+  <title id="flow-title">ExportRecordsAsync request flow</title>
+  <desc id="flow-desc">A sequence diagram showing how a single ExportRecordsAsync call flows through RedcapApi, the transport abstraction, and out to a REDCap server. The library builds a form-urlencoded payload using the Display attribute on enum members, sends it via IRedcapTransport, and returns the response body to the caller.</desc>
+
+  <style>
+    .lifeline { stroke: #c8b8eb; stroke-width: 1.2; stroke-dasharray: 4 4; }
+    .actor { fill: #f3eefc; stroke: #512BD4; stroke-width: 1.6; }
+    .actor-lbl { font-size: 13px; font-weight: 600; fill: #1f1235; text-anchor: middle; }
+    .msg { stroke: #512BD4; stroke-width: 1.4; fill: none; }
+    .msg-back { stroke: #512BD4; stroke-width: 1.4; fill: none; stroke-dasharray: 5 4; }
+    .msg-lbl { font-size: 12px; fill: #1f1235; }
+    .msg-lbl-sm { font-size: 11px; fill: #4a3a72; font-style: italic; }
+    .step { font-size: 11px; fill: #7860b8; font-weight: 600; }
+    .note { fill: #fff8e6; stroke: #c89a3b; stroke-width: 1.2; }
+    .note-lbl { font-size: 11px; fill: #5a4310; }
+  </style>
+
+  <defs>
+    <marker id="arrowf" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#512BD4"/>
+    </marker>
+  </defs>
+
+  <!-- Actors -->
+  <rect x="40" y="30" width="140" height="40" rx="6" class="actor"/>
+  <text x="110" y="55" class="actor-lbl">Caller</text>
+  <line x1="110" y1="70" x2="110" y2="500" class="lifeline"/>
+
+  <rect x="240" y="30" width="160" height="40" rx="6" class="actor"/>
+  <text x="320" y="55" class="actor-lbl">RedcapApi</text>
+  <line x1="320" y1="70" x2="320" y2="500" class="lifeline"/>
+
+  <rect x="460" y="30" width="180" height="40" rx="6" class="actor"/>
+  <text x="550" y="55" class="actor-lbl">IRedcapTransport</text>
+  <line x1="550" y1="70" x2="550" y2="500" class="lifeline"/>
+
+  <rect x="700" y="30" width="160" height="40" rx="6" class="actor"/>
+  <text x="780" y="55" class="actor-lbl">REDCap server</text>
+  <line x1="780" y1="70" x2="780" y2="500" class="lifeline"/>
+
+  <!-- Step 1: invoke -->
+  <text x="50" y="105" class="step">1</text>
+  <line x1="110" y1="115" x2="320" y2="115" class="msg" marker-end="url(#arrowf)"/>
+  <text x="215" y="108" text-anchor="middle" class="msg-lbl">ExportRecordsAsync(format: RedcapFormat.json)</text>
+
+  <!-- Step 2: build payload (self loop) -->
+  <text x="260" y="155" class="step">2</text>
+  <path d="M320 165 q 60 0 60 25 q 0 25 -60 25" class="msg" marker-end="url(#arrowf)"/>
+  <text x="395" y="180" class="msg-lbl">build Dictionary&lt;string,string&gt;</text>
+  <text x="395" y="196" class="msg-lbl-sm">token, content=record, format=json, type=flat</text>
+
+  <!-- Note: GetDisplayName -->
+  <rect x="220" y="220" width="220" height="46" rx="4" class="note"/>
+  <text x="230" y="238" class="note-lbl">enum values resolved via</text>
+  <text x="230" y="254" class="note-lbl">Utils.GetDisplayName() — [Display(Name="…")]</text>
+
+  <!-- Step 3: post -->
+  <text x="430" y="295" class="step">3</text>
+  <line x1="320" y1="305" x2="550" y2="305" class="msg" marker-end="url(#arrowf)"/>
+  <text x="435" y="298" text-anchor="middle" class="msg-lbl">SendPostRequestAsync(payload, uri, ct)</text>
+
+  <!-- Step 4: HTTP -->
+  <text x="660" y="335" class="step">4</text>
+  <line x1="550" y1="345" x2="780" y2="345" class="msg" marker-end="url(#arrowf)"/>
+  <text x="665" y="338" text-anchor="middle" class="msg-lbl">HTTP POST application/x-www-form-urlencoded</text>
+
+  <!-- Step 5: response body -->
+  <text x="660" y="385" class="step">5</text>
+  <line x1="780" y1="395" x2="550" y2="395" class="msg-back" marker-end="url(#arrowf)"/>
+  <text x="665" y="388" text-anchor="middle" class="msg-lbl">JSON body (records)</text>
+
+  <!-- Step 6: return string -->
+  <text x="430" y="425" class="step">6</text>
+  <line x1="550" y1="435" x2="320" y2="435" class="msg-back" marker-end="url(#arrowf)"/>
+  <text x="435" y="428" text-anchor="middle" class="msg-lbl">return string</text>
+
+  <!-- Step 7: return -->
+  <text x="200" y="475" class="step">7</text>
+  <line x1="320" y1="485" x2="110" y2="485" class="msg-back" marker-end="url(#arrowf)"/>
+  <text x="215" y="478" text-anchor="middle" class="msg-lbl">Task&lt;string&gt; — JSON ready for deserialization</text>
+</svg>

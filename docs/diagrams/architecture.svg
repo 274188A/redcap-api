@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 620" role="img" aria-labelledby="arch-title arch-desc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif">
+  <title id="arch-title">redcap-api architecture</title>
+  <desc id="arch-desc">A layered component diagram. Consumer code calls the RedcapApi facade, which composes seventeen focused domain interfaces. All HTTP traffic flows through the IRedcapTransport abstraction, satisfied in production by DefaultRedcapTransport over HttpClient, ultimately reaching a REDCap server.</desc>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#512BD4"/>
+    </marker>
+  </defs>
+
+  <style>
+    .box { fill: #ffffff; stroke: #512BD4; stroke-width: 1.6; }
+    .accent { fill: #f3eefc; stroke: #512BD4; stroke-width: 1.6; }
+    .seam { fill: #ede4ff; stroke: #512BD4; stroke-width: 1.6; stroke-dasharray: 6 4; }
+    .lbl { font-size: 14px; fill: #1f1235; }
+    .lbl-sm { font-size: 11px; fill: #4a3a72; }
+    .lbl-h { font-size: 14px; font-weight: 600; fill: #1f1235; }
+    .layer { font-size: 11px; fill: #7860b8; letter-spacing: 1px; }
+    .line { stroke: #512BD4; stroke-width: 1.4; fill: none; }
+  </style>
+
+  <!-- Layer label: Consumer -->
+  <text x="20" y="48" class="layer">CONSUMER</text>
+  <rect x="320" y="30" width="240" height="46" rx="6" class="box"/>
+  <text x="440" y="58" text-anchor="middle" class="lbl-h">Your application code</text>
+
+  <line x1="440" y1="76" x2="440" y2="106" class="line" marker-end="url(#arrow)"/>
+
+  <!-- Layer label: Facade -->
+  <text x="20" y="128" class="layer">FACADE</text>
+  <rect x="280" y="110" width="320" height="46" rx="6" class="accent"/>
+  <text x="440" y="132" text-anchor="middle" class="lbl-h">RedcapApi</text>
+  <text x="440" y="148" text-anchor="middle" class="lbl-sm">src/RedcapApi/Api/RedcapApi.cs</text>
+
+  <line x1="440" y1="156" x2="440" y2="186" class="line" marker-end="url(#arrow)"/>
+
+  <!-- Layer label: Domain interfaces -->
+  <text x="20" y="208" class="layer">DOMAIN INTERFACES (17)</text>
+  <rect x="40" y="190" width="800" height="78" rx="6" class="box"/>
+  <g class="lbl-sm" text-anchor="middle">
+    <text x="120" y="214">IRedcapRecords</text>
+    <text x="240" y="214">IRedcapMetadata</text>
+    <text x="360" y="214">IRedcapInstruments</text>
+    <text x="480" y="214">IRedcapEvents</text>
+    <text x="580" y="214">IRedcapArms</text>
+    <text x="680" y="214">IRedcapFiles</text>
+    <text x="790" y="214">IRedcapFileRepository</text>
+
+    <text x="120" y="234">IRedcapUsers</text>
+    <text x="240" y="234">IRedcapUserRoles</text>
+    <text x="360" y="234">IRedcapDataAccessGroups</text>
+    <text x="500" y="234">IRedcapSurveys</text>
+    <text x="600" y="234">IRedcapReports</text>
+    <text x="700" y="234">IRedcapLogging</text>
+    <text x="800" y="234">IRedcapProjects</text>
+
+    <text x="160" y="254">IRedcapFieldNames</text>
+    <text x="320" y="254">IRedcapRepeatingInstruments</text>
+    <text x="500" y="254">IRedcapVersion</text>
+    <text x="660" y="254" font-style="italic" fill="#7860b8">implemented by RedcapApi</text>
+  </g>
+
+  <line x1="440" y1="268" x2="440" y2="306" class="line" marker-end="url(#arrow)"/>
+
+  <!-- Layer label: Transport seam -->
+  <text x="20" y="328" class="layer">TRANSPORT SEAM</text>
+  <rect x="240" y="310" width="400" height="50" rx="6" class="seam"/>
+  <text x="440" y="332" text-anchor="middle" class="lbl-h">IRedcapTransport</text>
+  <text x="440" y="350" text-anchor="middle" class="lbl-sm">Strategy / dependency injection — swap for tests</text>
+
+  <line x1="440" y1="360" x2="440" y2="396" class="line" marker-end="url(#arrow)"/>
+
+  <!-- Layer label: Implementation -->
+  <text x="20" y="418" class="layer">IMPLEMENTATION</text>
+  <rect x="280" y="400" width="320" height="50" rx="6" class="accent"/>
+  <text x="440" y="422" text-anchor="middle" class="lbl-h">DefaultRedcapTransport</text>
+  <text x="440" y="440" text-anchor="middle" class="lbl-sm">src/RedcapApi/Api/DefaultRedcapTransport.cs</text>
+
+  <line x1="440" y1="450" x2="440" y2="486" class="line" marker-end="url(#arrow)"/>
+
+  <!-- Layer label: BCL -->
+  <text x="20" y="508" class="layer">.NET RUNTIME</text>
+  <rect x="340" y="490" width="200" height="44" rx="6" class="box"/>
+  <text x="440" y="517" text-anchor="middle" class="lbl-h">HttpClient</text>
+
+  <line x1="440" y1="534" x2="440" y2="568" class="line" marker-end="url(#arrow)"/>
+
+  <!-- Server -->
+  <text x="20" y="590" class="layer">EXTERNAL</text>
+  <path d="M340 600 q-10 -22 12 -24 q4 -22 30 -18 q12 -22 38 -10 q14 -16 36 -2 q26 -10 36 12 q22 0 18 22 q14 8 0 22 z" fill="#f3eefc" stroke="#512BD4" stroke-width="1.6"/>
+  <text x="440" y="600" text-anchor="middle" class="lbl-h">REDCap server</text>
+  <text x="440" y="615" text-anchor="middle" class="lbl-sm">/api/ endpoint, form-urlencoded</text>
+</svg>
