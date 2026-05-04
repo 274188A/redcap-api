@@ -58,7 +58,7 @@
 
 ### Status
 
-- **Library version:** 2.x
+- **Library version:** `1.0.0`
 - **Target framework:** `net10.0`
 - **License:** [MIT](LICENSE.md), © 2026 Curtin University.
 
@@ -102,11 +102,9 @@ The token belongs to the client instance — there is no longer a `token` parame
 
 The library is six layers thick — and the seam in the middle is the whole point.
 
-<p align="center">
-  <img src="docs/diagrams/architecture.svg" alt="redcap-api architecture: consumer code → RedcapApi facade → 17 domain interfaces → IRedcapTransport seam → DefaultRedcapTransport → HttpClient → REDCap server" width="640">
-  <br/>
-  <em>Figure 3.1 — Layered architecture. The dashed band is the transport seam; everything below it can be swapped at construction time.</em>
-</p>
+![redcap-api architecture: consumer code → RedcapApi facade → 17 domain interfaces → IRedcapTransport seam → DefaultRedcapTransport → HttpClient → REDCap server](docs/diagrams/architecture.svg)
+
+*Figure 3.1 — Layered architecture. The dashed band is the transport seam; everything below it can be swapped at construction time.*
 
 ### A guided tour
 
