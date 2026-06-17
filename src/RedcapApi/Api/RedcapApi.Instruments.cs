@@ -73,7 +73,7 @@ public partial class RedcapApi
             AddOptional(payload, "instrument", instrument);
             if (allRecord)
             {
-                payload["allRecords"] = allRecord.ToString();
+                payload["allRecords"] = Bool(allRecord);
             }
         }, cancellationToken, timeOutSeconds);
     }
@@ -111,7 +111,7 @@ public partial class RedcapApi
             AddOptional(payload, "instrument", instrument);
             if (allRecord)
             {
-                payload["allRecords"] = allRecord.ToString();
+                payload["allRecords"] = Bool(allRecord);
             }
         }, cancellationToken, timeOutSeconds);
     }

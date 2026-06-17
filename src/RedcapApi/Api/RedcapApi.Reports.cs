@@ -48,7 +48,7 @@ public partial class RedcapApi
 
             if (exportCheckboxLabel)
             {
-                payload["exportCheckboxLabel"] = exportCheckboxLabel.ToString();
+                payload["exportCheckboxLabel"] = Bool(exportCheckboxLabel);
             }
 
             AddOptional(payload, "csvDelimiter", csvDelimiter);

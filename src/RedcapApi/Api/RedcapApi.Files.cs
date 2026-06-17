@@ -80,7 +80,7 @@ public partial class RedcapApi
     public async Task<string> ImportFileAsync(string record, string field, string eventName, string? repeatInstance, string fileName, string filePath, RedcapReturnFormat returnFormat = RedcapReturnFormat.json, CancellationToken cancellationToken = default, long timeOutSeconds = 100)
     {
         var _binaryFile = Path.Combine(filePath, fileName);
-        var _fileBytes = System.IO.File.ReadAllBytes(_binaryFile);
+        var _fileBytes = await System.IO.File.ReadAllBytesAsync(_binaryFile, cancellationToken);
         return await ExecuteMultipartAsync(payload =>
         {
             AddFileMultipartFields(payload, RedcapAction.Import, record, field, eventName, repeatInstance, returnFormat);

@@ -146,7 +146,7 @@ public partial class RedcapApi
             AddReturnFormat(payload, returnFormat);
             if (returnMetadataOnly)
             {
-                payload["returnMetadataOnly"] = returnMetadataOnly.ToString();
+                payload["returnMetadataOnly"] = Bool(returnMetadataOnly);
             }
 
             AddOptional(payload, PayloadKey.Records, recordsStr);
@@ -154,18 +154,18 @@ public partial class RedcapApi
             AddOptional(payload, PayloadKey.Events, eventsStr);
             if (exportSurveyFields)
             {
-                payload["exportSurveyFields"] = exportSurveyFields.ToString();
+                payload["exportSurveyFields"] = Bool(exportSurveyFields);
             }
 
             if (exportDataAccessGroups)
             {
-                payload["exportDataAccessGroups"] = exportDataAccessGroups.ToString();
+                payload["exportDataAccessGroups"] = Bool(exportDataAccessGroups);
             }
 
             AddOptional(payload, "filterLogic", filterLogic);
             if (exportFiles)
             {
-                payload["exportFiles"] = exportFiles.ToString();
+                payload["exportFiles"] = Bool(exportFiles);
             }
         }, cancellationToken, timeOutSeconds);
     }

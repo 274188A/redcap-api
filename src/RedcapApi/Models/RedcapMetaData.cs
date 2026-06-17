@@ -72,7 +72,7 @@ public class RedcapMetaData
     /// <summary>
     /// the rank
     /// </summary>
-    public string? maxtrix_ranking { get; set; }
+    public string? matrix_ranking { get; set; }
     /// <summary>
     /// field annotation
     /// </summary>

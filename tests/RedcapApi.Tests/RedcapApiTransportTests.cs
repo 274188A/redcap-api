@@ -260,14 +260,14 @@ public class RedcapApiTransportTests
             Assert.Equal("event_1_arm_1", transport.LastDictionaryPayload["events"]);
             Assert.Equal("label", transport.LastDictionaryPayload["rawOrLabel"]);
             Assert.Equal("label", transport.LastDictionaryPayload["rawOrLabelHeaders"]);
-            Assert.Equal("True", transport.LastDictionaryPayload["exportCheckboxLabel"]);
-            Assert.Equal("True", transport.LastDictionaryPayload["exportSurveyFields"]);
-            Assert.Equal("True", transport.LastDictionaryPayload["exportDataAccessGroups"]);
+            Assert.Equal("true", transport.LastDictionaryPayload["exportCheckboxLabel"]);
+            Assert.Equal("true", transport.LastDictionaryPayload["exportSurveyFields"]);
+            Assert.Equal("true", transport.LastDictionaryPayload["exportDataAccessGroups"]);
             Assert.Equal("[age] > 30", transport.LastDictionaryPayload["filterLogic"]);
-            Assert.Equal("comma", transport.LastDictionaryPayload["csvDelimiter"]);
-            Assert.Equal("dot", transport.LastDictionaryPayload["decimalCharacter"]);
-            Assert.Equal("True", transport.LastDictionaryPayload["exportBlankForGrayFormStatus"]);
-            Assert.Equal("True", transport.LastDictionaryPayload["combineCheckboxOptions"]);
+            Assert.Equal(",", transport.LastDictionaryPayload["csvDelimiter"]);
+            Assert.Equal(".", transport.LastDictionaryPayload["decimalCharacter"]);
+            Assert.Equal("true", transport.LastDictionaryPayload["exportBlankForGrayFormStatus"]);
+            Assert.Equal("true", transport.LastDictionaryPayload["combineCheckboxOptions"]);
         }
     }
 
@@ -312,15 +312,15 @@ public class RedcapApiTransportTests
         Assert.Equal("event_1_arm_1", transport.LastDictionaryPayload["events"]);
         Assert.Equal("label", transport.LastDictionaryPayload["rawOrLabel"]);
         Assert.Equal("label", transport.LastDictionaryPayload["rawOrLabelHeaders"]);
-        Assert.Equal("True", transport.LastDictionaryPayload["exportCheckboxLabel"]);
+        Assert.Equal("true", transport.LastDictionaryPayload["exportCheckboxLabel"]);
         Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
-        Assert.Equal("True", transport.LastDictionaryPayload["exportSurveyFields"]);
-        Assert.Equal("True", transport.LastDictionaryPayload["exportDataAccessGroups"]);
+        Assert.Equal("true", transport.LastDictionaryPayload["exportSurveyFields"]);
+        Assert.Equal("true", transport.LastDictionaryPayload["exportDataAccessGroups"]);
         Assert.Equal("[age] > 30", transport.LastDictionaryPayload["filterLogic"]);
-        Assert.Equal("comma", transport.LastDictionaryPayload["csvDelimiter"]);
-        Assert.Equal("dot", transport.LastDictionaryPayload["decimalCharacter"]);
-        Assert.Equal("True", transport.LastDictionaryPayload["exportBlankForGrayFormStatus"]);
-        Assert.Equal("True", transport.LastDictionaryPayload["combineCheckboxOptions"]);
+        Assert.Equal(",", transport.LastDictionaryPayload["csvDelimiter"]);
+        Assert.Equal(".", transport.LastDictionaryPayload["decimalCharacter"]);
+        Assert.Equal("true", transport.LastDictionaryPayload["exportBlankForGrayFormStatus"]);
+        Assert.Equal("true", transport.LastDictionaryPayload["combineCheckboxOptions"]);
         Assert.Equal(42, transport.LastTimeOutSeconds);
     }
 
@@ -403,15 +403,15 @@ public class RedcapApiTransportTests
             Assert.Equal("event_a", transport.LastDictionaryPayload["events"]);
             Assert.Equal("label", transport.LastDictionaryPayload["rawOrLabel"]);
             Assert.Equal("label", transport.LastDictionaryPayload["rawOrLabelHeaders"]);
-            Assert.Equal("True", transport.LastDictionaryPayload["exportCheckboxLabel"]);
+            Assert.Equal("true", transport.LastDictionaryPayload["exportCheckboxLabel"]);
             Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
-            Assert.Equal("True", transport.LastDictionaryPayload["exportSurveyFields"]);
-            Assert.Equal("True", transport.LastDictionaryPayload["exportDataAccessGroups"]);
+            Assert.Equal("true", transport.LastDictionaryPayload["exportSurveyFields"]);
+            Assert.Equal("true", transport.LastDictionaryPayload["exportDataAccessGroups"]);
             Assert.Equal("[id] = 7", transport.LastDictionaryPayload["filterLogic"]);
-            Assert.Equal("comma", transport.LastDictionaryPayload["csvDelimiter"]);
-            Assert.Equal("dot", transport.LastDictionaryPayload["decimalCharacter"]);
-            Assert.Equal("True", transport.LastDictionaryPayload["exportBlankForGrayFormStatus"]);
-            Assert.Equal("True", transport.LastDictionaryPayload["combineCheckboxOptions"]);
+            Assert.Equal(",", transport.LastDictionaryPayload["csvDelimiter"]);
+            Assert.Equal(".", transport.LastDictionaryPayload["decimalCharacter"]);
+            Assert.Equal("true", transport.LastDictionaryPayload["exportBlankForGrayFormStatus"]);
+            Assert.Equal("true", transport.LastDictionaryPayload["combineCheckboxOptions"]);
         }
     }
 
@@ -428,8 +428,8 @@ public class RedcapApiTransportTests
         {
             Assert.Equal("record", transport.LastDictionaryPayload!["content"]);
             Assert.Equal("overwrite", transport.LastDictionaryPayload["overwriteBehavior"]);
-            Assert.Equal("True", transport.LastDictionaryPayload["forceAutoNumber"]);
-            Assert.Equal("True", transport.LastDictionaryPayload["backgroundProcess"]);
+            Assert.Equal("true", transport.LastDictionaryPayload["forceAutoNumber"]);
+            Assert.Equal("true", transport.LastDictionaryPayload["backgroundProcess"]);
             Assert.Equal("YMD", transport.LastDictionaryPayload["dateFormat"]);
             Assert.Equal("ids", transport.LastDictionaryPayload["returnContent"]);
             Assert.Contains("Alice", transport.LastDictionaryPayload["data"]);
@@ -463,10 +463,10 @@ public class RedcapApiTransportTests
         Assert.Equal("json", transport.LastDictionaryPayload["format"]);
         Assert.Equal("flat", transport.LastDictionaryPayload["type"]);
         Assert.Equal("overwrite", transport.LastDictionaryPayload["overwriteBehavior"]);
-        Assert.Equal("True", transport.LastDictionaryPayload["forceAutoNumber"]);
-        Assert.Equal("True", transport.LastDictionaryPayload["backgroundProcess"]);
+        Assert.Equal("true", transport.LastDictionaryPayload["forceAutoNumber"]);
+        Assert.Equal("true", transport.LastDictionaryPayload["backgroundProcess"]);
         Assert.Equal("YMD", transport.LastDictionaryPayload["dateFormat"]);
-        Assert.Equal("comma", transport.LastDictionaryPayload["csvDelimiter"]);
+        Assert.Equal(",", transport.LastDictionaryPayload["csvDelimiter"]);
         Assert.Equal("ids", transport.LastDictionaryPayload["returnContent"]);
         Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
         Assert.Contains("Alice", transport.LastDictionaryPayload["data"]);
@@ -487,8 +487,8 @@ public class RedcapApiTransportTests
         Assert.Equal("json", transport.LastDictionaryPayload["format"]);
         Assert.Equal("flat", transport.LastDictionaryPayload["type"]);
         Assert.Equal("normal", transport.LastDictionaryPayload["overwriteBehavior"]);
-        Assert.Equal("False", transport.LastDictionaryPayload["forceAutoNumber"]);
-        Assert.Equal("False", transport.LastDictionaryPayload["backgroundProcess"]);
+        Assert.Equal("false", transport.LastDictionaryPayload["forceAutoNumber"]);
+        Assert.Equal("false", transport.LastDictionaryPayload["backgroundProcess"]);
         Assert.Contains("Bob", transport.LastDictionaryPayload["data"]);
     }
 
@@ -522,7 +522,7 @@ public class RedcapApiTransportTests
         Assert.Equal("delete", transport.LastDictionaryPayload["action"]);
         Assert.Equal("10", transport.LastDictionaryPayload["records[0]"]);
         Assert.Equal("11", transport.LastDictionaryPayload["records[1]"]);
-        Assert.Equal("True", transport.LastDictionaryPayload["delete_logging"]);
+        Assert.Equal("true", transport.LastDictionaryPayload["delete_logging"]);
     }
 
     [Fact]
@@ -550,8 +550,49 @@ public class RedcapApiTransportTests
             Assert.Equal("demographics", transport.LastDictionaryPayload["instrument"]);
             Assert.Equal("event_1_arm_1", transport.LastDictionaryPayload["event"]);
             Assert.Equal("3", transport.LastDictionaryPayload["repeat_instance"]);
-            Assert.Equal("True", transport.LastDictionaryPayload["delete_logging"]);
+            Assert.Equal("true", transport.LastDictionaryPayload["delete_logging"]);
         }
+    }
+
+    [Fact]
+    public async Task DeleteRecordsAsync_DetailedOverload_WithNullParts_OmitsKeysAndDoesNotThrow()
+    {
+        var transport = new FakeTransport();
+        var api = new Redcap.RedcapApi(TestConstants.BaseUrl, TestConstants.Token, transport);
+
+        await api.DeleteRecordsAsync(
+            Content.Record,
+            RedcapAction.Delete,
+            new[] { "1" },
+            arm: null,
+            instrument: null!,
+            redcapEvent: null!,
+            repeatInstance: null!);
+
+        Assert.NotNull(transport.LastDictionaryPayload);
+        Assert.Equal("1", transport.LastDictionaryPayload!["records[0]"]);
+        Assert.False(transport.LastDictionaryPayload.ContainsKey("instrument"));
+        Assert.False(transport.LastDictionaryPayload.ContainsKey("event"));
+        Assert.False(transport.LastDictionaryPayload.ContainsKey("repeat_instance"));
+    }
+
+    [Theory]
+    [InlineData(CsvDelimiter.semiColon, DecimalCharacter.comma, ";", ",")]
+    [InlineData(CsvDelimiter.pipe, DecimalCharacter.dot, "|", ".")]
+    public async Task ExportRecordsAsync_DelimiterEnums_SendWireDisplayValues(
+        CsvDelimiter csvDelimiter, DecimalCharacter decimalCharacter, string expectedCsv, string expectedDecimal)
+    {
+        var transport = new FakeTransport();
+        var api = new Redcap.RedcapApi(TestConstants.BaseUrl, TestConstants.Token, transport);
+
+        await api.ExportRecordsAsync(
+            RedcapFormat.csv,
+            csvDelimiter: csvDelimiter,
+            decimalCharacter: decimalCharacter);
+
+        Assert.NotNull(transport.LastDictionaryPayload);
+        Assert.Equal(expectedCsv, transport.LastDictionaryPayload!["csvDelimiter"]);
+        Assert.Equal(expectedDecimal, transport.LastDictionaryPayload["decimalCharacter"]);
     }
 
     [Fact]
@@ -566,7 +607,7 @@ public class RedcapApiTransportTests
         Assert.Equal("record", transport.LastDictionaryPayload!["content"]);
         Assert.Equal("delete", transport.LastDictionaryPayload["action"]);
         Assert.Equal("2", transport.LastDictionaryPayload["arm"]);
-        Assert.Equal("True", transport.LastDictionaryPayload["delete_logging"]);
+        Assert.Equal("true", transport.LastDictionaryPayload["delete_logging"]);
     }
 
     [Fact]
@@ -615,7 +656,7 @@ public class RedcapApiTransportTests
         Assert.Equal("record", transport.LastDictionaryPayload["content"]);
         Assert.Equal("55", transport.LastDictionaryPayload["record"]);
         Assert.Equal("7", transport.LastDictionaryPayload["randomization_id"]);
-        Assert.Equal("True", transport.LastDictionaryPayload["returnAlt"]);
+        Assert.Equal("true", transport.LastDictionaryPayload["returnAlt"]);
     }
 
     [Fact]
@@ -631,7 +672,7 @@ public class RedcapApiTransportTests
         Assert.Equal("record", transport.LastDictionaryPayload["content"]);
         Assert.Equal("55", transport.LastDictionaryPayload["record"]);
         Assert.Equal("7", transport.LastDictionaryPayload["randomization_id"]);
-        Assert.Equal("True", transport.LastDictionaryPayload["returnAlt"]);
+        Assert.Equal("true", transport.LastDictionaryPayload["returnAlt"]);
     }
 
     [Theory]
@@ -708,7 +749,7 @@ public class RedcapApiTransportTests
             Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
             Assert.Equal("label", transport.LastDictionaryPayload["rawOrLabel"]);
             Assert.Equal("label", transport.LastDictionaryPayload["rawOrLabelHeaders"]);
-            Assert.Equal("True", transport.LastDictionaryPayload["exportCheckboxLabel"]);
+            Assert.Equal("true", transport.LastDictionaryPayload["exportCheckboxLabel"]);
             Assert.Equal(",", transport.LastDictionaryPayload["csvDelimiter"]);
             Assert.Equal(".", transport.LastDictionaryPayload["decimalCharacter"]);
         }
@@ -1327,14 +1368,14 @@ public class RedcapApiTransportTests
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("project_xml", transport.LastDictionaryPayload!["content"]);
         Assert.Equal("xml", transport.LastDictionaryPayload["returnFormat"]);
-        Assert.Equal("True", transport.LastDictionaryPayload["returnMetadataOnly"]);
+        Assert.Equal("true", transport.LastDictionaryPayload["returnMetadataOnly"]);
         Assert.Equal("1,2", transport.LastDictionaryPayload["records"]);
         Assert.Equal("field_1,field_2", transport.LastDictionaryPayload["fields"]);
         Assert.Equal("event_1_arm_1", transport.LastDictionaryPayload["events"]);
-        Assert.Equal("True", transport.LastDictionaryPayload["exportSurveyFields"]);
-        Assert.Equal("True", transport.LastDictionaryPayload["exportDataAccessGroups"]);
+        Assert.Equal("true", transport.LastDictionaryPayload["exportSurveyFields"]);
+        Assert.Equal("true", transport.LastDictionaryPayload["exportDataAccessGroups"]);
         Assert.Equal("[record_id] = '1'", transport.LastDictionaryPayload["filterLogic"]);
-        Assert.Equal("True", transport.LastDictionaryPayload["exportFiles"]);
+        Assert.Equal("true", transport.LastDictionaryPayload["exportFiles"]);
     }
 
     [Fact]
@@ -1861,7 +1902,7 @@ public class RedcapApiTransportTests
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("pdf", transport.LastDictionaryPayload!["content"]);
         Assert.Equal("1", transport.LastDictionaryPayload["record"]);
-        Assert.Equal("True", transport.LastDictionaryPayload["allRecords"]);
+        Assert.Equal("true", transport.LastDictionaryPayload["allRecords"]);
     }
 
     [Fact]
@@ -1877,7 +1918,7 @@ public class RedcapApiTransportTests
         Assert.Equal("pdf", transport.LastDictionaryPayload!["content"]);
         Assert.False(transport.LastDictionaryPayload.ContainsKey("filePath"));
         Assert.Equal(tempFolder, transport.LastDownloadDestinationPath);
-        Assert.Equal("True", transport.LastDictionaryPayload["allRecords"]);
+        Assert.Equal("true", transport.LastDictionaryPayload["allRecords"]);
     }
 
     [Fact]
@@ -1891,7 +1932,7 @@ public class RedcapApiTransportTests
         Assert.NotNull(transport.LastDictionaryPayload);
         Assert.Equal("pdf", transport.LastDictionaryPayload!["content"]);
         Assert.Equal("1", transport.LastDictionaryPayload["record"]);
-        Assert.Equal("True", transport.LastDictionaryPayload["allRecords"]);
+        Assert.Equal("true", transport.LastDictionaryPayload["allRecords"]);
     }
 
     [Fact]

@@ -73,7 +73,7 @@ public partial class RedcapApi
         {
             AddFormattedRequest(payload, Content.Record, format, returnFormat);
             payload[PayloadKey.Type] = redcapDataType.GetDisplayName();
-            payload["exportBlankForGrayFormStatus"] = exportBlankForGrayFormStatus.ToString();
+            AddFlagWhenTrue(payload, "exportBlankForGrayFormStatus", exportBlankForGrayFormStatus);
             if (recordsStr != null)
             {
                 payload[PayloadKey.Records] = recordsStr;
@@ -108,17 +108,17 @@ public partial class RedcapApi
 
             if (exportCheckboxLabel)
             {
-                payload["exportCheckboxLabel"] = exportCheckboxLabel.ToString();
+                payload["exportCheckboxLabel"] = Bool(exportCheckboxLabel);
             }
 
             if (exportSurveyFields)
             {
-                payload["exportSurveyFields"] = exportSurveyFields.ToString();
+                payload["exportSurveyFields"] = Bool(exportSurveyFields);
             }
 
             if (exportDataAccessGroups)
             {
-                payload["exportDataAccessGroups"] = exportDataAccessGroups.ToString();
+                payload["exportDataAccessGroups"] = Bool(exportDataAccessGroups);
             }
 
             if (!IsNullOrEmpty(filterLogic))
@@ -138,17 +138,17 @@ public partial class RedcapApi
 
             if (format == RedcapFormat.csv)
             {
-                payload["csvDelimiter"] = csvDelimiter.ToString();
+                payload["csvDelimiter"] = csvDelimiter.GetDisplayName();
             }
 
             if (decimalCharacter != DecimalCharacter.none)
             {
-                payload["decimalCharacter"] = decimalCharacter.ToString();
+                payload["decimalCharacter"] = decimalCharacter.GetDisplayName();
             }
 
             if (combineCheckboxOptions)
             {
-                payload["combineCheckboxOptions"] = combineCheckboxOptions.ToString();
+                payload["combineCheckboxOptions"] = Bool(combineCheckboxOptions);
             }
         }, cancellationToken, timeOutSeconds);
     }
@@ -254,17 +254,17 @@ public partial class RedcapApi
 
             if (exportCheckboxLabel)
             {
-                payload["exportCheckboxLabel"] = exportCheckboxLabel.ToString();
+                payload["exportCheckboxLabel"] = Bool(exportCheckboxLabel);
             }
 
             if (exportSurveyFields)
             {
-                payload["exportSurveyFields"] = exportSurveyFields.ToString();
+                payload["exportSurveyFields"] = Bool(exportSurveyFields);
             }
 
             if (exportDataAccessGroups)
             {
-                payload["exportDataAccessGroups"] = exportDataAccessGroups.ToString();
+                payload["exportDataAccessGroups"] = Bool(exportDataAccessGroups);
             }
 
             if (!IsNullOrEmpty(filterLogic))
@@ -284,22 +284,22 @@ public partial class RedcapApi
 
             if (format == RedcapFormat.csv)
             {
-                payload["csvDelimiter"] = csvDelimiter.ToString();
+                payload["csvDelimiter"] = csvDelimiter.GetDisplayName();
             }
 
             if (decimalCharacter != DecimalCharacter.none)
             {
-                payload["decimalCharacter"] = decimalCharacter.ToString();
+                payload["decimalCharacter"] = decimalCharacter.GetDisplayName();
             }
 
             if (combineCheckboxOptions)
             {
-                payload["combineCheckboxOptions"] = combineCheckboxOptions.ToString();
+                payload["combineCheckboxOptions"] = Bool(combineCheckboxOptions);
             }
 
             if (exportBlankForGrayFormStatus)
             {
-                payload["exportBlankForGrayFormStatus"] = exportBlankForGrayFormStatus.ToString();
+                payload["exportBlankForGrayFormStatus"] = Bool(exportBlankForGrayFormStatus);
             }
         }, cancellationToken, timeOutSeconds);
     }
@@ -344,9 +344,9 @@ public partial class RedcapApi
             AddFormattedRequest(payload, Content.Record, format, returnFormat);
             payload[PayloadKey.Type] = redcapDataType.GetDisplayName();
             payload["overwriteBehavior"] = overwriteBehavior.ToString();
-            payload["forceAutoNumber"] = forceAutoNumber.ToString();
-            payload["backgroundProcess"] = backgroundProcess.ToString();
-            payload["csvDelimiter"] = csvDelimiter.ToString();
+            payload["forceAutoNumber"] = Bool(forceAutoNumber);
+            payload["backgroundProcess"] = Bool(backgroundProcess);
+            payload["csvDelimiter"] = csvDelimiter.GetDisplayName();
             AddData(payload, data);
             if (!IsNullOrEmpty(dateFormat))
             {
@@ -412,7 +412,7 @@ public partial class RedcapApi
 
             if (deleteLogging)
             {
-                payload[PayloadKey.DeleteLogging] = deleteLogging.ToString();
+                payload[PayloadKey.DeleteLogging] = Bool(deleteLogging);
             }
         }, cancellationToken, timeOutSeconds);
     }
@@ -451,12 +451,15 @@ public partial class RedcapApi
                 payload[PayloadKey.Arm] = arm.Value.ToString();
             }
 
-            payload[PayloadKey.Instrument] = instrument.InstrumentName!;
-            payload[PayloadKey.Event] = redcapEvent.EventName!;
-            payload[PayloadKey.RepeatInstance] = repeatInstance.RepeatInstance.ToString();
+            AddOptional(payload, PayloadKey.Instrument, instrument?.InstrumentName);
+            AddOptional(payload, PayloadKey.Event, redcapEvent?.EventName);
+            if (repeatInstance != null)
+            {
+                payload[PayloadKey.RepeatInstance] = repeatInstance.RepeatInstance.ToString();
+            }
             if (deleteLogging)
             {
-                payload[PayloadKey.DeleteLogging] = deleteLogging.ToString();
+                payload[PayloadKey.DeleteLogging] = Bool(deleteLogging);
             }
         }, cancellationToken, timeOutSeconds);
     }
@@ -516,7 +519,7 @@ public partial class RedcapApi
             payload[PayloadKey.RandomizationId] = randomizationId;
             AddFormat(payload, format);
             AddReturnFormat(payload, returnFormat);
-            payload["returnAlt"] = returnAlt.ToString();
+            payload["returnAlt"] = Bool(returnAlt);
         }, cancellationToken, timeOutSeconds);
     }
 

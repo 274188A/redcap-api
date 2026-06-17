@@ -506,7 +506,7 @@ public class UtilitiesTests
         Assert.Contains("action=delete", request.Body);
         Assert.Contains("records%5B0%5D=1", request.Body);
         Assert.Contains("records%5B1%5D=2", request.Body);
-        Assert.Contains("delete_logging=True", request.Body);
+        Assert.Contains("delete_logging=true", request.Body);
     }
 
     [Fact]
@@ -522,7 +522,7 @@ public class UtilitiesTests
         Assert.Contains("action=randomize", request!.Body);
         Assert.Contains("content=record", request.Body);
         Assert.Contains("randomization_id=99", request.Body);
-        Assert.Contains("returnAlt=True", request.Body);
+        Assert.Contains("returnAlt=true", request.Body);
     }
 
     [Fact]

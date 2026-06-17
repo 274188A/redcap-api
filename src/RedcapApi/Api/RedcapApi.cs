@@ -407,6 +407,24 @@ public partial class RedcapApi : IRedcap, IDisposable
         }
     }
 
+    /// <summary>
+    /// Converts a boolean to the lower-case wire value REDCap expects ("true"/"false").
+    /// <see cref="bool.ToString()"/> yields "True"/"False", which REDCap endpoints that do a
+    /// strict string comparison silently ignore.
+    /// </summary>
+    private static string Bool(bool value) => value ? "true" : "false";
+
+    /// <summary>
+    /// Adds <paramref name="key"/> with the lower-case wire value only when <paramref name="value"/> is true.
+    /// </summary>
+    private static void AddFlagWhenTrue(Dictionary<string, string> payload, string key, bool value)
+    {
+        if (value)
+        {
+            payload[key] = Bool(value);
+        }
+    }
+
     private static void RequireItems<T>(IReadOnlyCollection<T>? values, string message)
     {
         if (values == null || values.Count == 0)
