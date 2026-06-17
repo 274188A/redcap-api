@@ -42,6 +42,8 @@ public class CustomFormUrlEncodedContent : ByteArrayContent
     }
     private static string Encode(string data)
     {
-        return string.IsNullOrEmpty(data) ? string.Empty : System.Net.WebUtility.UrlEncode(data).Replace("%20", "+");
+        // WebUtility.UrlEncode already emits '+' for spaces under application/x-www-form-urlencoded
+        // rules, so no post-processing is required.
+        return string.IsNullOrEmpty(data) ? string.Empty : System.Net.WebUtility.UrlEncode(data);
     }
 }

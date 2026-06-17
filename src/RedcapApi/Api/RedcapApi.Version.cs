@@ -24,7 +24,7 @@ public partial class RedcapApi
             AddFormattedRequest(payload, Content.Version, format);
         }, cancellationToken, timeOutSeconds);
 
-        Version = version;
+        _version = version;
         return version;
     }
 }

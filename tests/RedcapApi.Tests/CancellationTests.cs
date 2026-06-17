@@ -1,4 +1,5 @@
 using Redcap.Api;
+using Redcap.Exceptions;
 using Redcap.Interfaces;
 using Redcap.Models;
 using Xunit;
@@ -98,7 +99,7 @@ public class CancellationTests
     }
 
     [Fact]
-    public async Task ExportUsersAsync_WhenPerCallTimeoutExceeded_ThrowsTaskCanceledException()
+    public async Task ExportUsersAsync_WhenPerCallTimeoutExceeded_ThrowsRedcapApiExceptionIndicatingTimeout()
     {
         using var server = new LocalHttpServer(_ =>
         {
@@ -108,8 +109,25 @@ public class CancellationTests
         using var transport = new DefaultRedcapTransport(timeOutSeconds: 10);
         var api = new Redcap.RedcapApi(server.Url.ToString(), TestConstants.Token, transport);
 
-        await Assert.ThrowsAsync<TaskCanceledException>(() =>
+        var ex = await Assert.ThrowsAsync<RedcapApiException>(() =>
             api.ExportUsersAsync(timeOutSeconds: 1));
+        Assert.Contains("timed out", ex.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task ExportUsersAsync_WhenCallerCancels_StillThrowsOperationCanceledException()
+    {
+        using var server = new LocalHttpServer(_ =>
+        {
+            Thread.Sleep(TimeSpan.FromSeconds(2));
+            return new TestResponse(200, "ok");
+        });
+        using var transport = new DefaultRedcapTransport(timeOutSeconds: 30);
+        var api = new Redcap.RedcapApi(server.Url.ToString(), TestConstants.Token, transport);
+        using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(200));
+
+        await Assert.ThrowsAsync<TaskCanceledException>(() =>
+            api.ExportUsersAsync(cancellationToken: cts.Token, timeOutSeconds: 30));
     }
 
     [Fact]

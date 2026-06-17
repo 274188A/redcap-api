@@ -1,3 +1,4 @@
+using Redcap.Exceptions;
 using Redcap.Interfaces;
 using Redcap.Utilities;
 
@@ -99,9 +100,21 @@ public sealed class DefaultRedcapTransport : IRedcapTransport, IDisposable
 
     private async Task<T> ExecuteWithTimeoutAsync<T>(CancellationToken cancellationToken, long timeOutSeconds, Func<CancellationToken, Task<T>> action)
     {
+        var timeout = ResolveTimeout(timeOutSeconds);
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        linkedCts.CancelAfter(ResolveTimeout(timeOutSeconds));
-        return await action(linkedCts.Token);
+        linkedCts.CancelAfter(timeout);
+        try
+        {
+            return await action(linkedCts.Token);
+        }
+        catch (OperationCanceledException ex) when (!cancellationToken.IsCancellationRequested)
+        {
+            // The linked token fired but the caller's token did not, so this is a per-call timeout,
+            // not a caller-initiated cancellation. Surface it distinctly instead of as a bare
+            // OperationCanceledException that callers cannot tell apart from their own cancellation.
+            throw new RedcapApiException(
+                $"The REDCap request timed out after {timeout.TotalSeconds:0.###} seconds.", ex);
+        }
     }
 
     private TimeSpan ResolveTimeout(long timeOutSeconds) =>

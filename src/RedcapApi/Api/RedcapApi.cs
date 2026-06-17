@@ -36,10 +36,16 @@ public partial class RedcapApi : IRedcap, IDisposable
     private readonly string _token;
     private bool _disposed;
 
+    private volatile string? _version;
+
     /// <summary>
     /// Gets the last REDCap version value returned by <see cref="ExportRedcapVersionAsync(Redcap.Models.RedcapFormat, CancellationToken, long)"/>.
     /// </summary>
-    public string? Version { get; private set; }
+    /// <remarks>
+    /// This is a cached convenience value updated whenever <see cref="ExportRedcapVersionAsync(Redcap.Models.RedcapFormat, CancellationToken, long)"/>
+    /// completes. The backing field is <c>volatile</c> so reads are safely published across threads when the client is shared.
+    /// </remarks>
+    public string? Version => _version;
 
     /// <summary>
     /// Creates a new <see cref="RedcapApi"/> with the given URL and project token.
